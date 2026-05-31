@@ -1,16 +1,11 @@
 ﻿using FormatReadLibrary.Logging.LoggingRegisters;
-using LogRegister;
 using StateMachine;
 using System.Text.RegularExpressions;
 
 namespace FormatReadLibrary.Readers.Validators;
-
+[RequiresStateVariable("Match", typeof(Match))]
 public class ValidateEntryFormat(ParsingContext context, FileEnumeratorWithLog fileEnumerator) : Validator(context)
 {
-    private readonly (string, Type)[] _varNames = [
-            ("Match",typeof(Match)),
-        ];
-    protected override (string, Type)[] _variableNames { get => _varNames; }
     private readonly FileEnumeratorWithLog _fileEnumerator = fileEnumerator;
     public override bool Validate(ParsingContext ctx)
     {

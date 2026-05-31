@@ -59,7 +59,7 @@ public sealed class CommonListReader
         private static readonly Regex _entryRegex = FileRegexContainer.ListEntryRegex();
         private readonly Dictionary<string, Dictionary<int, CommonListEntry>> _entriesList;
         private readonly Dictionary<string, string> _baseDirectories;
-        private readonly ValidateTitleIsNotRepeated _titleIsNotRepeated;
+        private readonly ValidateSectionIsNotRepeated _titleIsNotRepeated;
         private string? _currentSection;
         private readonly Dictionary<string, bool> _processedSections;
         public CommonListParsingContext(CommonListParserOptions options, int maxID = 255, bool allowVariables = false) : base()
@@ -69,7 +69,7 @@ public sealed class CommonListReader
             _entriesList = options.EntriesList;
             State.AddVariable("BaseDirectory", new StateVariable<string>());
             State.AddVariable("Dictionary", new StateVariable<Dictionary<int, CommonListEntry>>());
-            State.AddVariable("WasProcessed", new StateVariable<bool>());
+            State.AddVariable("SectionWasProcessed", new StateVariable<bool>());
             State.AddVariable("Match", new LazyStateVariable<Match>(() =>
             {
                 if (options.FileEnumerator.LineIndex < 0)
@@ -121,7 +121,7 @@ public sealed class CommonListReader
                     return false;
                 State.Set("BaseDirectory", _baseDirectories[lowerLine]);
                 State.Set("Dictionary", _entriesList[lowerLine]);
-                State.Set("WasProcessed", _processedSections[lowerLine]);
+                State.Set("SectionWasProcessed", _processedSections[lowerLine]);
                 _currentSection = lowerLine;
                 return true;
             }

@@ -1,17 +1,19 @@
 ﻿using FormatReadLibrary.Logging.LoggingRegisters;
-using LogRegister;
 using StateMachine;
 
 namespace FormatReadLibrary.Readers.Validators;
 
-public class ValidateDuplicateID<T>(ParsingContext context, FileEnumeratorWithLog fileEnumerator) : Validator(context)
+[RequiresStateVariable("Dictionary")]
+[RequiresStateVariable("ID", typeof(int?))]
+public class ValidateDuplicateID<T> : Validator
 {
-    private readonly (string, Type)[] _varNames = [
-            ("Dictionary", typeof(Dictionary<int, T>)),
-            ("ID",typeof(int)),
-        ];
-    protected override (string, Type)[] _variableNames { get => _varNames; }
-    private readonly FileEnumeratorWithLog _fileEnumerator = fileEnumerator;
+    private readonly FileEnumeratorWithLog _fileEnumerator;
+    public ValidateDuplicateID(ParsingContext context, FileEnumeratorWithLog fileEnumerator) : base(context)
+    {
+        _fileEnumerator = fileEnumerator;
+        if (context.State.HasVariableOfType<Dictionary<string, T>>("Dictionary"))
+            throw new KeyNotFoundException($"Missing \"Dictionary\" variable of type {getFriendlyName(typeof(Dictionary<string, T>))} in {getFriendlyName(context.GetType())}'s state.");
+    }
     public override bool Validate(ParsingContext ctx)
     {
         State state = ctx.State;

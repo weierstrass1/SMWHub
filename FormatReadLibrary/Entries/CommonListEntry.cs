@@ -7,7 +7,7 @@ public sealed class CommonListEntry
     public required int[] Values { get; init; }
     public override string ToString()
     {
-        return $"{EntryType}-{ID}-{Path}" + (Values.Any() ?
+        return $"{EntryType}-{ID:X2}-{Path}" + (Values.Any() ?
             $"-[{string.Join(",", Values)}]" :
             "");
     }

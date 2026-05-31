@@ -1,15 +1,10 @@
 ﻿using FormatReadLibrary.Logging.LoggingRegisters;
-using LogRegister;
 using StateMachine;
 
 namespace FormatReadLibrary.Readers.Validators;
-
+[RequiresStateVariable("Values", typeof(int[]))]
 public class ValidateEntryVariables(ParsingContext context, FileEnumeratorWithLog fileEnumerator, bool allowedVariables = false) : Validator(context)
 {
-    private readonly (string, Type)[] _varNames = [
-            ("Values",typeof(int[]))
-        ];
-    protected override (string, Type)[] _variableNames { get => _varNames; }
     private readonly FileEnumeratorWithLog _fileEnumerator = fileEnumerator;
     private readonly bool _allowedVariables = allowedVariables;
     public override bool Validate(ParsingContext ctx)

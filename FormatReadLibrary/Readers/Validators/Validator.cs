@@ -4,7 +4,6 @@ namespace FormatReadLibrary.Readers.Validators;
 
 public abstract class Validator
 {
-    protected abstract  (string, Type)[] _variableNames { get; }
     public abstract bool Validate(ParsingContext ctx);
     public Validator(ParsingContext context)
     {
@@ -13,15 +12,23 @@ public abstract class Validator
         MethodInfo method = typeof(State)
             .GetMethod(nameof(State.HasVariableOfType))!;
         MethodInfo genericMethod;
-        foreach (var variable in _variableNames)
+        var requirements =
+            GetType().GetCustomAttributes<RequiresStateVariableAttribute>();
+        foreach (var require in requirements)
         {
-            genericMethod = method!.MakeGenericMethod(variable.Item2.GetType());
-            check = (bool?)genericMethod.Invoke(state, [variable.Item1]);
-            if (check != null && check.Value) 
-                throw new KeyNotFoundException($"Missing {variable.Item1} of type {getFriendlyName(variable.Item2)}.");
+            if(require.ExpectedType == null)
+            {
+                if (!state.HasVariable(require.VariableName))
+                    throw new KeyNotFoundException($"Missing \"{require.VariableName}\" variable in {getFriendlyName(context.GetType())}'s state.");
+                continue;
+            }
+            genericMethod = method!.MakeGenericMethod(require.ExpectedType);
+            check = (bool)genericMethod.Invoke(state, [require.VariableName])!;
+            if (!check.Value) 
+                throw new KeyNotFoundException($"Missing \"{require.VariableName}\" variable of type {getFriendlyName(require.ExpectedType)} in {getFriendlyName(context.GetType())}'s state.");
         }
     }
-    private static string getFriendlyName(Type type)
+    protected static string getFriendlyName(Type type)
     {
         if (!type.IsGenericType)
             return type.Name;

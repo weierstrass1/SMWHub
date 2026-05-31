@@ -35,14 +35,14 @@ public class State
     {
         return _variables.ContainsKey(key);
     }
-    public bool? HasVariableOfType<T>(string key)
+    public bool HasVariableOfType<T>(string key)
     {
         if(!HasVariable(key)) 
             return false;
-        if (_variables[key] is IStateVariable<T> sv)
+        if (_variables[key] is IStateVariable<T>)
             return true;
         if (_variables[key].Value == null)
-            return null;
+            return true;
         return _variables[key].Value!.GetType() == typeof(T);
     }
     public T? Get<T>(string key)

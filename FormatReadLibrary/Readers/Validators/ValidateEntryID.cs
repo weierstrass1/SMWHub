@@ -1,15 +1,10 @@
 ﻿using FormatReadLibrary.Logging.LoggingRegisters;
-using LogRegister;
 using StateMachine;
 
 namespace FormatReadLibrary.Readers.Validators;
-
+[RequiresStateVariable("ID", typeof(int?))]
 public class ValidateEntryID(ParsingContext context, FileEnumeratorWithLog fileEnumerator, int maxID = 255) : Validator(context)
 {
-    private readonly (string, Type)[] _varNames = [
-            ("ID",typeof(int)),
-        ];
-    protected override (string, Type)[] _variableNames { get => _varNames; }
     private readonly FileEnumeratorWithLog _fileEnumerator = fileEnumerator;
     private readonly int _maxID = maxID;
     public override bool Validate(ParsingContext ctx)

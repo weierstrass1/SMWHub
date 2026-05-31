@@ -1,21 +1,19 @@
 ﻿using FormatReadLibrary.Logging.LoggingRegisters;
 using StateMachine;
-
 namespace FormatReadLibrary.Readers.Validators;
 [RequiresStateVariable("SectionWasProcessed", typeof(bool))]
-public class ValidateListContext<T>(ParsingContext context, FileEnumeratorWithLog fileEnumerator) : Validator(context)
+public class ValidateSectionIsNotRepeated(ParsingContext context, FileEnumeratorWithLog fileEnumerator) : Validator(context)
 {
     private readonly FileEnumeratorWithLog _fileEnumerator = fileEnumerator;
-    public override bool Validate(ParsingContext ctx)
+    public override  bool Validate(ParsingContext ctx)
     {
         State state = ctx.State;
         var wasProcessed = state.Get<bool>("SectionWasProcessed") as bool?;
-        if (wasProcessed == null)
+        if (wasProcessed == null || wasProcessed.Value)
         {
-            _fileEnumerator.AddLog((i, path, line) => new SyntaxError(path, i, line, "List doesn't contain a section title"));
+            _fileEnumerator.AddLog((i, path, line) => new SyntaxError(path, i, line, "Repeated List Section"));
             return false;
         }
-
         return true;
     }
 }
