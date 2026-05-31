@@ -16,7 +16,7 @@ public abstract class ParsingContext
     {
         _validators.Add(validator);
     }
-    public abstract bool ProcessEntry(int i);
+    public abstract bool ProcessEntry(FileEnumeratorWithLog fileEnumerator);
     protected bool validate()
     {
         foreach(var validator in _validators)

@@ -32,11 +32,11 @@ public sealed class CommonListReader
             EntriesList = _entriesList,
         };
 
-        for (int i = 0; i < fReader.Length; i++)
+        while(fileEnumerator.MoveNext())
         {
-            if (string.IsNullOrWhiteSpace(fReader[i]))
+            if (string.IsNullOrWhiteSpace(fileEnumerator.Current))
                 continue;
-            if (!ctx.ProcessEntry(i))
+            if (!ctx.ProcessEntry(fileEnumerator))
                 return false;
         }
         return true;
@@ -67,9 +67,7 @@ public sealed class CommonListReader
             });
             State.AddVariable("Match", new LazyStateVariable<Match>(() =>
             {
-                var i = State.Get<int>("LineIndex")!;
-                var fileContentLines = State.Get<string[]>("FileContentLines")!;
-                return _entryRegex.Match(fileContentLines[i]);
+                return _entryRegex.Match(fileEnumerator.Current);
             }));
             State.AddVariable("ID", new LazyStateVariable<int?>(() =>
             {
@@ -101,11 +99,9 @@ public sealed class CommonListReader
             AddValidator(new ValidateEntryVariables(this, fileEnumerator, allowVariables));
             AddValidator(new ValidateDuplicateID<CommonListEntry>(this, fileEnumerator));
         }
-        public override bool ProcessEntry(int i)
+        public override bool ProcessEntry(FileEnumeratorWithLog fileEnumerator)
         {
-            State.Set("LineIndex", i);
-            var fileContentLines = State.Get<string[]>("FileContentLines");
-            string lowerLine = fileContentLines[i].ToLower().Trim();
+            string lowerLine = fileEnumerator.Current.ToLower().Trim();
             if (isATitle(lowerLine))
             {
                 if (!_titleIsNotRepeated.Validate(this))
