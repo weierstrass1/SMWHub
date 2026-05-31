@@ -57,7 +57,7 @@ public sealed class CommonListReader
         public required Dictionary<string, string> BaseDirectories { get; init; }
         private readonly ValidateTitleIsNotRepeated _titleIsNotRepeated;
         private string? _title;
-        public CommonListParsingContext(IEnumerable<string> titles, FileEnumeratorWithLog fileEnumerator, int maxID, bool allowVariables) : base()
+        public CommonListParsingContext(IEnumerable<string> titles, FileEnumeratorWithLog fileEnumerator, int maxID = 255, bool allowVariables = false) : base()
         {
             State.AddVariable("BaseDirectory", new StateVariable<string>());
             State.AddVariable("Dictionary", new StateVariable<Dictionary<int, CommonListEntry>>());
