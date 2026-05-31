@@ -3,33 +3,23 @@ using LogRegister;
 using StateMachine;
 using System.Text.RegularExpressions;
 
-namespace FormatReadLibrary.Readers.Validators
+namespace FormatReadLibrary.Readers.Validators;
+
+public class ValidateEntryFormat(ParsingContext context, FileEnumeratorWithLog fileEnumerator) : Validator(context)
 {
-    public class ValidateEntryFormat : Validator
+    private readonly (string, Type)[] _varNames = [
+            ("Match",typeof(Match)),
+        ];
+    protected override (string, Type)[] _variableNames { get => _varNames; }
+    private readonly FileEnumeratorWithLog _fileEnumerator = fileEnumerator;
+    public override bool Validate(ParsingContext ctx)
     {
-        private readonly (string, Type)[] _varNames = [
-                ("Match",typeof(Match)),
-                ("Log",typeof(LogRegisterSystem)),
-                ("Path", typeof(string)),
-                ("LineIndex", typeof(int)),
-                ("FileContentLines", typeof(string[])),
-            ];
-        protected override (string, Type)[] _variableNames { get => _varNames; }
-        public ValidateEntryFormat(ParsingContext ctx) : base(ctx)
-        { }
-        public override bool Validate(ParsingContext ctx)
+        State state = ctx.State;
+        if (!state.Get<Match>("Match")!.Success)
         {
-            State state = ctx.State;
-            if (!state.Get<Match>("Match")!.Success)
-            {
-                var log = state.Get<LogRegisterSystem>("Log")!;
-                var path = state.Get<string>("Path")!;
-                var i = state.Get<int>("LineIndex")!;
-                var fileContentLines = state.Get<string[]>("FileContentLines")!;
-                log.Add(new SyntaxError(path, i, fileContentLines[i], "Invalid Entry"));
-                return false;
-            }
-            return true;
+            _fileEnumerator.AddLog((i, path, line) => new SyntaxError(path, i, line, "Invalid Entry"));
+            return false;
         }
+        return true;
     }
 }

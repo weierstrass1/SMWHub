@@ -1,8 +1,7 @@
 ﻿using LogRegister;
 
-namespace FormatReadLibrary.Logging.Categories
+namespace FormatReadLibrary.Logging.Categories;
+
+public class Info : ILogCategory
 {
-    public class Info : ILogCategory
-    {
-    }
 }

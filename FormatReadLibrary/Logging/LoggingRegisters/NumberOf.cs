@@ -1,25 +1,24 @@
 ﻿using FormatReadLibrary.Logging.Categories;
 using LogRegister;
 
-namespace FormatReadLibrary.Logging.LoggingRegisters
-{
-    public class NumberOf : ILoggingRegister
-    {
-        public bool AppearWithoutVerbose => true;
-        public bool AppearInErrors => false;
-        public ILogCategory Category => new Info();
-        public string MessageType => "NUMBER OF";
-        public IReadOnlyDictionary<string, string> Parameters { get; }
-        public NumberOf(string name, long quantity, long? size = null)
-        {
-            var pars = new Dictionary<string, string>
-            {
-                { "name", $"'{name}'" },
-                { "quantity", $"{quantity}" },
-                { "size", size != null ? $" ({size} bytes)" : "" }
-            };
+namespace FormatReadLibrary.Logging.LoggingRegisters;
 
-            Parameters = pars;
-        }
+public class NumberOf : ILoggingRegister
+{
+    public bool AppearWithoutVerbose => true;
+    public bool AppearInErrors => false;
+    public ILogCategory Category => new Info();
+    public string MessageType => "NUMBER OF";
+    public IReadOnlyDictionary<string, string> Parameters { get; }
+    public NumberOf(string name, long quantity, long? size = null)
+    {
+        var pars = new Dictionary<string, string>
+        {
+            { "name", $"'{name}'" },
+            { "quantity", $"{quantity}" },
+            { "size", size != null ? $" ({size} bytes)" : "" }
+        };
+
+        Parameters = pars;
     }
 }

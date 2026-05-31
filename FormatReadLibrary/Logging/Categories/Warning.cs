@@ -1,6 +1,5 @@
-﻿namespace FormatReadLibrary.Logging.Categories
+﻿namespace FormatReadLibrary.Logging.Categories;
+
+public class Warning
 {
-    public class Warning
-    {
-    }
 }

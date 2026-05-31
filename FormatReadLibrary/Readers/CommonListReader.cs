@@ -23,19 +23,18 @@ public sealed class CommonListReader
     }
     public bool Read(string path, LogRegisterSystem log, int maxID = 255, bool allowVariables = false)
     {
-        string content = FileUtils.CleanFileContent(path);
+        FileReaderWithLog fReader = new(path, log);
+        FileEnumeratorWithLog fileEnumerator = (FileEnumeratorWithLog)fReader.GetEnumerator()!;
 
-        string[] lines = content.Split('\n');
-
-        CommonListParsingContext ctx = new(path, _entriesList.Keys, log, lines, maxID, allowVariables)
+        CommonListParsingContext ctx = new(_entriesList.Keys, fileEnumerator, maxID, allowVariables)
         {
             BaseDirectories = _baseDirectories,
             EntriesList = _entriesList,
         };
 
-        for (int i = 0; i < lines.Length; i++)
+        for (int i = 0; i < fReader.Length; i++)
         {
-            if (string.IsNullOrWhiteSpace(lines[i]))
+            if (string.IsNullOrWhiteSpace(fReader[i]))
                 continue;
             if (!ctx.ProcessEntry(i))
                 return false;
@@ -58,31 +57,10 @@ public sealed class CommonListReader
         public required Dictionary<string, string> BaseDirectories { get; init; }
         private readonly ValidateTitleIsNotRepeated _titleIsNotRepeated;
         private string? _title;
-        public CommonListParsingContext(string path, IEnumerable<string> titles, LogRegisterSystem log, string[] fileContentLines, int maxID, bool allowVariables) : base()
+        public CommonListParsingContext(IEnumerable<string> titles, FileEnumeratorWithLog fileEnumerator, int maxID, bool allowVariables) : base()
         {
             State.AddVariable("BaseDirectory", new StateVariable<string>());
-            State.AddVariable("LineIndex", new StateVariable<int>());
             State.AddVariable("Dictionary", new StateVariable<Dictionary<int, CommonListEntry>>());
-            State.AddVariable("Log", new StateVariable<LogRegisterSystem>()
-            {
-                Value = log
-            });
-            State.AddVariable("Path", new StateVariable<string>()
-            {
-                Value = path
-            });
-            State.AddVariable("FileContentLines", new StateVariable<string[]>()
-            {
-                Value = fileContentLines
-            });
-            State.AddVariable("MaxID", new StateVariable<int>()
-            {
-                Value = maxID
-            });
-            State.AddVariable("AllowVariables", new StateVariable<bool>()
-            {
-                Value = allowVariables
-            });
             State.AddVariable("CheckedTitle", new StateVariable<Dictionary<string, bool>>()
             {
                 Value = titles.ToDictionary(k => k, k => false)
@@ -115,13 +93,13 @@ public sealed class CommonListReader
                         int.Parse(x[1..]) :
                         Convert.ToInt32(x, 16))];
             }));
-            _titleIsNotRepeated = new(this);
-            AddValidator(new ValidateListContext<CommonListEntry>(this));
-            AddValidator(new ValidateEntryFormat(this));
-            AddValidator(new ValidateEntryID(this));
-            //AddValidator(new ValidateFileExists(this));
-            AddValidator(new ValidateEntryVariables(this));
-            AddValidator(new ValidateDuplicateID<CommonListEntry>(this));
+            _titleIsNotRepeated = new(this, fileEnumerator);
+            AddValidator(new ValidateListContext<CommonListEntry>(this, fileEnumerator));
+            AddValidator(new ValidateEntryFormat(this, fileEnumerator));
+            AddValidator(new ValidateEntryID(this, fileEnumerator, maxID));
+            AddValidator(new ValidateFileExists(this, fileEnumerator.Log));
+            AddValidator(new ValidateEntryVariables(this, fileEnumerator, allowVariables));
+            AddValidator(new ValidateDuplicateID<CommonListEntry>(this, fileEnumerator));
         }
         public override bool ProcessEntry(int i)
         {

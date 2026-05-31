@@ -1,28 +1,27 @@
 ﻿using FormatReadLibrary.Logging.Categories;
 using LogRegister;
 
-namespace FormatReadLibrary.Logging.LoggingRegisters
+namespace FormatReadLibrary.Logging.LoggingRegisters;
+
+public class SyntaxError : ILoggingRegister
 {
-    public class SyntaxError : ILoggingRegister
+    public bool AppearWithoutVerbose => true;
+    public bool AppearInErrors => true;
+    public ILogCategory Category => new Error();
+
+    public string MessageType => "SYNTAX ERROR";
+
+    public IReadOnlyDictionary<string, string> Parameters { get; private set; }
+    public SyntaxError(string file, int line, string lineContent, string message = "")
     {
-        public bool AppearWithoutVerbose => true;
-        public bool AppearInErrors => true;
-        public ILogCategory Category => new Error();
-
-        public string MessageType => "SYNTAX ERROR";
-
-        public IReadOnlyDictionary<string, string> Parameters { get; private set; }
-        public SyntaxError(string file, int line, string lineContent, string message = "")
+        Parameters = new Dictionary<string, string>
         {
-            Parameters = new Dictionary<string, string>
-            {
-                { "file", $"'{file}'" },
-                { "line", $"'{line+1}'" },
-                { "message", string.IsNullOrWhiteSpace(message) ?
-                    "" :
-                    $".\n\t\t{message}"},
-                { "lineContent", $"'{lineContent}'"   }
-            }.AsReadOnly();
-        }
+            { "file", $"'{file}'" },
+            { "line", $"'{line+1}'" },
+            { "message", string.IsNullOrWhiteSpace(message) ?
+                "" :
+                $".\n\t\t{message}"},
+            { "lineContent", $"'{lineContent}'"   }
+        }.AsReadOnly();
     }
 }

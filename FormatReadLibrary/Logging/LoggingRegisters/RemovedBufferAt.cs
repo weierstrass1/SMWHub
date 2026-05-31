@@ -1,22 +1,21 @@
 ﻿using FormatReadLibrary.Logging.Categories;
 using LogRegister;
 
-namespace FormatReadLibrary.Logging.LoggingRegisters
+namespace FormatReadLibrary.Logging.LoggingRegisters;
+
+internal class RemovedBufferAt : ILoggingRegister
 {
-    internal class RemovedBufferAt : ILoggingRegister
+    public bool AppearWithoutVerbose => false;
+    public bool AppearInErrors => false;
+    public ILogCategory Category => new Info();
+    public string MessageType => "REMOVED BUFFER AT";
+    public IReadOnlyDictionary<string, string> Parameters { get; }
+    public RemovedBufferAt(long address, long size)
     {
-        public bool AppearWithoutVerbose => false;
-        public bool AppearInErrors => false;
-        public ILogCategory Category => new Info();
-        public string MessageType => "REMOVED BUFFER AT";
-        public IReadOnlyDictionary<string, string> Parameters { get; }
-        public RemovedBufferAt(long address, long size)
+        Parameters = new Dictionary<string, string>
         {
-            Parameters = new Dictionary<string, string>
-            {
-                { "address", $"'0x{address:X6}'" },
-                { "size", $"{size} bytes" }
-            };
-        }
+            { "address", $"'0x{address:X6}'" },
+            { "size", $"{size} bytes" }
+        };
     }
 }

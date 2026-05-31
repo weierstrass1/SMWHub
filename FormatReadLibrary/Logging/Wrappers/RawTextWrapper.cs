@@ -1,24 +1,23 @@
 ﻿using LogRegister;
 using System.Text;
 
-namespace FormatReadLibrary.Logging.Wrappers
+namespace FormatReadLibrary.Logging.Wrappers;
+
+public class RawTextWrapper
 {
-    public class RawTextWrapper
+    private readonly StringBuilder builder;
+    public RawTextWrapper() 
     {
-        private readonly StringBuilder builder;
-        public RawTextWrapper() 
-        {
-            builder = new();
-        }
-        public void RenderAction(string text, ILogCategory category, SpanType type, bool mustWrite = false)
-        {
-            if (type == SpanType.Prefix)
-                return;
-            builder.Append(text);
-        }
-        public override string ToString()
-        {
-            return builder.ToString();
-        }
+        builder = new();
+    }
+    public void RenderAction(string text, ILogCategory category, SpanType type, bool mustWrite = false)
+    {
+        if (type == SpanType.Prefix)
+            return;
+        builder.Append(text);
+    }
+    public override string ToString()
+    {
+        return builder.ToString();
     }
 }
