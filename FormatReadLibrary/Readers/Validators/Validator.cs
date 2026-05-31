@@ -1,4 +1,5 @@
 ﻿using StateMachine;
+using System.Reflection;
 namespace FormatReadLibrary.Readers.Validators;
 
 public abstract class Validator
@@ -8,9 +9,15 @@ public abstract class Validator
     public Validator(ParsingContext context)
     {
         State state = context.State;
+        bool? check;
+        MethodInfo method = typeof(State)
+            .GetMethod(nameof(State.HasVariableOfType))!;
+        MethodInfo genericMethod;
         foreach (var variable in _variableNames)
         {
-            if (!state.HasVariable(variable.Item1))
+            genericMethod = method!.MakeGenericMethod(variable.Item2.GetType());
+            check = (bool?)genericMethod.Invoke(state, [variable.Item1]);
+            if (check != null && check.Value) 
                 throw new KeyNotFoundException($"Missing {variable.Item1} of type {getFriendlyName(variable.Item2)}.");
         }
     }

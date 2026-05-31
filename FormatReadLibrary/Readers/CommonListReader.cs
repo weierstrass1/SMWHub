@@ -26,11 +26,15 @@ public sealed class CommonListReader
         FileReaderWithLog fReader = new(path, log);
         FileEnumeratorWithLog fileEnumerator = (FileEnumeratorWithLog)fReader.GetEnumerator()!;
 
-        CommonListParsingContext ctx = new(_entriesList.Keys, fileEnumerator, maxID, allowVariables)
+        CommonListParserOptions opts = new()
         {
+            Sections = _entriesList.Keys,
+            FileEnumerator = fileEnumerator,
             BaseDirectories = _baseDirectories,
             EntriesList = _entriesList,
         };
+
+        CommonListParsingContext ctx = new(opts, maxID, allowVariables);
 
         while(fileEnumerator.MoveNext())
         {
@@ -53,36 +57,45 @@ public sealed class CommonListReader
     private sealed class CommonListParsingContext : ParsingContext
     {
         private static readonly Regex _entryRegex = FileRegexContainer.ListEntryRegex();
-        public required Dictionary<string, Dictionary<int, CommonListEntry>> EntriesList { get; init; }
-        public required Dictionary<string, string> BaseDirectories { get; init; }
+        private readonly Dictionary<string, Dictionary<int, CommonListEntry>> _entriesList;
+        private readonly Dictionary<string, string> _baseDirectories;
         private readonly ValidateTitleIsNotRepeated _titleIsNotRepeated;
-        private string? _title;
-        public CommonListParsingContext(IEnumerable<string> titles, FileEnumeratorWithLog fileEnumerator, int maxID = 255, bool allowVariables = false) : base()
+        private string? _currentSection;
+        private readonly Dictionary<string, bool> _processedSections;
+        public CommonListParsingContext(CommonListParserOptions options, int maxID = 255, bool allowVariables = false) : base()
         {
+            _processedSections = options.Sections.ToDictionary(k => k, k => false);
+            _baseDirectories = options.BaseDirectories;
+            _entriesList = options.EntriesList;
             State.AddVariable("BaseDirectory", new StateVariable<string>());
             State.AddVariable("Dictionary", new StateVariable<Dictionary<int, CommonListEntry>>());
-            State.AddVariable("CheckedTitle", new StateVariable<Dictionary<string, bool>>()
-            {
-                Value = titles.ToDictionary(k => k, k => false)
-            });
+            State.AddVariable("WasProcessed", new StateVariable<bool>());
             State.AddVariable("Match", new LazyStateVariable<Match>(() =>
             {
-                return _entryRegex.Match(fileEnumerator.Current);
+                if (options.FileEnumerator.LineIndex < 0)
+                    return null;
+                return _entryRegex.Match(options.FileEnumerator.Current);
             }));
             State.AddVariable("ID", new LazyStateVariable<int?>(() =>
             {
-                var match = State.Get<Match>("Match")!;
+                var match = State.Get<Match>("Match");
+                if (match == null)
+                    return null;
                 return Convert.ToInt32(match.Groups["id"].Value, 16);
             }));
             State.AddVariable("Filepath", new LazyStateVariable<string>(() =>
             {
-                var match = State.Get<Match>("Match")!;
+                var match = State.Get<Match>("Match");
+                if (match == null)
+                    return null;
                 var baseDirectory = State.Get<string>("BaseDirectory")!;
                 return Path.Combine(baseDirectory, match!.Groups["file"].Value);
             }));
             State.AddVariable("Values", new LazyStateVariable<int[]>(() =>
             {
-                var match = State.Get<Match>("Match")!;
+                var match = State.Get<Match>("Match");
+                if (match == null)
+                    return null;
                 if (!match.Groups["var"].Success)
                     return [];
                 return [..match.Groups["var"].Value
@@ -91,13 +104,13 @@ public sealed class CommonListReader
                         int.Parse(x[1..]) :
                         Convert.ToInt32(x, 16))];
             }));
-            _titleIsNotRepeated = new(this, fileEnumerator);
-            AddValidator(new ValidateListContext<CommonListEntry>(this, fileEnumerator));
-            AddValidator(new ValidateEntryFormat(this, fileEnumerator));
-            AddValidator(new ValidateEntryID(this, fileEnumerator, maxID));
-            AddValidator(new ValidateFileExists(this, fileEnumerator.Log));
-            AddValidator(new ValidateEntryVariables(this, fileEnumerator, allowVariables));
-            AddValidator(new ValidateDuplicateID<CommonListEntry>(this, fileEnumerator));
+            _titleIsNotRepeated = new(this, options.FileEnumerator);
+            AddValidator(new ValidateListContext<CommonListEntry>(this, options.FileEnumerator));
+            AddValidator(new ValidateEntryFormat(this, options.FileEnumerator));
+            AddValidator(new ValidateEntryID(this, options.FileEnumerator, maxID));
+            //AddValidator(new ValidateFileExists(this, options.FileEnumerator.Log));
+            AddValidator(new ValidateEntryVariables(this, options.FileEnumerator, allowVariables));
+            AddValidator(new ValidateDuplicateID<CommonListEntry>(this, options.FileEnumerator));
         }
         public override bool ProcessEntry(FileEnumeratorWithLog fileEnumerator)
         {
@@ -106,11 +119,10 @@ public sealed class CommonListReader
             {
                 if (!_titleIsNotRepeated.Validate(this))
                     return false;
-                State.Set("BaseDirectory", BaseDirectories[lowerLine]);
-                var checkedTitle = State.Get<Dictionary<string, bool>>("CheckedTitle")!;
-                checkedTitle[lowerLine] = true;
-                State.Set("Dictionary", EntriesList[lowerLine]);
-                _title = lowerLine;
+                State.Set("BaseDirectory", _baseDirectories[lowerLine]);
+                State.Set("Dictionary", _entriesList[lowerLine]);
+                State.Set("WasProcessed", _processedSections[lowerLine]);
+                _currentSection = lowerLine;
                 return true;
             }
             if (!validate())
@@ -119,7 +131,7 @@ public sealed class CommonListReader
             var id = State.Get<int>("ID");
             dictionary!.Add(id, new()
             {
-                EntryType = _title!.Replace(":", ""),
+                EntryType = _currentSection!.Replace(":", ""),
                 ID = id,
                 Path = State.Get<string>("Filepath")!,
                 Values = State.Get<int[]>("Values")!,
@@ -129,7 +141,14 @@ public sealed class CommonListReader
         }
         private bool isATitle(string lowerLine)
         {
-            return EntriesList.ContainsKey(lowerLine);
+            return _entriesList.ContainsKey(lowerLine);
         }
+    }
+    private class CommonListParserOptions
+    {
+        public required IEnumerable<string> Sections { get; init; }
+        public required FileEnumeratorWithLog FileEnumerator { get; init; }
+        public required Dictionary<string, Dictionary<int, CommonListEntry>> EntriesList { get; init; }
+        public required Dictionary<string, string> BaseDirectories { get; init; }
     }
 }

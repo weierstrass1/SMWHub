@@ -1,6 +1,6 @@
 ﻿namespace StateMachine;
 
-public class LazyStateVariable<T> : IStateVariable<T>
+public class LazyStateVariable<T>(Func<T> getter) : IStateVariable<T>
 {
     public T? Value
     { 
@@ -16,9 +16,5 @@ public class LazyStateVariable<T> : IStateVariable<T>
     }
     object? IStateVariable.Value { get => Value; set => Value = (T?)value; }
     private T? _value;
-    private readonly Func<T> _getter;
-    public LazyStateVariable(Func<T> getter)
-    {
-        _getter = getter;
-    }
+    private readonly Func<T?> _getter = getter;
 }

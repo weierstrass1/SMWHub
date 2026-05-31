@@ -14,9 +14,11 @@ public class Program
 
         CommonListReader reader = new([
             ("Sprites","Sprites"),
+            ("Clusters", "Clusters"),
+            ("Extendeds", "Extendeds")
             ]);
         reader.Read("slist.txt", log);
-
+        var entries = reader.GetEntries();
         LogRenderer renderer = new(Path.Combine("Logging", "LogMessages.json"));
         RawTextWrapper rawText = new();
         MultiWrapper mw = new();

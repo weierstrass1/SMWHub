@@ -35,6 +35,16 @@ public class State
     {
         return _variables.ContainsKey(key);
     }
+    public bool? HasVariableOfType<T>(string key)
+    {
+        if(!HasVariable(key)) 
+            return false;
+        if (_variables[key] is IStateVariable<T> sv)
+            return true;
+        if (_variables[key].Value == null)
+            return null;
+        return _variables[key].Value!.GetType() == typeof(T);
+    }
     public T? Get<T>(string key)
     {
         if (_variables[key] is IStateVariable<T> genVariable)
