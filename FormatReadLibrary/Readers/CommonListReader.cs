@@ -68,7 +68,7 @@ public sealed class CommonListReader
             _baseDirectories = options.BaseDirectories;
             _entriesList = options.EntriesList;
             State.AddVariable("BaseDirectory", new StateVariable<string>());
-            State.AddVariable("Dictionary", new StateVariable<Dictionary<int, CommonListEntry>>());
+            State.AddVariable("Entries", new StateVariable<Dictionary<int, CommonListEntry>>());
             State.AddVariable("SectionWasProcessed", new StateVariable<bool>());
             State.AddVariable("Match", new LazyStateVariable<Match>(() =>
             {
@@ -120,16 +120,16 @@ public sealed class CommonListReader
                 if (!_titleIsNotRepeated.Validate(this))
                     return false;
                 State.Set("BaseDirectory", _baseDirectories[lowerLine]);
-                State.Set("Dictionary", _entriesList[lowerLine]);
+                State.Set("Entries", _entriesList[lowerLine]);
                 State.Set("SectionWasProcessed", _processedSections[lowerLine]);
                 _currentSection = lowerLine;
                 return true;
             }
             if (!validate())
                 return false;
-            var dictionary = State.Get<Dictionary<int, CommonListEntry>>("Dictionary");
+            var entries = State.Get<Dictionary<int, CommonListEntry>>("Entries")!;
             var id = State.Get<int>("ID");
-            dictionary!.Add(id, new()
+            entries.Add(id, new()
             {
                 EntryType = _currentSection!.Replace(":", ""),
                 ID = id,

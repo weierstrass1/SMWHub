@@ -19,6 +19,10 @@ public class Program
             ]);
         reader.Read("slist.txt", log);
         var entries = reader.GetEntries();
+
+        GPSListReader gpsreader = new("blocks");
+        gpsreader.Read("list.txt", log);
+        var gpsEntries = gpsreader.GetEntries();
         LogRenderer renderer = new(Path.Combine("Logging", "LogMessages.json"));
         RawTextWrapper rawText = new();
         MultiWrapper mw = new();

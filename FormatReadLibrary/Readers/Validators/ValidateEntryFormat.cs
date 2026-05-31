@@ -9,8 +9,8 @@ public class ValidateEntryFormat(ParsingContext context, FileEnumeratorWithLog f
     private readonly FileEnumeratorWithLog _fileEnumerator = fileEnumerator;
     public override bool Validate(ParsingContext ctx)
     {
-        State state = ctx.State;
-        if (!state.Get<Match>("Match")!.Success)
+        Match match = ctx.State.Get<Match>("Match")!;
+        if (!match.Success)
         {
             _fileEnumerator.AddLog((i, path, line) => new SyntaxError(path, i, line, "Invalid Entry"));
             return false;

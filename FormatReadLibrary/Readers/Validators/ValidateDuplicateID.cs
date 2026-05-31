@@ -3,7 +3,7 @@ using StateMachine;
 
 namespace FormatReadLibrary.Readers.Validators;
 
-[RequiresStateVariable("Dictionary")]
+[RequiresStateVariable("Entries")]
 [RequiresStateVariable("ID", typeof(int?))]
 public class ValidateDuplicateID<T> : Validator
 {
@@ -11,13 +11,13 @@ public class ValidateDuplicateID<T> : Validator
     public ValidateDuplicateID(ParsingContext context, FileEnumeratorWithLog fileEnumerator) : base(context)
     {
         _fileEnumerator = fileEnumerator;
-        if (context.State.HasVariableOfType<Dictionary<string, T>>("Dictionary"))
-            throw new KeyNotFoundException($"Missing \"Dictionary\" variable of type {getFriendlyName(typeof(Dictionary<string, T>))} in {getFriendlyName(context.GetType())}'s state.");
+        if (!context.State.HasVariableOfType<Dictionary<int, T>>("Entries"))
+            throw new KeyNotFoundException($"Missing \"Entries\" variable of type {getFriendlyName(typeof(Dictionary<int, T>))} in {getFriendlyName(context.GetType())}'s state.");
     }
     public override bool Validate(ParsingContext ctx)
     {
         State state = ctx.State;
-        var dictionary = state.Get<Dictionary<int, T>>("Dictionary")!;
+        var dictionary = state.Get<Dictionary<int, T>>("Entries")!;
         var id = state.Get<int>("ID")!;
         if (dictionary!.ContainsKey(id))
         {
