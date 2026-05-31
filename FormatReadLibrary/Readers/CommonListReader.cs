@@ -1,10 +1,10 @@
 ﻿using FormatReadLibrary.Entries;
-using FormatReadLibrary.Logging.LoggingRegisters;
+using FormatReadLibrary.Readers.Validators;
 using LogRegister;
+using StateMachine;
 using System.Text.RegularExpressions;
 
 namespace FormatReadLibrary.Readers;
-
 public sealed class CommonListReader
 {
     private readonly Dictionary<string, string> _baseDirectories;
@@ -27,12 +27,10 @@ public sealed class CommonListReader
 
         string[] lines = content.Split('\n');
 
-        ParsingContext ctx = new(path, _entriesList.Keys, log, lines)
+        CommonListParsingContext ctx = new(path, _entriesList.Keys, log, lines, maxID, allowVariables)
         {
             BaseDirectories = _baseDirectories,
             EntriesList = _entriesList,
-            MaxID = maxID,
-            AllowVariables = allowVariables
         };
 
         for (int i = 0; i < lines.Length; i++)
@@ -53,108 +51,111 @@ public sealed class CommonListReader
         }
         return entries;
     }
-
-    private sealed class ParsingContext
+    private sealed class CommonListParsingContext : ParsingContext
     {
         private static readonly Regex _entryRegex = FileRegexContainer.ListEntryRegex();
-
-        public required int MaxID { get; init; }
-        public required bool AllowVariables { get; init; }
         public required Dictionary<string, Dictionary<int, CommonListEntry>> EntriesList { get; init; }
         public required Dictionary<string, string> BaseDirectories { get; init; }
-
-        private readonly LogRegisterSystem _log;
-        private readonly string _path;
-        private readonly string[] _fileContentLines;
-        private readonly Dictionary<string, bool> _checkedTitle;
-        
-        private int _id;
-        private string _baseDirectory = "";
-        private string? _filepath;
+        private readonly ValidateTitleIsNotRepeated _titleIsNotRepeated;
         private string? _title;
-        private int[]? _values;
-        private Match? _m;
-        private Dictionary<int, CommonListEntry>? _currentDic;
-
-        public ParsingContext(string path, IEnumerable<string> titles, LogRegisterSystem log, string[] fileContentLines)
+        public CommonListParsingContext(string path, IEnumerable<string> titles, LogRegisterSystem log, string[] fileContentLines, int maxID, bool allowVariables) : base()
         {
-            _path = path;
-            _fileContentLines = fileContentLines;
-            _checkedTitle = titles.ToDictionary(k => k, k => false);
-            _log = log;
+            State.AddVariable("BaseDirectory", new StateVariable<string>());
+            State.AddVariable("LineIndex", new StateVariable<int>());
+            State.AddVariable("Dictionary", new StateVariable<Dictionary<int, CommonListEntry>>());
+            State.AddVariable("Log", new StateVariable<LogRegisterSystem>()
+            {
+                Value = log
+            });
+            State.AddVariable("Path", new StateVariable<string>()
+            {
+                Value = path
+            });
+            State.AddVariable("FileContentLines", new StateVariable<string[]>()
+            {
+                Value = fileContentLines
+            });
+            State.AddVariable("MaxID", new StateVariable<int>()
+            {
+                Value = maxID
+            });
+            State.AddVariable("AllowVariables", new StateVariable<bool>()
+            {
+                Value = allowVariables
+            });
+            State.AddVariable("CheckedTitle", new StateVariable<Dictionary<string, bool>>()
+            {
+                Value = titles.ToDictionary(k => k, k => false)
+            });
+            State.AddVariable("Match", new LazyStateVariable<Match>(() =>
+            {
+                var i = State.Get<int>("LineIndex")!;
+                var fileContentLines = State.Get<string[]>("FileContentLines")!;
+                return _entryRegex.Match(fileContentLines[i]);
+            }));
+            State.AddVariable("ID", new LazyStateVariable<int?>(() =>
+            {
+                var match = State.Get<Match>("Match")!;
+                return Convert.ToInt32(match.Groups["id"].Value, 16);
+            }));
+            State.AddVariable("Filepath", new LazyStateVariable<string>(() =>
+            {
+                var match = State.Get<Match>("Match")!;
+                var baseDirectory = State.Get<string>("BaseDirectory")!;
+                return Path.Combine(baseDirectory, match!.Groups["file"].Value);
+            }));
+            State.AddVariable("Values", new LazyStateVariable<int[]>(() =>
+            {
+                var match = State.Get<Match>("Match")!;
+                if (!match.Groups["var"].Success)
+                    return [];
+                return [..match.Groups["var"].Value
+                    .Split(' ')
+                    .Select(x => x[0] == '@' ?
+                        int.Parse(x[1..]) :
+                        Convert.ToInt32(x, 16))];
+            }));
+            _titleIsNotRepeated = new(this);
+            AddValidator(new ValidateListContext<CommonListEntry>(this));
+            AddValidator(new ValidateEntryFormat(this));
+            AddValidator(new ValidateEntryID(this));
+            //AddValidator(new ValidateFileExists(this));
+            AddValidator(new ValidateEntryVariables(this));
+            AddValidator(new ValidateDuplicateID<CommonListEntry>(this));
         }
-        public bool ProcessEntry(int i)
+        public override bool ProcessEntry(int i)
         {
-            string lowerLine = _fileContentLines[i].ToLower().Trim();
+            State.Set("LineIndex", i);
+            var fileContentLines = State.Get<string[]>("FileContentLines");
+            string lowerLine = fileContentLines[i].ToLower().Trim();
             if (isATitle(lowerLine))
             {
-                if (!validateTitleIsNotRepeated(i, lowerLine))
+                if (!_titleIsNotRepeated.Validate(this))
                     return false;
-                _baseDirectory = BaseDirectories[lowerLine];
-                _checkedTitle[lowerLine] = true;
-                _currentDic = EntriesList[lowerLine];
+                State.Set("BaseDirectory", BaseDirectories[lowerLine]);
+                var checkedTitle = State.Get<Dictionary<string, bool>>("CheckedTitle")!;
+                checkedTitle[lowerLine] = true;
+                State.Set("Dictionary", EntriesList[lowerLine]);
                 _title = lowerLine;
                 return true;
             }
-            
-            return validateAndAddEntry(i);
-        }
-        private bool validateAndAddEntry(int i)
-        {
-            if (!validateListContext(i) ||
-                !CommonValidations.ValidateEntryFormat(i, _path, _log, _fileContentLines, _entryRegex, out _m) ||
-                !validateEntryID(i) ||
-                !validateFileExists() ||
-                !CommonValidations.ValidateEntryVariables(i, _path, _log, _fileContentLines, out _values, _m, AllowVariables) ||
-                !CommonValidations.ValidateDuplicateID(i, _path, _log, _fileContentLines, _id, _currentDic!))
+            if (!validate())
                 return false;
-            _currentDic!.Add(_id, new()
+            var dictionary = State.Get<Dictionary<int, CommonListEntry>>("Dictionary");
+            var id = State.Get<int>("ID");
+            dictionary!.Add(id, new()
             {
                 EntryType = _title!.Replace(":", ""),
-                ID = _id,
-                Path = _filepath!,
-                Values = _values!
+                ID = id,
+                Path = State.Get<string>("Filepath")!,
+                Values = State.Get<int[]>("Values")!,
             });
+            State.CleanLazyTypes();
             return true;
         }
         private bool isATitle(string lowerLine)
         {
             return EntriesList.ContainsKey(lowerLine);
-        }
-        private bool validateTitleIsNotRepeated(int i, string lowerline)
-        {
-            if (_checkedTitle[lowerline])
-            {
-                _log.Add(new SyntaxError(_path, i, _fileContentLines[i], "Repeated List Title"));
-                return false;
-            }
-            return true;
-        }
-        private bool validateListContext(int i)
-        {
-            if (_currentDic == null)
-            {
-                _log.Add(new SyntaxError(_path, i, _fileContentLines[i], "List doesn't contain a title"));
-                return false;
-            }
-
-            return true;
-        }
-        private bool validateEntryID(int i)
-        {
-            _id = Convert.ToInt32(_m!.Groups["id"].Value, 16);
-            if (_id > MaxID)
-            {
-                _log.Add(new SyntaxError(_path, i, _fileContentLines[i], $"ID is over the maximum value ({MaxID:X2})"));
-                return false;
-            }
-
-            return true;
-        }
-        private bool validateFileExists()
-        {
-            _filepath = Path.Combine(_baseDirectory, _m!.Groups["file"].Value);
-            return CommonValidations.ValidateFileExists(_path, _log, _filepath);
         }
     }
 }

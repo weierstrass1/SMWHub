@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.14.36811.4 d17.14
+VisualStudioVersion = 17.14.36811.4
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SMWHub", "SMWHub\SMWHub.csproj", "{4E019F3E-60ED-47E9-96C0-FDDD8D48F7D3}"
 EndProject
@@ -10,6 +10,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharedRoutineLibrary", "SharedRoutineLibrary\SharedRoutineLibrary.csproj", "{29614108-82BA-41F9-BEB6-3A97DC91331E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SMWHubLibrary", "SMWHubLibrary\SMWHubLibrary.csproj", "{E400F925-5742-4D15-871F-3C6D90A648EB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StateMachine", "StateMachine\StateMachine.csproj", "{09433522-E08D-463C-8CB4-F02445688D9A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{E400F925-5742-4D15-871F-3C6D90A648EB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E400F925-5742-4D15-871F-3C6D90A648EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E400F925-5742-4D15-871F-3C6D90A648EB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{09433522-E08D-463C-8CB4-F02445688D9A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{09433522-E08D-463C-8CB4-F02445688D9A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{09433522-E08D-463C-8CB4-F02445688D9A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{09433522-E08D-463C-8CB4-F02445688D9A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

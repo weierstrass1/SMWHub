@@ -12,7 +12,10 @@ public class Program
 
         LogRegisterSystem log = new();
 
-
+        CommonListReader reader = new([
+            ("Sprites","Sprites"),
+            ]);
+        reader.Read("slist.txt", log);
 
         LogRenderer renderer = new(Path.Combine("Logging", "LogMessages.json"));
         RawTextWrapper rawText = new();
