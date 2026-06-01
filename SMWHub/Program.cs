@@ -14,9 +14,9 @@ public class Program
         LogRegisterSystem log = new();
 
         CommonListReader reader = new([
-            ("Sprites","Sprites"),
-            ("Clusters", "Clusters"),
-            ("Extendeds", "Extendeds")
+            new("Sprites","Sprites"),
+            new("Clusters", "Clusters"),
+            new("Extendeds", "Extendeds")
             ]);
         reader.Read("slist.txt", log);
         var entries = reader.GetEntries();

@@ -7,17 +7,17 @@ using System.Text.RegularExpressions;
 namespace FormatReadLibrary.Readers;
 public sealed class CommonListReader
 {
-    private readonly Dictionary<string, string> _baseDirectories;
+    private readonly Dictionary<string, CommonListSectionTuple> _sections;
     private readonly Dictionary<string, Dictionary<int, CommonListEntry>> _entriesList;
-    public CommonListReader((string, string)[] titles)
+    public CommonListReader(CommonListSectionTuple[] sections)
     {
-        _baseDirectories = [];
+        _sections = [];
         _entriesList = [];
         string lowertitle;
-        foreach ((string title, string baseDir) in titles)
+        foreach (CommonListSectionTuple section in sections)
         {
-            lowertitle = $"{title.ToLower().Trim()}:";
-            _baseDirectories.TryAdd(lowertitle, baseDir);
+            lowertitle = $"{section.Title.ToLower().Trim()}:";
+            _sections.TryAdd(lowertitle, section);
             _entriesList.TryAdd(lowertitle, []);
         }
     }
@@ -33,7 +33,7 @@ public sealed class CommonListReader
 
         foreach (var section in enumerators)
         {
-            ctx = new(section.Value, maxID, allowVariables);
+            ctx = new(section.Value, _sections[section.Key], maxID, allowVariables);
             section.Value.MoveNext();
             while (section.Value.MoveNext())
             {
@@ -42,13 +42,7 @@ public sealed class CommonListReader
                 if (!ctx.ProcessEntry())
                     return false;
             }
-            newEntries = ctx.GetEntries();
-            foreach (var entry in newEntries.Values)
-            {
-                entry.EntryType = section.Key;
-                entry.Path = Path.Combine(_baseDirectories[section.Key], entry.Path);
-            }
-            _entriesList[section.Key] = newEntries;
+            _entriesList[section.Key] = ctx.GetEntries();
         }
         return true;
     }
@@ -65,8 +59,10 @@ public sealed class CommonListReader
     {
         private static readonly Regex _entryRegex = FileRegexContainer.ListEntryRegex();
         private readonly Dictionary<int, CommonListEntry> _entriesList = [];
-        public CommonListParsingContext(FileEnumeratorWithLog fileEnumerator, int maxID = 255, bool allowVariables = false) : base(fileEnumerator)
+        private readonly CommonListSectionTuple _section;
+        public CommonListParsingContext(FileEnumeratorWithLog fileEnumerator, CommonListSectionTuple section, int maxID = 255, bool allowVariables = false) : base(fileEnumerator)
         {
+            _section = section;
             State.AddVariable("Match", new StateVariable<Match>());
             State.AddVariable("ID", new StateVariable<int?>());
             State.AddVariable("Filepath", new StateVariable<string>());
@@ -82,7 +78,7 @@ public sealed class CommonListReader
             Match match = _entryRegex.Match(FileEnumerator.Current);
             State.Set("Match", match);
             State.Set("ID", Convert.ToInt32(match.Groups["id"].Value, 16));
-            State.Set("Filepath", match.Groups["file"].Value);
+            State.Set("Filepath", Path.Combine(_section.BaseDirectory, match.Groups["file"].Value));
             int[] values = [];
             if (match.Groups["var"].Success)
             {
@@ -99,6 +95,7 @@ public sealed class CommonListReader
             _entriesList.Add(id, new()
             {
                 ID = id,
+                EntryType = _section.Title,
                 Path = State.Get<string>("Filepath")!,
                 Values = State.Get<int[]>("Values")!,
             });
@@ -109,4 +106,5 @@ public sealed class CommonListReader
             return _entriesList.ToDictionary();
         }
     }
+    public sealed record CommonListSectionTuple (string Title, string BaseDirectory);
 }
