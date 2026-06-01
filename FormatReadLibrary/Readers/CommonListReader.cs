@@ -25,7 +25,8 @@ public sealed class CommonListReader
     {
         FileReaderWithLog fReader = new(path, log);
         FileEnumeratorWithLog fileEnumerator = (FileEnumeratorWithLog)fReader.GetEnumerator()!;
-        fReader.SplitBySections(out Dictionary<string, FileEnumeratorWithLog> enumerators, [.. _entriesList.Keys]);
+        if(!fReader.SplitBySections(out Dictionary<string, FileEnumeratorWithLog> enumerators, true, [.. _entriesList.Keys]))
+            return false;
 
         CommonListParsingContext ctx;
         Dictionary<int, CommonListEntry> newEntries;

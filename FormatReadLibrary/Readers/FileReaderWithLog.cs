@@ -37,22 +37,24 @@ public sealed class FileReaderWithLog : IEnumerable<string>
     {
         return new FileEnumeratorWithLog(this);
     }
-    public bool SplitBySections(out Dictionary<string, FileEnumeratorWithLog> enumerators, Regex regex)
+    public bool SplitBySections(out Dictionary<string, FileEnumeratorWithLog> enumerators, Regex regex, bool skipTitle = true)
     {
         return splitBySections(out enumerators,
             line => line,
             line => regex.IsMatch(line),
-            line => regex.Match(line).Groups["id"].Value);
+            line => regex.Match(line).Groups["id"].Value,
+            skipTitle);
     }
-    public bool SplitBySections(out Dictionary<string, FileEnumeratorWithLog> enumerators, params string[] sections)
+    public bool SplitBySections(out Dictionary<string, FileEnumeratorWithLog> enumerators, bool skipTitle = true, params string[] sections)
     {
         var lowerSections = sections.Select(s => s.ToLower().Trim()).ToHashSet();
         return splitBySections(out enumerators,
             line => line.ToLower(),
-            line => sections.Contains(line),
-            line => line);
+            line => lowerSections.Contains(line),
+            line => line,
+            skipTitle);
     }
-    private bool splitBySections(out Dictionary<string, FileEnumeratorWithLog> enumerators, Func<string, string> lineProcessing, Func<string, bool> match, Func<string, string> getID)
+    private bool splitBySections(out Dictionary<string, FileEnumeratorWithLog> enumerators, Func<string, string> lineProcessing, Func<string, bool> match, Func<string, string> getID, bool skipTitle = true)
     {
         enumerators = [];
         int sectionStart = 0;
