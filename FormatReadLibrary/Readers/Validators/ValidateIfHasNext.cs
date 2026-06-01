@@ -15,7 +15,7 @@ namespace FormatReadLibrary.Readers.Validators
         {
             if (!_fileEnumerator.MoveNext())
             {
-                _fileEnumerator.AddLog((i, path, line) => new SyntaxError(path, i, line, "Expected more entries in the file, but reached the end."));
+                _fileEnumerator.AddSyntaxErrorLog("Expected more entries in the file, but reached the end.");
                 return false;
             }
             return true;

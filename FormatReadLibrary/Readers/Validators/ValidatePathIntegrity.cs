@@ -16,7 +16,7 @@ namespace FormatReadLibrary.Readers.Validators
         {
             if (_fileEnumerator.Current.IndexOfAny(Path.GetInvalidPathChars()) >= 0)
             {
-                _fileEnumerator.AddLog((i, path, line) => new SyntaxError(path, i, line, "Invalid path"));
+                _fileEnumerator.AddSyntaxErrorLog("Invalid path");
                     return false;
             }
             return true;

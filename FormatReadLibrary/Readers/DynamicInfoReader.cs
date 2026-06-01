@@ -28,7 +28,7 @@ public sealed class DynamicInfoReader
         {
             if (string.IsNullOrWhiteSpace(fileEnumerator.Current))
                 continue;
-            if (!ctx.ProcessEntry(fileEnumerator))
+            if (!ctx.ProcessEntry())
             {
                 dynamicInfo = null;
                 return false;
@@ -57,16 +57,16 @@ public sealed class DynamicInfoReader
                 { "poseschunkssizes:", false },
                 { "numberof16x16tilesperpose:", false }
             };
-        private readonly Dictionary<string, Func<FileEnumeratorWithLog, bool>> _sectionProcessing;
+        private readonly Dictionary<string, Func<bool>> _sectionProcessing;
         private readonly ValidateListContext _validateListContext;
         private readonly ValidateSectionIsNotRepeated _sectionIsNotRepeated;
-        public DynamicInfoParsingContext(FileEnumeratorWithLog fileEnumerator)
+        public DynamicInfoParsingContext(FileEnumeratorWithLog fileEnumerator): base(fileEnumerator)
         {
-            _poseGraphicsListPC = new(fileEnumerator, _poseGraphics);
-            _palettesListPC = new(fileEnumerator, _palettes);
-            _resourcesListPC = new(fileEnumerator, _resources);
-            _legacyFormatPC = new(fileEnumerator, _poseChunkSizes);
-            _currentFormatPC = new(fileEnumerator, _currentNumberOf16x16TilesPerPose);
+            _poseGraphicsListPC = new(FileEnumerator, _poseGraphics);
+            _palettesListPC = new(FileEnumerator, _palettes);
+            _resourcesListPC = new(FileEnumerator, _resources);
+            _legacyFormatPC = new(FileEnumerator, _poseChunkSizes);
+            _currentFormatPC = new(FileEnumerator, _currentNumberOf16x16TilesPerPose);
             _sectionProcessing = new(){
                 { "posesgraphics:", _poseGraphicsListPC.ProcessEntry },
                 { "palettes:", _palettesListPC.ProcessEntry },
@@ -75,12 +75,12 @@ public sealed class DynamicInfoReader
                 { "numberof16x16tilesperpose:", _currentFormatPC.ProcessEntry }
             };
             State.AddVariable("SectionWasProcessed", new StateVariable<bool>());
-            _sectionIsNotRepeated = new(this, fileEnumerator);
-            _validateListContext = new(this, fileEnumerator);
+            _sectionIsNotRepeated = new(this, FileEnumerator);
+            _validateListContext = new(this, FileEnumerator);
         }
-        public override bool ProcessEntry(FileEnumeratorWithLog fileEnumerator)
+        public override bool ProcessEntry()
         {
-            string lowerLine = fileEnumerator.Current.ToLower().Trim();
+            string lowerLine = FileEnumerator.Current.ToLower().Trim();
             if (isSectionTitle(lowerLine))
             {
                 if (!_sectionIsNotRepeated.Validate(this))
@@ -91,7 +91,7 @@ public sealed class DynamicInfoReader
             }
             if (!_validateListContext.Validate(this))
                 return false;
-            return _sectionProcessing[_currentSection!].Invoke(fileEnumerator);
+            return _sectionProcessing[_currentSection!].Invoke();
         }
         public DynamicInfo GetDynamicInfo(string name)
         {
@@ -123,16 +123,16 @@ public sealed class DynamicInfoReader
     private sealed class DynamicInfoResourceListParsingContext : ParsingContext
     {
         private readonly List<string> _list = [];
-        public DynamicInfoResourceListParsingContext(FileEnumeratorWithLog fileEnumerator, List<string> list)
+        public DynamicInfoResourceListParsingContext(FileEnumeratorWithLog fileEnumerator, List<string> list) : base(fileEnumerator)
         {
             _list = list;
-            AddValidator(new ValidatePathIntegrity(this, fileEnumerator));
+            AddValidator(new ValidatePathIntegrity(this, FileEnumerator));
         }
-        public override bool ProcessEntry(FileEnumeratorWithLog fileEnumerator)
+        public override bool ProcessEntry()
         {
             if (!validate())
                 return false;
-            _list.Add(fileEnumerator.Current);
+            _list.Add(FileEnumerator.Current);
             return true;
         }
     }
@@ -145,21 +145,20 @@ public sealed class DynamicInfoReader
         private readonly ValidateEntryFormat _validateEntryFormat;
         private readonly ValidateIfHasNext _ifHasNext;
         private readonly ValidateDuplicateID<string, (int, int)> _validateDuplicateID;
-        public DynamicInfoLegacyFormatParsingContext(FileEnumeratorWithLog fileEnumerator, Dictionary<string, (int, int)> poseChunkSizes)
+        public DynamicInfoLegacyFormatParsingContext(FileEnumeratorWithLog fileEnumerator, Dictionary<string, (int, int)> poseChunkSizes) : base(fileEnumerator)
         {
             _poseChunkSizes = poseChunkSizes;
-            State.AddVariable("Entries", new StateVariable<Dictionary<string, (int, int)>>(_poseChunkSizes));
             State.AddVariable("Match", new LazyStateVariable<Match>(() =>
             {
-                if (fileEnumerator.LineIndex < 0)
+                if (!FileEnumerator.IsValid())
                     return null;
-                return _entryRegex.Match(fileEnumerator.Current);
+                return _entryRegex.Match(FileEnumerator.Current);
             }));
             State.AddVariable("MatchTable", new LazyStateVariable<Match>(() =>
             {
-                if (fileEnumerator.LineIndex < 0)
+                if (!FileEnumerator.IsValid())
                     return null;
-                return _entryTableRegex.Match(fileEnumerator.Current);
+                return _entryTableRegex.Match(FileEnumerator.Current);
             }));
             State.AddVariable("ID", new LazyStateVariable<string>(() =>
             {
@@ -172,15 +171,15 @@ public sealed class DynamicInfoReader
             {
                 return HexUtils.GetValues(fileEnumerator.Current);
             }));
-            _validateEntryFormat = new ValidateEntryFormat(this, fileEnumerator);
-            _validateDuplicateID = new ValidateDuplicateID<string, (int, int)>(this, fileEnumerator);
-            _ifHasNext = new ValidateIfHasNext(this, fileEnumerator);
-            AddValidator(new ValidateTableValueSize(this, fileEnumerator, TableValueSize.db));
-            AddValidator(new ValidateEntryFormat(this, fileEnumerator, "MatchTable"));
-            AddValidator(new ValidateValuesSize(this, fileEnumerator, 2, 2));
+            _validateEntryFormat = new ValidateEntryFormat(this, FileEnumerator);
+            _validateDuplicateID = new ValidateDuplicateID<string, (int, int)>(this, FileEnumerator, _poseChunkSizes);
+            _ifHasNext = new ValidateIfHasNext(this, FileEnumerator);
+            AddValidator(new ValidateTableValueSize(this, FileEnumerator, TableValueSize.db));
+            AddValidator(new ValidateEntryFormat(this, FileEnumerator, "MatchTable"));
+            AddValidator(new ValidateValuesSize(this, FileEnumerator, 2, 2));
 
         }
-        public override bool ProcessEntry(FileEnumeratorWithLog fileEnumerator)
+        public override bool ProcessEntry()
         {
             if (!_validateEntryFormat.Validate(this))
                 return false;
@@ -203,11 +202,11 @@ public sealed class DynamicInfoReader
     {
         public bool Active { get; private set; } = false;
         private readonly Dictionary<int, string> _currentNumberOf16x16TilesPerPose;
-        public DynamicInfoCurrentFormatParsingContext(FileEnumeratorWithLog fileEnumerator, Dictionary<int, string> currentNumberOf16x16TilesPerPose)
+        public DynamicInfoCurrentFormatParsingContext(FileEnumeratorWithLog fileEnumerator, Dictionary<int, string> currentNumberOf16x16TilesPerPose) : base(fileEnumerator)
         {
             _currentNumberOf16x16TilesPerPose = currentNumberOf16x16TilesPerPose;
         }
-        public override bool ProcessEntry(FileEnumeratorWithLog fileEnumerator)
+        public override bool ProcessEntry()
         {
             throw new NotImplementedException();
         }

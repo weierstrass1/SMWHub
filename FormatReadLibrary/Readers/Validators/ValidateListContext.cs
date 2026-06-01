@@ -12,7 +12,7 @@ public sealed class ValidateListContext(ParsingContext context, FileEnumeratorWi
         var wasProcessed = state.Get<bool>("SectionWasProcessed") as bool?;
         if (wasProcessed == null)
         {
-            _fileEnumerator.AddLog((i, path, line) => new SyntaxError(path, i, line, "List doesn't contain a section title"));
+            _fileEnumerator.AddSyntaxErrorLog("List doesn't contain a section title");
             return false;
         }
 

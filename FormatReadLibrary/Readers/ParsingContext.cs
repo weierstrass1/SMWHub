@@ -7,8 +7,10 @@ public abstract class ParsingContext
 {
     public State State { get; private set; }
     protected List<Validator> _validators { get; private set; }
-    public ParsingContext()
+    public FileEnumeratorWithLog FileEnumerator { get; private set; }
+    public ParsingContext(FileEnumeratorWithLog fileEnumerator)
     {
+        FileEnumerator = fileEnumerator;
         State = new();
         _validators = [];
     }
@@ -16,7 +18,7 @@ public abstract class ParsingContext
     {
         _validators.Add(validator);
     }
-    public abstract bool ProcessEntry(FileEnumeratorWithLog fileEnumerator);
+    public abstract bool ProcessEntry();
     protected bool validate()
     {
         foreach(var validator in _validators)

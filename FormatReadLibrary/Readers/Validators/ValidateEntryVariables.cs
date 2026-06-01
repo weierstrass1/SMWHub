@@ -15,12 +15,12 @@ public sealed class ValidateEntryVariables(ParsingContext context, FileEnumerato
             return true;
         if (values.Any(v => v < 0 || v > 255))
         {
-            _fileEnumerator.AddLog((i, path, line) => new SyntaxError(path, i, line, "Variable values must be between 0 and 255 [00-FF]"));
+            _fileEnumerator.AddSyntaxErrorLog("Variable values must be between 0 and 255 [00-FF]");
             return false;
         }
         if (_allowedVariables)
         {
-            _fileEnumerator.AddLog((i, path, line) => new SyntaxError(path, i, line, "This list doesn't allow variable values"));
+            _fileEnumerator.AddLog((i, path, line) => new SyntaxError(i, path, line, "This list doesn't allow variable values"));
             return false;
         }
 

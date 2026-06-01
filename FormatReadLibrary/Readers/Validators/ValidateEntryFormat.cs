@@ -18,7 +18,7 @@ public sealed class ValidateEntryFormat : Validator
         Match match = ctx.State.Get<Match>("Match")!;
         if (!match.Success)
         {
-            _fileEnumerator.AddLog((i, path, line) => new SyntaxError(path, i, line, "Invalid Entry"));
+            _fileEnumerator.AddSyntaxErrorLog("Invalid Entry");
             return false;
         }
         return true;

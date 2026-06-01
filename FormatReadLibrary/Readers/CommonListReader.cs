@@ -25,23 +25,29 @@ public sealed class CommonListReader
     {
         FileReaderWithLog fReader = new(path, log);
         FileEnumeratorWithLog fileEnumerator = (FileEnumeratorWithLog)fReader.GetEnumerator()!;
+        fReader.SplitBySections(out Dictionary<string, FileEnumeratorWithLog> enumerators, [.. _entriesList.Keys]);
 
-        CommonListParserOptions opts = new()
+        CommonListParsingContext ctx;
+        Dictionary<int, CommonListEntry> newEntries;
+
+        foreach (var section in enumerators)
         {
-            Sections = _entriesList.Keys,
-            FileEnumerator = fileEnumerator,
-            BaseDirectories = _baseDirectories,
-            EntriesList = _entriesList,
-        };
-
-        CommonListParsingContext ctx = new(opts, maxID, allowVariables);
-
-        while(fileEnumerator.MoveNext())
-        {
-            if (string.IsNullOrWhiteSpace(fileEnumerator.Current))
-                continue;
-            if (!ctx.ProcessEntry(fileEnumerator))
-                return false;
+            ctx = new(section.Value, maxID, allowVariables);
+            section.Value.MoveNext();
+            while (section.Value.MoveNext())
+            {
+                if (string.IsNullOrWhiteSpace(section.Value.Current))
+                    continue;
+                if (!ctx.ProcessEntry())
+                    return false;
+            }
+            newEntries = ctx.GetEntries();
+            foreach (var entry in newEntries.Values)
+            {
+                entry.EntryType = section.Key;
+                entry.Path = Path.Combine(_baseDirectories[section.Key], entry.Path);
+            }
+            _entriesList[section.Key] = newEntries;
         }
         return true;
     }
@@ -57,24 +63,14 @@ public sealed class CommonListReader
     private sealed class CommonListParsingContext : ParsingContext
     {
         private static readonly Regex _entryRegex = FileRegexContainer.ListEntryRegex();
-        private readonly Dictionary<string, Dictionary<int, CommonListEntry>> _entriesList;
-        private readonly Dictionary<string, string> _baseDirectories;
-        private readonly ValidateSectionIsNotRepeated _sectionIsNotRepeated;
-        private string? _currentSection;
-        private readonly Dictionary<string, bool> _processedSections;
-        public CommonListParsingContext(CommonListParserOptions options, int maxID = 255, bool allowVariables = false) : base()
+        private readonly Dictionary<int, CommonListEntry> _entriesList = [];
+        public CommonListParsingContext(FileEnumeratorWithLog fileEnumerator, int maxID = 255, bool allowVariables = false) : base(fileEnumerator)
         {
-            _processedSections = options.Sections.ToDictionary(k => k, k => false);
-            _baseDirectories = options.BaseDirectories;
-            _entriesList = options.EntriesList;
-            State.AddVariable("BaseDirectory", new StateVariable<string>());
-            State.AddVariable("Entries", new StateVariable<Dictionary<int, CommonListEntry>>());
-            State.AddVariable("SectionWasProcessed", new StateVariable<bool>());
             State.AddVariable("Match", new LazyStateVariable<Match>(() =>
             {
-                if (options.FileEnumerator.LineIndex < 0)
+                if (!FileEnumerator.IsValid())
                     return null;
-                return _entryRegex.Match(options.FileEnumerator.Current);
+                return _entryRegex.Match(FileEnumerator.Current);
             }));
             State.AddVariable("ID", new LazyStateVariable<int?>(() =>
             {
@@ -88,8 +84,7 @@ public sealed class CommonListReader
                 var match = State.Get<Match>("Match");
                 if (match == null)
                     return null;
-                var baseDirectory = State.Get<string>("BaseDirectory")!;
-                return Path.Combine(baseDirectory, match!.Groups["file"].Value);
+                return match!.Groups["file"].Value;
             }));
             State.AddVariable("Values", new LazyStateVariable<int[]>(() =>
             {
@@ -104,34 +99,19 @@ public sealed class CommonListReader
                         int.Parse(x[1..]) :
                         Convert.ToInt32(x, 16))];
             }));
-            _sectionIsNotRepeated = new(this, options.FileEnumerator);
-            AddValidator(new ValidateListContext(this, options.FileEnumerator));
-            AddValidator(new ValidateEntryFormat(this, options.FileEnumerator));
-            AddValidator(new ValidateEntryID(this, options.FileEnumerator, maxID));
-            AddValidator(new ValidateFileExists(this, options.FileEnumerator.Log));
-            AddValidator(new ValidateEntryVariables(this, options.FileEnumerator, allowVariables));
-            AddValidator(new ValidateDuplicateID<int, CommonListEntry>(this, options.FileEnumerator));
+            AddValidator(new ValidateEntryFormat(this, FileEnumerator));
+            AddValidator(new ValidateEntryID(this, FileEnumerator, maxID));
+            //AddValidator(new ValidateFileExists(this, FileEnumerator.Log));
+            AddValidator(new ValidateEntryVariables(this, FileEnumerator, allowVariables));
+            AddValidator(new ValidateDuplicateID<int, CommonListEntry>(this, FileEnumerator, _entriesList));
         }
-        public override bool ProcessEntry(FileEnumeratorWithLog fileEnumerator)
+        public override bool ProcessEntry()
         {
-            string lowerLine = fileEnumerator.Current.ToLower().Trim();
-            if (isATitle(lowerLine))
-            {
-                if (!_sectionIsNotRepeated.Validate(this))
-                    return false;
-                State.Set("BaseDirectory", _baseDirectories[lowerLine]);
-                State.Set("Entries", _entriesList[lowerLine]);
-                State.Set("SectionWasProcessed", _processedSections[lowerLine]);
-                _currentSection = lowerLine;
-                return true;
-            }
             if (!validate())
                 return false;
-            var entries = State.Get<Dictionary<int, CommonListEntry>>("Entries")!;
             var id = State.Get<int>("ID");
-            entries.Add(id, new()
+            _entriesList.Add(id, new()
             {
-                EntryType = _currentSection!.Replace(":", ""),
                 ID = id,
                 Path = State.Get<string>("Filepath")!,
                 Values = State.Get<int[]>("Values")!,
@@ -139,16 +119,9 @@ public sealed class CommonListReader
             State.Reset();
             return true;
         }
-        private bool isATitle(string lowerLine)
+        public Dictionary<int, CommonListEntry> GetEntries()
         {
-            return _entriesList.ContainsKey(lowerLine);
+            return _entriesList.ToDictionary();
         }
-    }
-    private sealed class CommonListParserOptions
-    {
-        public required IEnumerable<string> Sections { get; init; }
-        public required FileEnumeratorWithLog FileEnumerator { get; init; }
-        public required Dictionary<string, Dictionary<int, CommonListEntry>> EntriesList { get; init; }
-        public required Dictionary<string, string> BaseDirectories { get; init; }
     }
 }

@@ -13,7 +13,7 @@ public sealed class ValidateGPSBlockLine(ParsingContext context, FileEnumeratorW
         int end = ctx.State.Get<int>("End");
         if ($"{end:X2}"[..^1] != $"{start:X2}"[..^1])
         {
-            _fileEnumerator.AddLog((i, path, line) => new SyntaxError(path, i, line, $"Invalid Range ({start:X2}-{end:X2})"));
+            _fileEnumerator.AddSyntaxErrorLog($"Invalid Range ({start:X2}-{end:X2})");
             return false;
         }
         return true;

@@ -26,7 +26,7 @@ namespace FormatReadLibrary.Readers.Validators
             string name = _valueSize.ToString();
             if (_fileEnumerator.Current.Length > 1 && _fileEnumerator.Current[0..2] != name)
             {
-                _fileEnumerator.AddLog((i,path,line) => new SyntaxError(path, i, line, $"Should use {name}"));
+                _fileEnumerator.AddSyntaxErrorLog($"Should use {name}");
                 return false;
             }
             return true;

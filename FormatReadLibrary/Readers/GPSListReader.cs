@@ -29,7 +29,7 @@ public sealed class GPSListReader(string baseDirectory)
         {
             if (string.IsNullOrWhiteSpace(fileEnumerator.Current))
                 continue;
-            if (!ctx.ProcessEntry(fileEnumerator))
+            if (!ctx.ProcessEntry())
                 return false;
         }
         return true;
@@ -42,7 +42,7 @@ public sealed class GPSListReader(string baseDirectory)
     {
         private static readonly Regex _entryRegex = FileRegexContainer.GPSListEntryRegex();
         private readonly ValidateGPSBlockLine _validateGPSBlockLine;
-        public GPSListParsingContext(GPSListParserOptions options) : base() 
+        public GPSListParsingContext(GPSListParserOptions options) : base(options.FileEnumerator) 
         {
             State.AddVariable("BaseDirectory", new StateVariable<string>(options.BaseDirectory));
             State.AddVariable("Start", new StateVariable<int>());
@@ -50,9 +50,9 @@ public sealed class GPSListReader(string baseDirectory)
             State.AddVariable("Entries", new StateVariable<Dictionary<int, GPSListEntry>>(options.EntriesList));
             State.AddVariable("Match", new LazyStateVariable<Match>(() =>
             {
-                if (options.FileEnumerator.LineIndex < 0)
+                if (!FileEnumerator.IsValid())
                     return null;
-                return _entryRegex.Match(options.FileEnumerator.Current);
+                return _entryRegex.Match(FileEnumerator.Current);
             }));
             State.AddVariable("Filepath", new LazyStateVariable<string>(() =>
             {
@@ -75,12 +75,12 @@ public sealed class GPSListReader(string baseDirectory)
                         int.Parse(x[1..]) :
                         Convert.ToInt32(x, 16))];
             }));
-            AddValidator(new ValidateEntryFormat(this, options.FileEnumerator));
-            AddValidator(new ValidateFileExists(this,  options.FileEnumerator.Log));
-            AddValidator(new ValidateEntryVariables(this, options.FileEnumerator));
-            _validateGPSBlockLine = new(this, options.FileEnumerator);
+            AddValidator(new ValidateEntryFormat(this, FileEnumerator));
+            AddValidator(new ValidateFileExists(this,  FileEnumerator.Log));
+            AddValidator(new ValidateEntryVariables(this, FileEnumerator));
+            _validateGPSBlockLine = new(this, FileEnumerator);
         }
-        public override bool ProcessEntry(FileEnumeratorWithLog fileEnumerator)
+        public override bool ProcessEntry()
         {
             if (!validate())
                 return false;

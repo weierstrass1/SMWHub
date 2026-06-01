@@ -12,7 +12,7 @@ public sealed class SyntaxError : ILoggingRegister
     public string MessageType => "SYNTAX ERROR";
 
     public IReadOnlyDictionary<string, string> Parameters { get; private set; }
-    public SyntaxError(string file, int line, string lineContent, string message = "")
+    public SyntaxError(int line, string file, string lineContent, string message = "")
     {
         Parameters = new Dictionary<string, string>
         {

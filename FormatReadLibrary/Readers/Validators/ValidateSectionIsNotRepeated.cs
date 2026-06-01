@@ -11,7 +11,7 @@ public sealed class ValidateSectionIsNotRepeated(ParsingContext context, FileEnu
         var wasProcessed = state.Get<bool>("SectionWasProcessed") as bool?;
         if (wasProcessed == null || wasProcessed.Value)
         {
-            _fileEnumerator.AddLog((i, path, line) => new SyntaxError(path, i, line, "Repeated List Section"));
+            _fileEnumerator.AddSyntaxErrorLog("Repeated List Section");
             return false;
         }
         return true;

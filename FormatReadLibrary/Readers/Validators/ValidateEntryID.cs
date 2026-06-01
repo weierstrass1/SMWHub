@@ -13,7 +13,7 @@ public sealed class ValidateEntryID(ParsingContext context, FileEnumeratorWithLo
         var id = state.Get<int>("ID")!;
         if (id > _maxID)
         {
-            _fileEnumerator.AddLog((i, path, line) => new SyntaxError(path, i, line, $"ID is over the maximum value ({_maxID:X2})"));
+            _fileEnumerator.AddSyntaxErrorLog($"ID is over the maximum value ({_maxID:X2})");
             return false;
         }
 

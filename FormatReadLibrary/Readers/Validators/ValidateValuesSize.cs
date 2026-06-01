@@ -18,9 +18,9 @@ namespace FormatReadLibrary.Readers.Validators
             var values = ctx.State.Get<int[]>("Values");
             if (values.Length < _minSize || values.Length > _maxSize)
             {
-                _fileEnumerator.AddLog((i,path,line)=>new SyntaxError(path,i,line, _minSize == _maxSize ?
+                _fileEnumerator.AddSyntaxErrorLog(_minSize == _maxSize ?
                     $"You Should use {_minSize} values" :
-                    $"You Should use between {_minSize} and {_maxSize} values"));
+                    $"You Should use between {_minSize} and {_maxSize} values");
                 return false;
             }
             return true;

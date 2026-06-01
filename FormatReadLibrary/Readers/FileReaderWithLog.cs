@@ -1,6 +1,9 @@
-﻿using LogRegister;
+﻿using FormatReadLibrary.Logging.LoggingRegisters;
+using LogRegister;
 using System.Collections;
 using System.IO;
+using System.Text.RegularExpressions;
+using static System.Collections.Specialized.BitVector32;
 
 namespace FormatReadLibrary.Readers;
 
@@ -14,7 +17,6 @@ public sealed class FileReaderWithLog : IEnumerable<string>
     public readonly LogRegisterSystem Log;
     private readonly string _path;
     private readonly string[] _fileContentLines;
-
     public FileReaderWithLog(string path, LogRegisterSystem log)
     {
         Log = log;
@@ -34,6 +36,68 @@ public sealed class FileReaderWithLog : IEnumerable<string>
     public IEnumerator<string> GetEnumerator()
     {
         return new FileEnumeratorWithLog(this);
+    }
+    public bool SplitBySections(out Dictionary<string, FileEnumeratorWithLog> enumerators, Regex regex)
+    {
+        return splitBySections(out enumerators,
+            line => line,
+            line => regex.IsMatch(line),
+            line => regex.Match(line).Groups["id"].Value);
+    }
+    public bool SplitBySections(out Dictionary<string, FileEnumeratorWithLog> enumerators, params string[] sections)
+    {
+        var lowerSections = sections.Select(s => s.ToLower().Trim()).ToHashSet();
+        return splitBySections(out enumerators,
+            line => line.ToLower(),
+            line => sections.Contains(line),
+            line => line);
+    }
+    private bool splitBySections(out Dictionary<string, FileEnumeratorWithLog> enumerators, Func<string, string> lineProcessing, Func<string, bool> match, Func<string, string> getID)
+    {
+        enumerators = [];
+        int sectionStart = 0;
+        string? section = null;
+        string currentLine;
+        bool notEmptyLine = false;
+        int i;
+        string id;
+        for (i = 0; i < Length; i++)
+        {
+            if (string.IsNullOrWhiteSpace(_fileContentLines[i]))
+                continue;
+            currentLine = lineProcessing(_fileContentLines[i]);
+            if (!match(currentLine))
+            {
+                notEmptyLine = true;
+                continue;
+            }
+            if(!processSection(enumerators, getID, sectionStart, section, currentLine, notEmptyLine, i, out id))
+                return false;
+            section = id;
+            sectionStart = i;
+            notEmptyLine = true;
+        }
+        currentLine = _fileContentLines[^1];
+        i = Length - 1;
+        return processSection(enumerators, getID, sectionStart, section, currentLine, notEmptyLine, i, out id);
+    }
+
+    private bool processSection(Dictionary<string, FileEnumeratorWithLog> enumerators, Func<string, string> getID, int sectionStart, string? section, string currentLine, bool notEmptyLine, int i, out string id)
+    {
+        id = getID(currentLine);
+        if (enumerators.ContainsKey(id))
+        {
+            Log.Add(new SyntaxError(i, _path, currentLine, $"Repeated Section {id}"));
+            return false;
+        }
+        if (section == null && notEmptyLine)
+        {
+            Log.Add(new SyntaxError(i, _path, currentLine, "\"Section doesn't contain title\""));
+            return false;
+        }
+        if (section != null)
+            enumerators.Add(section, new FileEnumeratorWithLog(this, sectionStart, i - 1));
+        return true;
     }
     IEnumerator IEnumerable.GetEnumerator()
     {
