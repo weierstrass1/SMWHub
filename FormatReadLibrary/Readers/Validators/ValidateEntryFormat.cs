@@ -1,5 +1,4 @@
-﻿using FormatReadLibrary.Logging.LoggingRegisters;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 
 namespace FormatReadLibrary.Readers.Validators;
 public sealed class ValidateEntryFormat : Validator

@@ -58,4 +58,8 @@ public sealed class FileEnumeratorWithLog : IEnumerator<string>
     public void Dispose()
     {
     }
+    public bool IsLastLine()
+    {
+        return LineIndex == _maxLimit;
+    }
 }

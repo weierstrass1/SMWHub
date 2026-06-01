@@ -1,9 +1,7 @@
 ﻿using FormatReadLibrary.Logging.LoggingRegisters;
 using LogRegister;
 using System.Collections;
-using System.IO;
 using System.Text.RegularExpressions;
-using static System.Collections.Specialized.BitVector32;
 
 namespace FormatReadLibrary.Readers;
 
@@ -60,10 +58,9 @@ public sealed class FileReaderWithLog : IEnumerable<string>
         int sectionStart = 0;
         string? section = null;
         string currentLine;
-        bool notEmptyLine = false;
         int i;
         string id;
-        bool emptySection = true;
+        int lastNotEmptyLine = -1;
         for (i = 0; i < Length; i++)
         {
             if (string.IsNullOrWhiteSpace(_fileContentLines[i]))
@@ -71,25 +68,21 @@ public sealed class FileReaderWithLog : IEnumerable<string>
             currentLine = lineProcessing(_fileContentLines[i]);
             if (!match(currentLine))
             {
-                notEmptyLine = true;
-                if (section != null)
-                    emptySection = false;
+                lastNotEmptyLine = i;
                 continue;
             }
-            if(!processSection(enumerators, getID, emptySection, sectionStart, section, currentLine, notEmptyLine, i, out id, skipTitle))
+            if(!processSection(enumerators, getID, sectionStart, section, currentLine, lastNotEmptyLine, i, out id, skipTitle))
                 return false;
             section = id;
             sectionStart = i;
-            notEmptyLine = true;
-            emptySection = true;
+            lastNotEmptyLine = -1;
         }
-        currentLine = _fileContentLines[^1];
-        i = Length - 1;
-        return processSection(enumerators, getID, emptySection, sectionStart, section, currentLine, notEmptyLine, i, out id, skipTitle);
+        currentLine = _fileContentLines[lastNotEmptyLine];
+        return processSection(enumerators, getID, sectionStart, section, currentLine, lastNotEmptyLine, lastNotEmptyLine, out id, skipTitle);
     }
     private bool processSection(Dictionary<string, FileEnumeratorWithLog> enumerators, Func<string, string> getID, 
-        bool emptySection, int sectionStart, string? section, 
-        string currentLine, bool notEmptyLine, int i, out string id, bool skipTitle)
+        int sectionStart, string? section, string currentLine, int lastNotEmptyLine, 
+        int i, out string id, bool skipTitle)
     {
         id = getID(currentLine);
         if (enumerators.ContainsKey(id))
@@ -97,13 +90,13 @@ public sealed class FileReaderWithLog : IEnumerable<string>
             Log.Add(new SyntaxError(i, _path, currentLine, $"Repeated Section {id}"));
             return false;
         }
-        if (section == null && notEmptyLine)
+        if (section == null && lastNotEmptyLine >= 0)
         {
             Log.Add(new SyntaxError(i, _path, currentLine, "\"Section doesn't contain title\""));
             return false;
         }
-        if (section != null && !emptySection)
-            enumerators.Add(section, new FileEnumeratorWithLog(this, sectionStart + (skipTitle ? 1 : 0), i - 1));
+        if (section != null && lastNotEmptyLine >= 0)
+            enumerators.Add(section, new FileEnumeratorWithLog(this, sectionStart + (skipTitle ? 1 : 0), lastNotEmptyLine));
         return true;
     }
     IEnumerator IEnumerable.GetEnumerator()

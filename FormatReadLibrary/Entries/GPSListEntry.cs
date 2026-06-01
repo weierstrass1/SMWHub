@@ -6,7 +6,7 @@ public sealed class GPSListEntry
     public string Description { get; set; } = "";
     public required string Path { get; init; }
     public int ActLike { get; set; } = -1;
-    public int[] Values { get; set; } = [];
+    public int[]? Values { get; set; } = [];
     public override string ToString()
     {
         string actlike = ActLike >= 0 ? $"-{ActLike:X4}" : "";

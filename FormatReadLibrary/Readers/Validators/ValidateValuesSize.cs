@@ -1,11 +1,4 @@
-﻿using FormatReadLibrary.Logging.LoggingRegisters;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace FormatReadLibrary.Readers.Validators
+﻿namespace FormatReadLibrary.Readers.Validators
 {
     [RequiresStateVariable("Values", typeof(int[]))]
     public class ValidateValuesSize(ParsingContext context, FileEnumeratorWithLog fileEnumerator, uint minSize, uint maxSize) : Validator(context)

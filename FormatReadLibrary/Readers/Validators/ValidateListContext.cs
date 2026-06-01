@@ -1,5 +1,4 @@
-﻿using FormatReadLibrary.Logging.LoggingRegisters;
-using StateMachine;
+﻿using StateMachine;
 
 namespace FormatReadLibrary.Readers.Validators;
 [RequiresStateVariable("SectionWasProcessed", typeof(bool))]

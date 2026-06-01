@@ -34,6 +34,10 @@ public class State
             return true;
         return _variables[key].Value!.GetType() == typeof(T);
     }
+    public T GetVariable<T>(string key) where T : IStateVariable
+    {
+        return (T)_variables[key];
+    }
     public T? Get<T>(string key)
     {
         if (_variables[key] is IStateVariable<T> genVariable)

@@ -1,6 +1,4 @@
-﻿using FormatReadLibrary.Logging.LoggingRegisters;
-
-namespace FormatReadLibrary.Readers.Validators;
+﻿namespace FormatReadLibrary.Readers.Validators;
 
 [RequiresStateVariable("Start", typeof(int))]
 [RequiresStateVariable("End", typeof(int))]

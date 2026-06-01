@@ -1,14 +1,4 @@
-﻿using FormatReadLibrary.Logging.LoggingRegisters;
-using LogRegister;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace FormatReadLibrary.Readers.Validators
+﻿namespace FormatReadLibrary.Readers.Validators
 {
     public enum TableValueSize
     {

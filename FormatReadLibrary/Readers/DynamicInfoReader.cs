@@ -1,11 +1,9 @@
-﻿using Configs;
-using FormatReadLibrary.Infos;
+﻿using FormatReadLibrary.Infos;
 using FormatReadLibrary.Logging.LoggingRegisters;
+using FormatReadLibrary.Readers.StateVariables;
 using FormatReadLibrary.Readers.Validators;
 using LogRegister;
 using StateMachine;
-using System;
-using System.IO;
 using System.Text.RegularExpressions;
 
 namespace FormatReadLibrary.Readers;
@@ -20,157 +18,124 @@ public sealed class DynamicInfoReader
     public bool Read(string name, string dynamicInfoContent, LogRegisterSystem log, out DynamicInfo? dynamicInfo)
     {
         FileReaderWithLog fReader = new(name, dynamicInfoContent, log);
-        FileEnumeratorWithLog fileEnumerator = (FileEnumeratorWithLog)fReader.GetEnumerator()!;
 
-        DynamicInfoParsingContext ctx = new(fileEnumerator);
+        dynamicInfo = null;
+        if (!fReader.SplitBySections(out Dictionary<string, FileEnumeratorWithLog> enumerators, true,
+            "posesgraphics:", "palettes:", "resources:", "poseschunkssizes:", "numberof16x16tilesperpose:"))
+            return false;
 
-        while (fileEnumerator.MoveNext())
+        if (!validateIfUseBothFormats(name, log, fReader, enumerators))
+            return false;
+
+        ParsingContext ctx;
+        dynamicInfo = new(Path.GetFileNameWithoutExtension(name));
+
+        foreach (var section in enumerators)
         {
-            if (string.IsNullOrWhiteSpace(fileEnumerator.Current))
-                continue;
-            if (!ctx.ProcessEntry())
+            ctx = createContext(section.Key, dynamicInfo, section.Value);
+            while (section.Value.MoveNext())
             {
-                dynamicInfo = null;
-                return false;
+                if (string.IsNullOrWhiteSpace(section.Value.Current))
+                    continue;
+                if (!ctx.ProcessEntry())
+                    return false;
             }
         }
-        dynamicInfo = ctx.GetDynamicInfo(name);
+
         return true;
     }
-    private sealed class DynamicInfoParsingContext : ParsingContext
+    private static bool validateIfUseBothFormats(string name, LogRegisterSystem log, FileReaderWithLog fReader, Dictionary<string, FileEnumeratorWithLog> enumerators)
     {
-        private readonly List<string> _poseGraphics = [];
-        private readonly List<string> _palettes = [];
-        private readonly List<string> _resources = [];
-        private readonly Dictionary<string, (int, int)> _poseChunkSizes = [];
-        private readonly Dictionary<int, string> _currentNumberOf16x16TilesPerPose = [];
-        private readonly DynamicInfoResourceListParsingContext _poseGraphicsListPC;
-        private readonly DynamicInfoResourceListParsingContext _palettesListPC;
-        private readonly DynamicInfoResourceListParsingContext _resourcesListPC;
-        private readonly DynamicInfoLegacyFormatParsingContext _legacyFormatPC;
-        private readonly DynamicInfoCurrentFormatParsingContext _currentFormatPC;
-        private string? _currentSection;
-        private readonly Dictionary<string, bool> _processedSections = new(){
-                { "posesgraphics:", false },
-                { "palettes:", false },
-                { "resources:", false },
-                { "poseschunkssizes:", false },
-                { "numberof16x16tilesperpose:", false }
-            };
-        private readonly Dictionary<string, Func<bool>> _sectionProcessing;
-        private readonly ValidateListContext _validateListContext;
-        private readonly ValidateSectionIsNotRepeated _sectionIsNotRepeated;
-        public DynamicInfoParsingContext(FileEnumeratorWithLog fileEnumerator): base(fileEnumerator)
+        if (enumerators.TryGetValue("poseschunkssizes:", out FileEnumeratorWithLog? legacyFormat) &&
+            enumerators.TryGetValue("numberof16x16tilesperpose:", out FileEnumeratorWithLog? currentFormat))
         {
-            _poseGraphicsListPC = new(FileEnumerator, _poseGraphics);
-            _palettesListPC = new(FileEnumerator, _palettes);
-            _resourcesListPC = new(FileEnumerator, _resources);
-            _legacyFormatPC = new(FileEnumerator, _poseChunkSizes);
-            _currentFormatPC = new(FileEnumerator, _currentNumberOf16x16TilesPerPose);
-            _sectionProcessing = new(){
-                { "posesgraphics:", _poseGraphicsListPC.ProcessEntry },
-                { "palettes:", _palettesListPC.ProcessEntry },
-                { "resources:", _resourcesListPC.ProcessEntry },
-                { "poseschunkssizes:", _legacyFormatPC.ProcessEntry },
-                { "numberof16x16tilesperpose:", _currentFormatPC.ProcessEntry }
-            };
-            State.AddVariable("SectionWasProcessed", new StateVariable<bool>());
-            _sectionIsNotRepeated = new(this, FileEnumerator);
-            _validateListContext = new(this, FileEnumerator);
+            int i = Math.Max(legacyFormat.LineIndex, currentFormat.LineIndex);
+            log.Add(new SyntaxError(i, name, fReader[i], $"Both 'poseschunkssizes:' and 'numberof16x16tilesperpose:' sections are present. You can't use legacy and current format at the same time."));
+            return false;
         }
-        public override bool ProcessEntry()
-        {
-            string lowerLine = FileEnumerator.Current.ToLower().Trim();
-            if (isSectionTitle(lowerLine))
-            {
-                if (!_sectionIsNotRepeated.Validate(this))
-                    return false;
-                State.Set("SectionWasProcessed", _processedSections[lowerLine]);
-                _currentSection = lowerLine;
-                return true;
-            }
-            if (!_validateListContext.Validate(this))
-                return false;
-            return _sectionProcessing[_currentSection!].Invoke();
-        }
-        public DynamicInfo GetDynamicInfo(string name)
-        {
-            DynamicInfo di = new(name)
-            {
-                Palettes = [.. _palettes],
-                PoseGraphics = [.. _poseGraphics],
-                Resources = [.. _resources]
-            };
-            if (_legacyFormatPC.Active)
-            {
-                List<int> pcs = [];
-                foreach (var tuple in _poseChunkSizes.Values)
-                    pcs.AddRange([tuple.Item1, tuple.Item2]);
-                di.PosesChunksSizes = [.. pcs];
-                di.GenerateLastRow();
-            }
-            else if (_currentFormatPC.Active)
-            {
-                di.FromNumberOf16x16Tiles(_currentNumberOf16x16TilesPerPose);
-            }
-            return di;
-        }
-        private bool isSectionTitle(string sectionTitle)
-        {
-            return _processedSections.ContainsKey(sectionTitle);
-        }
+        return true;
     }
-    private sealed class DynamicInfoResourceListParsingContext : ParsingContext
+    private ParsingContext createContext(string section, DynamicInfo dynamicInfo, FileEnumeratorWithLog fileEnumerator)
     {
-        private readonly List<string> _list = [];
-        public DynamicInfoResourceListParsingContext(FileEnumeratorWithLog fileEnumerator, List<string> list) : base(fileEnumerator)
+        return section switch
         {
-            _list = list;
+            "posesgraphics:" => new DynamicInfoResourceListParsingContext(fileEnumerator, DynamicInfoSection.PosesGraphics)
+            { DynamicInfo = dynamicInfo },
+            "palettes:" => new DynamicInfoResourceListParsingContext(fileEnumerator, DynamicInfoSection.Palettes)
+            { DynamicInfo = dynamicInfo },
+            "resources:" => new DynamicInfoResourceListParsingContext(fileEnumerator, DynamicInfoSection.Resources)
+            { DynamicInfo = dynamicInfo },
+            "poseschunkssizes:" => new DynamicInfoLegacyFormatParsingContext(fileEnumerator)
+            { DynamicInfo = dynamicInfo },
+            "numberof16x16tilesperpose:" => new DynamicInfoCurrentFormatParsingContext(fileEnumerator)
+            { DynamicInfo = dynamicInfo },
+            _ => throw new Exception($"Unknown section type: {section}")
+        };
+    }
+    private enum DynamicInfoSection
+    {
+        PosesGraphics,
+        Palettes,
+        Resources,
+        PosesChunkSizes,
+        NumberOf16x16TilesPerPose
+    }
+    private sealed class DynamicInfoResourceListParsingContext : ParsingContext, IHaveDynamicInfo
+    {
+        public required DynamicInfo DynamicInfo { get; init; }
+        private readonly List<string> _list = [];
+        private readonly DynamicInfoSection _section;
+        public DynamicInfoResourceListParsingContext(FileEnumeratorWithLog fileEnumerator, DynamicInfoSection section) : base(fileEnumerator)
+        {
+            _section = section;
             AddValidator(new ValidatePathIntegrity(this, FileEnumerator));
         }
         public override bool ProcessEntry()
         {
             if (!validate())
                 return false;
+
             _list.Add(FileEnumerator.Current);
+            if (!FileEnumerator.IsLastLine())
+                return true;
+
+            setupDynamicInfoList();
             return true;
         }
+        private void setupDynamicInfoList()
+        {
+            string[] arr = [.. _list];
+
+            switch (_section)
+            {
+                case DynamicInfoSection.PosesGraphics:
+                    DynamicInfo.PoseGraphics = arr;
+                    break;
+                case DynamicInfoSection.Palettes:
+                    DynamicInfo.Palettes = arr;
+                    break;
+                case DynamicInfoSection.Resources:
+                    DynamicInfo.Resources = arr;
+                    break;
+            }
+        }
     }
-    private sealed class DynamicInfoLegacyFormatParsingContext : ParsingContext
+    private sealed class DynamicInfoLegacyFormatParsingContext : ParsingContext, IHaveDynamicInfo
     {
+        public required DynamicInfo DynamicInfo { get; init; }
         public bool Active { get; private set; } = false;
         private static Regex _entryRegex = FileRegexContainer.DynInfoLegacyRegex();
         private static Regex _entryTableRegex = FileRegexContainer.NumberTableRegex();
-        private readonly Dictionary<string, (int, int)> _poseChunkSizes;
+        private readonly Dictionary<string, (int, int)> _poseChunkSizes = [];
         private readonly ValidateEntryFormat _validateEntryFormat;
         private readonly ValidateIfHasNext _ifHasNext;
         private readonly ValidateDuplicateID<string, (int, int)> _validateDuplicateID;
-        public DynamicInfoLegacyFormatParsingContext(FileEnumeratorWithLog fileEnumerator, Dictionary<string, (int, int)> poseChunkSizes) : base(fileEnumerator)
+        public DynamicInfoLegacyFormatParsingContext(FileEnumeratorWithLog fileEnumerator) : base(fileEnumerator)
         {
-            _poseChunkSizes = poseChunkSizes;
-            State.AddVariable("Match", new LazyStateVariable<Match>(() =>
-            {
-                if (!FileEnumerator.IsValid())
-                    return null;
-                return _entryRegex.Match(FileEnumerator.Current);
-            }));
-            State.AddVariable("MatchTable", new LazyStateVariable<Match>(() =>
-            {
-                if (!FileEnumerator.IsValid())
-                    return null;
-                return _entryTableRegex.Match(FileEnumerator.Current);
-            }));
-            State.AddVariable("ID", new LazyStateVariable<string>(() =>
-            {
-                var match = State.Get<Match>("Match");
-                if (match == null)
-                    return null;
-                return match.Groups["id"].Value;
-            }));
-            State.AddVariable("Values", new LazyStateVariable<int[]>(() =>
-            {
-                return HexUtils.GetValues(fileEnumerator.Current);
-            }));
+            State.AddVariable("Match", new MatchStateVariable());
+            State.AddVariable("MatchTable", new MatchStateVariable());
+            State.AddVariable("ID", new StateVariable<string>());
+            State.AddVariable("Values", new ValuesStateVariable());
             _validateEntryFormat = new ValidateEntryFormat(this, FileEnumerator);
             _validateDuplicateID = new ValidateDuplicateID<string, (int, int)>(this, FileEnumerator, _poseChunkSizes);
             _ifHasNext = new ValidateIfHasNext(this, FileEnumerator);
@@ -181,31 +146,67 @@ public sealed class DynamicInfoReader
         }
         public override bool ProcessEntry()
         {
-            if (!_validateEntryFormat.Validate(this))
+            string id;
+            if (!validatePoseChunksTitle(out id))
                 return false;
-            if (!_validateDuplicateID.Validate(this))
-                return false;
-            Match m = State.Get<Match>("Match")!;
-            string id = m.Groups["id"].Value;
+
             if (!_ifHasNext.Validate(this))
-                return false;                
+                return false;
+
+            int[]? values = setupValues();
             if (!validate())
                 return false;
+
             Active = true;
-            var values = State.Get<int[]>("Values")!;
-            _poseChunkSizes.Add(id, (values[0], values[1]));
-            State.Reset();
+            _poseChunkSizes.Add(id, (values![0], values[1]));
+            if (!FileEnumerator.IsLastLine())
+                return true;
+
+            setupDynamicInfoPosesChunksSizes();
             return true;
         }
-    }
-    private sealed class DynamicInfoCurrentFormatParsingContext : ParsingContext
-    {
-        public bool Active { get; private set; } = false;
-        private readonly Dictionary<int, string> _currentNumberOf16x16TilesPerPose;
-        public DynamicInfoCurrentFormatParsingContext(FileEnumeratorWithLog fileEnumerator, Dictionary<int, string> currentNumberOf16x16TilesPerPose) : base(fileEnumerator)
+        private int[]? setupValues()
         {
-            _currentNumberOf16x16TilesPerPose = currentNumberOf16x16TilesPerPose;
+            var matchTableVar = State.GetVariable<MatchStateVariable>("MatchTable");
+            matchTableVar.GetFrom(FileEnumerator.Current, _entryTableRegex);
+            var valuesVar = State.GetVariable<ValuesStateVariable>("Values");
+            return valuesVar.GetFrom(FileEnumerator.Current);
         }
+        private bool validatePoseChunksTitle(out string id)
+        {
+            var matchVar = State.GetVariable<MatchStateVariable>("Match");
+            Match match = matchVar.GetFrom(FileEnumerator.Current, _entryRegex)!;
+
+            id = "";
+
+            if (!_validateEntryFormat.Validate(this))
+                return false;
+
+            id = match.Groups["id"].Value;
+            State.Set("ID", id);
+
+            return _validateDuplicateID.Validate(this);
+        }
+
+        private void setupDynamicInfoPosesChunksSizes()
+        {
+            List<int> pcs = [];
+            foreach (var tuple in _poseChunkSizes.Values)
+                pcs.AddRange([tuple.Item1, tuple.Item2]);
+            DynamicInfo.PosesChunksSizes = [.. pcs];
+            DynamicInfo.GenerateLastRow();
+        }
+    }
+    private sealed class DynamicInfoCurrentFormatParsingContext : ParsingContext, IHaveDynamicInfo
+    {
+        public required DynamicInfo DynamicInfo { get; init; }
+        public bool Active { get; private set; } = false;
+        private readonly Dictionary<int, string> _currentNumberOf16x16TilesPerPose = [];
+
+        public DynamicInfoCurrentFormatParsingContext(FileEnumeratorWithLog fileEnumerator) : base(fileEnumerator)
+        {
+        }
+
         public override bool ProcessEntry()
         {
             throw new NotImplementedException();

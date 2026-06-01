@@ -1,4 +1,5 @@
 ﻿using FormatReadLibrary.Entries;
+using FormatReadLibrary.Readers.StateVariables;
 using FormatReadLibrary.Readers.Validators;
 using LogRegister;
 using StateMachine;
@@ -29,7 +30,6 @@ public sealed class CommonListReader
             return false;
 
         CommonListParsingContext ctx;
-        Dictionary<int, CommonListEntry> newEntries;
 
         foreach (var section in enumerators)
         {
@@ -62,10 +62,10 @@ public sealed class CommonListReader
         public CommonListParsingContext(FileEnumeratorWithLog fileEnumerator, CommonListSectionTuple section, int maxID = 255, bool allowVariables = false) : base(fileEnumerator)
         {
             _section = section;
-            State.AddVariable("Match", new StateVariable<Match>());
+            State.AddVariable("Match", new MatchStateVariable());
             State.AddVariable("ID", new StateVariable<int?>());
             State.AddVariable("Filepath", new StateVariable<string>());
-            State.AddVariable("Values", new StateVariable<int[]>());
+            State.AddVariable("Values", new ValuesStateVariable());
             AddValidator(new ValidateEntryFormat(this, FileEnumerator));
             AddValidator(new ValidateEntryID(this, FileEnumerator, maxID));
             //AddValidator(new ValidateFileExists(this, FileEnumerator.Log));
@@ -74,22 +74,7 @@ public sealed class CommonListReader
         }
         public override bool ProcessEntry()
         {
-            Match match = _entryRegex.Match(FileEnumerator.Current);
-            State.Set("Match", match);
-            int id = Convert.ToInt32(match.Groups["id"].Value, 16);
-            State.Set("ID", id);
-            string filepath = Path.Combine(_section.BaseDirectory, match.Groups["file"].Value);
-            State.Set("Filepath", filepath);
-            int[] values = [];
-            if (match.Groups["var"].Success)
-            {
-                values = [..match.Groups["var"].Value
-                    .Split(' ')
-                    .Select(x => x[0] == '@' ?
-                        int.Parse(x[1..]) :
-                        Convert.ToInt32(x, 16))];
-            }
-            State.Set("Values", values);
+            setupStateVariables(out int id, out string filepath, out int[]? values);
 
             if (!validate())
                 return false;
@@ -102,6 +87,20 @@ public sealed class CommonListReader
                 Values = values,
             });
             return true;
+        }
+        private void setupStateVariables(out int id, out string filepath, out int[]? values)
+        {
+            var matchVar = State.GetVariable<MatchStateVariable>("Match");
+            Match match = matchVar.GetFrom(FileEnumerator.Current, _entryRegex)!;
+
+            id = Convert.ToInt32(match.Groups["id"].Value, 16);
+            State.Set("ID", id);
+
+            filepath = Path.Combine(_section.BaseDirectory, match.Groups["file"].Value);
+            State.Set("Filepath", filepath);
+
+            var valuesVar = State.GetVariable<ValuesStateVariable>("Values");
+            values = valuesVar.GetFrom(match);
         }
         public Dictionary<int, CommonListEntry> GetEntries()
         {
