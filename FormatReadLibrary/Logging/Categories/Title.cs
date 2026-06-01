@@ -2,6 +2,6 @@
 
 namespace FormatReadLibrary.Logging.Categories;
 
-public class Title : ILogCategory
+public sealed class Title : ILogCategory
 {
 }

@@ -3,7 +3,7 @@ using System.Text;
 
 namespace FormatReadLibrary.Logging.Wrappers;
 
-public class RawTextWrapper
+public sealed class RawTextWrapper
 {
     private readonly StringBuilder builder;
     public RawTextWrapper() 

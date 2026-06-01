@@ -2,6 +2,6 @@
 
 namespace FormatReadLibrary.Logging.Categories;
 
-public class Error : ILogCategory
+public sealed class Error : ILogCategory
 {
 }

@@ -1,7 +1,8 @@
 ﻿namespace StateMachine;
 
-public class LazyStateVariable<T>(Func<T> getter) : IStateVariable<T>
+public class LazyStateVariable<T>(Func<T> getter, bool cleanOnReset = true) : IStateVariable<T>
 {
+    public bool CleanOnReset { get; set; } = cleanOnReset;
     public T? Value
     { 
         get

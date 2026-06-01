@@ -3,7 +3,7 @@ using LogRegister;
 
 namespace FormatReadLibrary.Logging.Wrappers;
 
-public class ConsoleWrapper
+public static class ConsoleWrapper
 {
     public static void RenderAction(string text, ILogCategory category, SpanType type, bool mustWrite = false)
     {
@@ -11,35 +11,24 @@ public class ConsoleWrapper
             return;
         if (type == SpanType.Prefix)
             return;
-        ConsoleColor color;
-        switch (category)
+        var color = category switch
         {
-            case Title:
-                color = type == SpanType.NormalText ?
-                    ConsoleColor.Magenta :
-                    ConsoleColor.DarkMagenta;
-                break;
-            case Error:
-                color = type == SpanType.NormalText ?
-                    ConsoleColor.Red :
-                    ConsoleColor.DarkRed;
-                break;
-            case Warning:
-                color = type == SpanType.NormalText ?
-                    ConsoleColor.Yellow :
-                    ConsoleColor.DarkYellow;
-                break;
-            case Success:
-                color = type == SpanType.NormalText ?
-                    ConsoleColor.Green :
-                    ConsoleColor.DarkGreen;
-                break;
-            default:
-                color = type == SpanType.NormalText ?
-                    ConsoleColor.Gray :
-                    ConsoleColor.Cyan;
-                break;
-        }
+            Title => type == SpanType.NormalText ?
+                                ConsoleColor.Magenta :
+                                ConsoleColor.DarkMagenta,
+            Error => type == SpanType.NormalText ?
+                                ConsoleColor.Red :
+                                ConsoleColor.DarkRed,
+            Warning => type == SpanType.NormalText ?
+                                ConsoleColor.Yellow :
+                                ConsoleColor.DarkYellow,
+            Success => type == SpanType.NormalText ?
+                                ConsoleColor.Green :
+                                ConsoleColor.DarkGreen,
+            _ => type == SpanType.NormalText ?
+                                ConsoleColor.Gray :
+                                ConsoleColor.Cyan,
+        };
         Console.ForegroundColor = color;
         Console.Write(text);
         Console.ResetColor();

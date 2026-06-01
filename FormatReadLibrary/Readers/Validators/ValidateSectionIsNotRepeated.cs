@@ -2,7 +2,7 @@
 using StateMachine;
 namespace FormatReadLibrary.Readers.Validators;
 [RequiresStateVariable("SectionWasProcessed", typeof(bool))]
-public class ValidateSectionIsNotRepeated(ParsingContext context, FileEnumeratorWithLog fileEnumerator) : Validator(context)
+public sealed class ValidateSectionIsNotRepeated(ParsingContext context, FileEnumeratorWithLog fileEnumerator) : Validator(context)
 {
     private readonly FileEnumeratorWithLog _fileEnumerator = fileEnumerator;
     public override  bool Validate(ParsingContext ctx)

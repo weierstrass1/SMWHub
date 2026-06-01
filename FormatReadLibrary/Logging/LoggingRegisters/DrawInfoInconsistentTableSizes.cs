@@ -3,7 +3,7 @@ using FormatReadLibrary.Logging.Categories;
 
 namespace FormatReadLibrary.Logging.LoggingRegisters;
 
-public class DrawInfoInconsistentTableSizes : ILoggingRegister
+public sealed class DrawInfoInconsistentTableSizes : ILoggingRegister
 {
     public bool AppearWithoutVerbose => true;
     public bool AppearInErrors => true;

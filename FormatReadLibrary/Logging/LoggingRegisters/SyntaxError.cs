@@ -3,7 +3,7 @@ using LogRegister;
 
 namespace FormatReadLibrary.Logging.LoggingRegisters;
 
-public class SyntaxError : ILoggingRegister
+public sealed class SyntaxError : ILoggingRegister
 {
     public bool AppearWithoutVerbose => true;
     public bool AppearInErrors => true;

@@ -6,15 +6,11 @@ using System.Text.RegularExpressions;
 
 namespace FormatReadLibrary.Readers;
 
-public sealed class GPSListReader
+public sealed class GPSListReader(string baseDirectory)
 {
-    private readonly string _baseDirectory;
-    private readonly Dictionary<int, GPSListEntry> _entriesList;
-    public GPSListReader(string baseDirectory)
-    {
-        _baseDirectory = baseDirectory;
-        _entriesList = [];
-    }
+    private readonly string _baseDirectory = baseDirectory;
+    private readonly Dictionary<int, GPSListEntry> _entriesList = [];
+
     public bool Read(string path, LogRegisterSystem log)
     {
         FileReaderWithLog fReader = new(path, log);
@@ -40,12 +36,7 @@ public sealed class GPSListReader
     }
     public IEnumerable<GPSListEntry> GetEntries()
     {
-        List<GPSListEntry> entries = [];
-        foreach (var entry in _entriesList.OrderBy(kvp => kvp.Key))
-        {
-            entries.Add(entry.Value);
-        }
-        return entries;
+        return _entriesList.OrderBy(kvp => kvp.Key).Select(kvp => kvp.Value);
     }
     private sealed class GPSListParsingContext : ParsingContext
     {
@@ -85,7 +76,7 @@ public sealed class GPSListReader
                         Convert.ToInt32(x, 16))];
             }));
             AddValidator(new ValidateEntryFormat(this, options.FileEnumerator));
-            //AddValidator(new ValidateFileExists(this,  options.FileEnumerator.Log));
+            AddValidator(new ValidateFileExists(this,  options.FileEnumerator.Log));
             AddValidator(new ValidateEntryVariables(this, options.FileEnumerator));
             _validateGPSBlockLine = new(this, options.FileEnumerator);
         }
@@ -102,16 +93,14 @@ public sealed class GPSListReader
             bool rectangle = m.Groups["r"].Success;
             if (end < start)
             {
-                int tmp = end;
-                end = start;
-                start = tmp;
+                (start, end) = (end, start);
             }
             if (!rectangle)
             {
                 State.Set("Start", start);
-                State.Set("Start", end);
+                State.Set("End", end);
 
-                if (_validateGPSBlockLine.Validate(this))
+                if (!_validateGPSBlockLine.Validate(this))
                     return false;
             }
             int x = Math.Min(start % 16, end % 16);
@@ -136,7 +125,7 @@ public sealed class GPSListReader
                     };
                     if (currentIndex != end)
                         continue;
-                    State.CleanLazyTypes();
+                    State.Reset();
                     return true;
                 }
             }

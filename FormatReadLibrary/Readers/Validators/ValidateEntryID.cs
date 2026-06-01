@@ -3,7 +3,7 @@ using StateMachine;
 
 namespace FormatReadLibrary.Readers.Validators;
 [RequiresStateVariable("ID", typeof(int?))]
-public class ValidateEntryID(ParsingContext context, FileEnumeratorWithLog fileEnumerator, int maxID = 255) : Validator(context)
+public sealed class ValidateEntryID(ParsingContext context, FileEnumeratorWithLog fileEnumerator, int maxID = 255) : Validator(context)
 {
     private readonly FileEnumeratorWithLog _fileEnumerator = fileEnumerator;
     private readonly int _maxID = maxID;

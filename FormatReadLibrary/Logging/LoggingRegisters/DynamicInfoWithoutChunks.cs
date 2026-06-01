@@ -2,7 +2,7 @@
 
 namespace FormatReadLibrary.Logging.LoggingRegisters;
 
-public class DynamicInfoWithoutChunks : ILoggingRegister
+public sealed class DynamicInfoWithoutChunks : ILoggingRegister
 {
     public bool AppearWithoutVerbose => true;
     public bool AppearInErrors => true;

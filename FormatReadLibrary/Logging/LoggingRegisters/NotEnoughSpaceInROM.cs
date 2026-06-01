@@ -3,7 +3,7 @@ using FormatReadLibrary.Logging.Categories;
 
 namespace FormatReadLibrary.Logging.LoggingRegisters;
 
-public class NotEnoughSpaceInROM : ILoggingRegister
+public sealed class NotEnoughSpaceInROM : ILoggingRegister
 {
     public bool AppearWithoutVerbose => true;
     public bool AppearInErrors => true;

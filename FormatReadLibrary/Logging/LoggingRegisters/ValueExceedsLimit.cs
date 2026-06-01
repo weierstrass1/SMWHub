@@ -2,8 +2,7 @@
 using FormatReadLibrary.Logging.Categories;
 
 namespace FormatReadLibrary.Logging.LoggingRegisters;
-
-public class ValueExceedsLimit : ILoggingRegister
+public sealed class ValueExceedsLimit : ILoggingRegister
 {
     public bool AppearWithoutVerbose => true;
     public bool AppearInErrors => true;

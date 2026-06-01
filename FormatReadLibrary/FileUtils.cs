@@ -4,10 +4,9 @@ namespace FormatReadLibrary;
 
 public static class FileUtils
 {
-    public static string CleanFileContent(string path)
+    public static string CleanString(string str)
     {
-        string content = File.ReadAllText(path).Replace("\r\n", "\n");
-        content = FileRegexContainer.CommentRegex().Replace(content, "");
+        string content = FileRegexContainer.CommentRegex().Replace(str, "");
 
         Regex space = FileRegexContainer.SpaceRegex();
 
@@ -15,5 +14,10 @@ public static class FileUtils
                                 .Split('\n')
                                 .Select(l => space.Replace(l, " ").Trim()));
         return content;
+    }
+    public static string CleanFileContent(string path)
+    {
+        string content = File.ReadAllText(path).Replace("\r\n", "\n");
+        return CleanString(content);
     }
 }

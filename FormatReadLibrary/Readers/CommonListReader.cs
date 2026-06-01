@@ -59,7 +59,7 @@ public sealed class CommonListReader
         private static readonly Regex _entryRegex = FileRegexContainer.ListEntryRegex();
         private readonly Dictionary<string, Dictionary<int, CommonListEntry>> _entriesList;
         private readonly Dictionary<string, string> _baseDirectories;
-        private readonly ValidateSectionIsNotRepeated _titleIsNotRepeated;
+        private readonly ValidateSectionIsNotRepeated _sectionIsNotRepeated;
         private string? _currentSection;
         private readonly Dictionary<string, bool> _processedSections;
         public CommonListParsingContext(CommonListParserOptions options, int maxID = 255, bool allowVariables = false) : base()
@@ -104,20 +104,20 @@ public sealed class CommonListReader
                         int.Parse(x[1..]) :
                         Convert.ToInt32(x, 16))];
             }));
-            _titleIsNotRepeated = new(this, options.FileEnumerator);
-            AddValidator(new ValidateListContext<CommonListEntry>(this, options.FileEnumerator));
+            _sectionIsNotRepeated = new(this, options.FileEnumerator);
+            AddValidator(new ValidateListContext(this, options.FileEnumerator));
             AddValidator(new ValidateEntryFormat(this, options.FileEnumerator));
             AddValidator(new ValidateEntryID(this, options.FileEnumerator, maxID));
-            //AddValidator(new ValidateFileExists(this, options.FileEnumerator.Log));
+            AddValidator(new ValidateFileExists(this, options.FileEnumerator.Log));
             AddValidator(new ValidateEntryVariables(this, options.FileEnumerator, allowVariables));
-            AddValidator(new ValidateDuplicateID<CommonListEntry>(this, options.FileEnumerator));
+            AddValidator(new ValidateDuplicateID<int, CommonListEntry>(this, options.FileEnumerator));
         }
         public override bool ProcessEntry(FileEnumeratorWithLog fileEnumerator)
         {
             string lowerLine = fileEnumerator.Current.ToLower().Trim();
             if (isATitle(lowerLine))
             {
-                if (!_titleIsNotRepeated.Validate(this))
+                if (!_sectionIsNotRepeated.Validate(this))
                     return false;
                 State.Set("BaseDirectory", _baseDirectories[lowerLine]);
                 State.Set("Entries", _entriesList[lowerLine]);
@@ -136,7 +136,7 @@ public sealed class CommonListReader
                 Path = State.Get<string>("Filepath")!,
                 Values = State.Get<int[]>("Values")!,
             });
-            State.CleanLazyTypes();
+            State.Reset();
             return true;
         }
         private bool isATitle(string lowerLine)
@@ -144,7 +144,7 @@ public sealed class CommonListReader
             return _entriesList.ContainsKey(lowerLine);
         }
     }
-    private class CommonListParserOptions
+    private sealed class CommonListParserOptions
     {
         public required IEnumerable<string> Sections { get; init; }
         public required FileEnumeratorWithLog FileEnumerator { get; init; }

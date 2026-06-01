@@ -3,7 +3,7 @@ using LogRegister;
 using StateMachine;
 namespace FormatReadLibrary.Readers.Validators;
 [RequiresStateVariable("Filepath", typeof(string))]
-public class ValidateFileExists(ParsingContext context, LogRegisterSystem log) : Validator(context)
+public sealed class ValidateFileExists(ParsingContext context, LogRegisterSystem log) : Validator(context)
 {
     private readonly LogRegisterSystem _log = log;
     public override bool Validate(ParsingContext ctx)

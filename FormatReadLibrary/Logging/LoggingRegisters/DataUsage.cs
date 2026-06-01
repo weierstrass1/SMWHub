@@ -3,7 +3,7 @@ using LogRegister;
 
 namespace FormatReadLibrary.Logging.LoggingRegisters;
 
-public class DataUsage : ILoggingRegister
+public sealed class DataUsage : ILoggingRegister
 {
     public bool AppearWithoutVerbose => true;
 		public bool AppearInErrors => false;

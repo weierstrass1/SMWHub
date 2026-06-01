@@ -3,7 +3,7 @@ using FormatReadLibrary.Logging.Categories;
 
 namespace FormatReadLibrary.Logging.LoggingRegisters;
 
-public class FailedToProcessFile : ILoggingRegister
+public sealed class FailedToProcessFile : ILoggingRegister
 {
     public bool AppearWithoutVerbose => true;
     public bool AppearInErrors => true;

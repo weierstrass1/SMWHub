@@ -1,4 +1,5 @@
-﻿using FormatReadLibrary.Logging.Categories;
+﻿using FormatReadLibrary.Infos;
+using FormatReadLibrary.Logging.Categories;
 using FormatReadLibrary.Logging.Wrappers;
 using FormatReadLibrary.Readers;
 using LogRegister;
@@ -23,6 +24,10 @@ public class Program
         GPSListReader gpsreader = new("blocks");
         gpsreader.Read("list.txt", log);
         var gpsEntries = gpsreader.GetEntries();
+
+        DynamicInfoReader direader = new();
+        direader.Read("DKCMasterGnawty.dynamicinfo", log, out DynamicInfo? dynamicInfo);
+
         LogRenderer renderer = new(Path.Combine("Logging", "LogMessages.json"));
         RawTextWrapper rawText = new();
         MultiWrapper mw = new();

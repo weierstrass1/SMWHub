@@ -7,25 +7,14 @@ public class State
     {
         _variables = [];
     }
-    public void CleanLazyTypes()
+    public void Reset()
     {
-        var lazys = _variables
-            .Values
-            .Where(v =>
-                {
-                    Type t = v.GetType();
-                    return t.IsGenericType && t.GetGenericTypeDefinition() == typeof(LazyStateVariable<>);
-                });
-        foreach (var lazy in lazys)
+        foreach (var variable in _variables.Values)
         {
-            lazy.Value = null;
+            if (!variable.CleanOnReset)
+                continue;
+            variable.Value = default;
         }
-    }
-    public IEnumerable<T> FingByType<T>() where T : IStateVariable
-    {
-        return _variables
-            .Where(v => v.GetType() == typeof(T))
-            .Select(v => (T)v.Value);
     }
     public void AddVariable(string key, IStateVariable variable)
     {

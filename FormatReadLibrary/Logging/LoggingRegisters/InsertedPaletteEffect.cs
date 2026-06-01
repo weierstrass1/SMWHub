@@ -3,7 +3,7 @@ using LogRegister;
 
 namespace FormatReadLibrary.Logging.LoggingRegisters;
 
-public class InsertedPaletteEffect : ILoggingRegister
+public sealed class InsertedPaletteEffect : ILoggingRegister
 {
     public bool AppearWithoutVerbose => false;
     public bool AppearInErrors => false;

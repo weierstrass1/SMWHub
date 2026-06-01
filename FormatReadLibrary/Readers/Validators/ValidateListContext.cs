@@ -3,7 +3,7 @@ using StateMachine;
 
 namespace FormatReadLibrary.Readers.Validators;
 [RequiresStateVariable("SectionWasProcessed", typeof(bool))]
-public class ValidateListContext<T>(ParsingContext context, FileEnumeratorWithLog fileEnumerator) : Validator(context)
+public sealed class ValidateListContext(ParsingContext context, FileEnumeratorWithLog fileEnumerator) : Validator(context)
 {
     private readonly FileEnumeratorWithLog _fileEnumerator = fileEnumerator;
     public override bool Validate(ParsingContext ctx)

@@ -13,7 +13,7 @@ public static partial class FileRegexContainer
     public static partial Regex SpaceRegex();
     [GeneratedRegex(@";.*")]
     public static partial Regex CommentRegex();
-    [GeneratedRegex(@"^[a-zA-Z_][a-zA-Z0-9_]*\d+_PoseChunksSizes:")]
+    [GeneratedRegex(@"^(?<id>[a-zA-Z][a-zA-Z0-9]*\d+)(_[a-zA-Z0-9]*)?_Poses?ChunksSizes:$")]
     public static partial Regex DynInfoLegacyRegex();
     [GeneratedRegex(@"^(db (\$[a-fA-F0-9]{2}|[0-9]+)(,(\$[a-fA-F0-9]{2}|[0-9]+))*|dw (\$[a-fA-F0-9]{4}|[0-9]+)(,(\$[a-fA-F0-9]{4}|[0-9]+))*|dl (\$[a-fA-F0-9]{6}|[0-9]+)(,(\$[a-fA-F0-9]{6}|[0-9]+))*)$")]
     public static partial Regex NumberTableRegex();

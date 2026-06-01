@@ -3,7 +3,7 @@ using LogRegister;
 
 namespace FormatReadLibrary.Logging.LoggingRegisters;
 
-internal class RemovedBufferAt : ILoggingRegister
+public sealed class RemovedBufferAt : ILoggingRegister
 {
     public bool AppearWithoutVerbose => false;
     public bool AppearInErrors => false;

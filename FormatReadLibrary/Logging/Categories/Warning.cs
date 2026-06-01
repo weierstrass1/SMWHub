@@ -1,5 +1,7 @@
-﻿namespace FormatReadLibrary.Logging.Categories;
+﻿using LogRegister;
 
-public class Warning
+namespace FormatReadLibrary.Logging.Categories;
+
+public sealed class Warning : ILogCategory
 {
 }

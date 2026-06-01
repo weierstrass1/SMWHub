@@ -3,7 +3,7 @@ using StateMachine;
 
 namespace FormatReadLibrary.Readers.Validators;
 [RequiresStateVariable("Values", typeof(int[]))]
-public class ValidateEntryVariables(ParsingContext context, FileEnumeratorWithLog fileEnumerator, bool allowedVariables = false) : Validator(context)
+public sealed class ValidateEntryVariables(ParsingContext context, FileEnumeratorWithLog fileEnumerator, bool allowedVariables = false) : Validator(context)
 {
     private readonly FileEnumeratorWithLog _fileEnumerator = fileEnumerator;
     private readonly bool _allowedVariables = allowedVariables;
