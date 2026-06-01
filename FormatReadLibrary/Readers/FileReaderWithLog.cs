@@ -63,6 +63,7 @@ public sealed class FileReaderWithLog : IEnumerable<string>
         bool notEmptyLine = false;
         int i;
         string id;
+        bool emptySection = true;
         for (i = 0; i < Length; i++)
         {
             if (string.IsNullOrWhiteSpace(_fileContentLines[i]))
@@ -71,20 +72,24 @@ public sealed class FileReaderWithLog : IEnumerable<string>
             if (!match(currentLine))
             {
                 notEmptyLine = true;
+                if (section != null)
+                    emptySection = false;
                 continue;
             }
-            if(!processSection(enumerators, getID, sectionStart, section, currentLine, notEmptyLine, i, out id))
+            if(!processSection(enumerators, getID, emptySection, sectionStart, section, currentLine, notEmptyLine, i, out id, skipTitle))
                 return false;
             section = id;
             sectionStart = i;
             notEmptyLine = true;
+            emptySection = true;
         }
         currentLine = _fileContentLines[^1];
         i = Length - 1;
-        return processSection(enumerators, getID, sectionStart, section, currentLine, notEmptyLine, i, out id);
+        return processSection(enumerators, getID, emptySection, sectionStart, section, currentLine, notEmptyLine, i, out id, skipTitle);
     }
-
-    private bool processSection(Dictionary<string, FileEnumeratorWithLog> enumerators, Func<string, string> getID, int sectionStart, string? section, string currentLine, bool notEmptyLine, int i, out string id)
+    private bool processSection(Dictionary<string, FileEnumeratorWithLog> enumerators, Func<string, string> getID, 
+        bool emptySection, int sectionStart, string? section, 
+        string currentLine, bool notEmptyLine, int i, out string id, bool skipTitle)
     {
         id = getID(currentLine);
         if (enumerators.ContainsKey(id))
@@ -97,8 +102,8 @@ public sealed class FileReaderWithLog : IEnumerable<string>
             Log.Add(new SyntaxError(i, _path, currentLine, "\"Section doesn't contain title\""));
             return false;
         }
-        if (section != null)
-            enumerators.Add(section, new FileEnumeratorWithLog(this, sectionStart, i - 1));
+        if (section != null && !emptySection)
+            enumerators.Add(section, new FileEnumeratorWithLog(this, sectionStart + (skipTitle ? 1 : 0), i - 1));
         return true;
     }
     IEnumerator IEnumerable.GetEnumerator()

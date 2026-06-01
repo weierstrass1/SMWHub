@@ -34,7 +34,6 @@ public sealed class CommonListReader
         foreach (var section in enumerators)
         {
             ctx = new(section.Value, _sections[section.Key], maxID, allowVariables);
-            section.Value.MoveNext();
             while (section.Value.MoveNext())
             {
                 if (string.IsNullOrWhiteSpace(section.Value.Current))
@@ -77,8 +76,10 @@ public sealed class CommonListReader
         {
             Match match = _entryRegex.Match(FileEnumerator.Current);
             State.Set("Match", match);
-            State.Set("ID", Convert.ToInt32(match.Groups["id"].Value, 16));
-            State.Set("Filepath", Path.Combine(_section.BaseDirectory, match.Groups["file"].Value));
+            int id = Convert.ToInt32(match.Groups["id"].Value, 16);
+            State.Set("ID", id);
+            string filepath = Path.Combine(_section.BaseDirectory, match.Groups["file"].Value);
+            State.Set("Filepath", filepath);
             int[] values = [];
             if (match.Groups["var"].Success)
             {
@@ -89,15 +90,16 @@ public sealed class CommonListReader
                         Convert.ToInt32(x, 16))];
             }
             State.Set("Values", values);
+
             if (!validate())
                 return false;
-            var id = State.Get<int>("ID");
+
             _entriesList.Add(id, new()
             {
                 ID = id,
                 EntryType = _section.Title,
-                Path = State.Get<string>("Filepath")!,
-                Values = State.Get<int[]>("Values")!,
+                Path = filepath,
+                Values = values,
             });
             return true;
         }
