@@ -66,39 +66,10 @@ public sealed class CommonListReader
         private readonly Dictionary<int, CommonListEntry> _entriesList = [];
         public CommonListParsingContext(FileEnumeratorWithLog fileEnumerator, int maxID = 255, bool allowVariables = false) : base(fileEnumerator)
         {
-            State.AddVariable("Match", new LazyStateVariable<Match>(() =>
-            {
-                if (!FileEnumerator.IsValid())
-                    return null;
-                return _entryRegex.Match(FileEnumerator.Current);
-            }));
-            State.AddVariable("ID", new LazyStateVariable<int?>(() =>
-            {
-                var match = State.Get<Match>("Match");
-                if (match == null)
-                    return null;
-                return Convert.ToInt32(match.Groups["id"].Value, 16);
-            }));
-            State.AddVariable("Filepath", new LazyStateVariable<string>(() =>
-            {
-                var match = State.Get<Match>("Match");
-                if (match == null)
-                    return null;
-                return match!.Groups["file"].Value;
-            }));
-            State.AddVariable("Values", new LazyStateVariable<int[]>(() =>
-            {
-                var match = State.Get<Match>("Match");
-                if (match == null)
-                    return null;
-                if (!match.Groups["var"].Success)
-                    return [];
-                return [..match.Groups["var"].Value
-                    .Split(' ')
-                    .Select(x => x[0] == '@' ?
-                        int.Parse(x[1..]) :
-                        Convert.ToInt32(x, 16))];
-            }));
+            State.AddVariable("Match", new StateVariable<Match>());
+            State.AddVariable("ID", new StateVariable<int?>());
+            State.AddVariable("Filepath", new StateVariable<string>());
+            State.AddVariable("Values", new StateVariable<int[]>());
             AddValidator(new ValidateEntryFormat(this, FileEnumerator));
             AddValidator(new ValidateEntryID(this, FileEnumerator, maxID));
             //AddValidator(new ValidateFileExists(this, FileEnumerator.Log));
@@ -107,6 +78,20 @@ public sealed class CommonListReader
         }
         public override bool ProcessEntry()
         {
+            Match match = _entryRegex.Match(FileEnumerator.Current);
+            State.Set("Match", match);
+            State.Set("ID", Convert.ToInt32(match.Groups["id"].Value, 16));
+            State.Set("Filepath", match.Groups["file"].Value);
+            int[] values = [];
+            if (match.Groups["var"].Success)
+            {
+                values = [..match.Groups["var"].Value
+                    .Split(' ')
+                    .Select(x => x[0] == '@' ?
+                        int.Parse(x[1..]) :
+                        Convert.ToInt32(x, 16))];
+            }
+            State.Set("Values", values);
             if (!validate())
                 return false;
             var id = State.Get<int>("ID");
@@ -116,7 +101,6 @@ public sealed class CommonListReader
                 Path = State.Get<string>("Filepath")!,
                 Values = State.Get<int[]>("Values")!,
             });
-            State.Reset();
             return true;
         }
         public Dictionary<int, CommonListEntry> GetEntries()

@@ -53,7 +53,7 @@ public sealed class FileEnumeratorWithLog : IEnumerator<string>
     }
     public bool IsValid()
     {
-        return LineIndex >= _minLimit || LineIndex <= _maxLimit;
+        return LineIndex >= _minLimit && LineIndex <= _maxLimit;
     }
     public void Dispose()
     {
