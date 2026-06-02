@@ -27,6 +27,8 @@ public class Program
 
         DynamicInfoReader direader = new();
         direader.Read("DKCMasterGnawty.dynamicinfo", log, out DynamicInfo? dynamicInfo);
+        direader.Read("SMWVanillaBoo.dynamicinfo", log, out DynamicInfo? dynamicInfo1);
+
 
         LogRenderer renderer = new(Path.Combine("Logging", "LogMessages.json"));
         RawTextWrapper rawText = new();

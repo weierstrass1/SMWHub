@@ -123,7 +123,6 @@ public sealed class DynamicInfoReader
     private sealed class DynamicInfoLegacyFormatParsingContext : ParsingContext, IHaveDynamicInfo
     {
         public required DynamicInfo DynamicInfo { get; init; }
-        public bool Active { get; private set; } = false;
         private static Regex _entryRegex = FileRegexContainer.DynInfoLegacyRegex();
         private static Regex _entryTableRegex = FileRegexContainer.NumberTableRegex();
         private readonly Dictionary<string, (int, int)> _poseChunkSizes = [];
@@ -152,12 +151,12 @@ public sealed class DynamicInfoReader
 
             if (!_ifHasNext.Validate(this))
                 return false;
+            _ifHasNext.MoveToTheNextNotEmptyLine();
 
             int[]? values = setupValues();
             if (!validate())
                 return false;
 
-            Active = true;
             _poseChunkSizes.Add(id, (values![0], values[1]));
             if (!FileEnumerator.IsLastLine())
                 return true;
@@ -187,7 +186,6 @@ public sealed class DynamicInfoReader
 
             return _validateDuplicateID.Validate(this);
         }
-
         private void setupDynamicInfoPosesChunksSizes()
         {
             List<int> pcs = [];
@@ -200,16 +198,47 @@ public sealed class DynamicInfoReader
     private sealed class DynamicInfoCurrentFormatParsingContext : ParsingContext, IHaveDynamicInfo
     {
         public required DynamicInfo DynamicInfo { get; init; }
-        public bool Active { get; private set; } = false;
+        private static Regex _entryRegex = FileRegexContainer.DynInfoCurrentRegex();
         private readonly Dictionary<int, string> _currentNumberOf16x16TilesPerPose = [];
-
         public DynamicInfoCurrentFormatParsingContext(FileEnumeratorWithLog fileEnumerator) : base(fileEnumerator)
         {
+            State.AddVariable("Match", new MatchStateVariable());
+            State.AddVariable("IDs", new ValuesStateVariable());
+            AddValidator(new ValidateEntryFormat(this, FileEnumerator));
         }
 
         public override bool ProcessEntry()
         {
-            throw new NotImplementedException();
+            Match match = setupMatch();
+
+            if (!validate())
+                return false;
+
+            addValues(match);
+
+            if (!FileEnumerator.IsLastLine())
+                return true;
+
+            DynamicInfo.FromNumberOf16x16Tiles(_currentNumberOf16x16TilesPerPose);
+            return true;
+        }
+        private void addValues(Match match)
+        {
+            var idsVar = State.GetVariable<ValuesStateVariable>("IDs");
+            int[] ids = idsVar.GetFrom(match)!;
+
+            string value = $"{match.Groups["tiles"]}{match.Groups["modifier"]}";
+
+            foreach (int id in ids)
+            {
+                _currentNumberOf16x16TilesPerPose[id] = value;
+            }
+        }
+        private Match setupMatch()
+        {
+            var matchVar = State.GetVariable<MatchStateVariable>("Match");
+            Match match = matchVar.GetFrom(FileEnumerator.Current, _entryRegex)!;
+            return match;
         }
     }
 }
