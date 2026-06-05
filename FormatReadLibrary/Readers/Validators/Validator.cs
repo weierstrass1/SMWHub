@@ -3,7 +3,6 @@ namespace FormatReadLibrary.Readers.Validators;
 
 public abstract class Validator
 {
-    public virtual string MessageID => GetType().ToUpperSpacedName();
     public abstract bool Validate(IHaveState ctx);
     public Validator(IHaveState context)
     {

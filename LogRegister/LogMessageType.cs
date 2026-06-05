@@ -25,12 +25,14 @@ public sealed partial class LogMessageType
         _variables = [];
         foreach (Match match in ParameterRegex().Matches(Text))
         {
-            _variables.Add(match.Value[1..^1], new()
+            _variables.Add(match.Value.Replace("{", "").Replace("}", ""), new()
             {
                 Category = Category,
                 Start = match.Index,
                 Length = match.Length,
-                Type = SpanType.Parameter
+                Type = match.Groups["nested"].Success ?
+                    SpanType.NestedMessage :
+                    SpanType.Parameter
             });
         }
     }
@@ -53,47 +55,84 @@ public sealed partial class LogMessageType
     }
     public LogRenderResult GetMessage(ILoggingEntry logEntry)
     {
-        Validate(logEntry);
+        Dictionary<string, LogRenderResult> nestedMessages = getNestedResults(logEntry);
         var sb = new StringBuilder();
         int lastIndex = 0;
 
         List<LogSpan> spans = [_prefixSpan];
+        LogRenderResult? nestedResult;
+        int offset = 0;
 
         foreach ((string key, LogSpan span) in _variables)
         {
-            if (span.Start > lastIndex)
-            {
-                sb.Append(Text, lastIndex, span.Start - lastIndex);
-            }
+            appendTextBeforeSpan(sb, lastIndex, span);
 
-            if (!logEntry.Parameters.TryGetValue(key, out string? value))
-                value = $"{{{key}}}";
-
-            int start = sb.Length;
-
-            sb.Append(value);
-
-            spans.Add(new()
-            {
-                Category = Category,
-                Start = start,
-                Length = value.Length,
-                Type = SpanType.Parameter
-            });
-
-            lastIndex = span.Start + span.Length;
+            if (span.Type == SpanType.NestedMessage && nestedMessages.TryGetValue(key, out nestedResult))
+                offset = appendNestedResult(sb, spans, nestedResult, offset);
+            else
+                lastIndex = appendRegularSpan(logEntry, sb, spans, offset, key, span);
         }
+        appendTextAfterLastSpan(sb, lastIndex);
+        return new(Category, sb.ToString(), spans.AsReadOnly());
+    }
+    private Dictionary<string, LogRenderResult> getNestedResults(ILoggingEntry logEntry)
+    {
+        Dictionary<string, LogRenderResult> nestedMessages = [];
+        if (logEntry is ILoggingEntryWithNestedMessage loggingEntryWithNestedMessage)
+        {
+            nestedMessages = loggingEntryWithNestedMessage
+                .NestedEntries
+                .ToDictionary(ne => ne.Key, ne => GetMessage(ne.Value));
+        }
+
+        return nestedMessages;
+    }
+    private void appendTextBeforeSpan(StringBuilder sb, int lastIndex, LogSpan span)
+    {
+        if (span.Start > lastIndex)
+        {
+            sb.Append(Text, lastIndex, span.Start - lastIndex);
+        }
+    }
+    private static int appendNestedResult(StringBuilder sb, List<LogSpan> spans, LogRenderResult nestedResult, int offset)
+    {
+        nestedResult.RemoveOfType(SpanType.Prefix);
+        nestedResult.DisplaceAll(offset);
+        foreach (var s in nestedResult.Spans)
+            spans.Add(s);
+        sb.Append(nestedResult.Text);
+        offset += nestedResult.Text.Length;
+        return offset;
+    }
+    private int appendRegularSpan(ILoggingEntry logEntry, StringBuilder sb, List<LogSpan> spans, int offset, string key, LogSpan span)
+    {
+        int lastIndex;
+        if (!logEntry.Parameters.TryGetValue(key, out string? value))
+            value = $"{{{key}}}";
+
+        int start = sb.Length;
+
+        sb.Append(value);
+
+        spans.Add(new()
+        {
+            Category = Category,
+            Start = start + offset,
+            Length = value.Length,
+            Type = SpanType.Parameter
+        });
+
+        lastIndex = span.Start + span.Length;
+        return lastIndex;
+    }
+    private void appendTextAfterLastSpan(StringBuilder sb, int lastIndex)
+    {
         if (lastIndex < Text.Length)
         {
             sb.Append(Text, lastIndex, Text.Length - lastIndex);
         }
-        return new()
-        {
-            Category = Category,
-            Spans = spans.AsReadOnly(),
-            Text = sb.ToString()
-        };
     }
-    [GeneratedRegex(@"\{(\w+)\}")]
+
+    [GeneratedRegex(@"(?<nested>\{\{(\w+)\}\})|(?<normal>\{(\w+)\})")]
     private static partial Regex ParameterRegex();
 }

@@ -18,4 +18,6 @@ public static class LogMessageTypeKeys
     public const string SYNTAX_ERROR = "SYNTAX ERROR";
     public const string TITLE = "TITLE";
     public const string VALUE_EXCEEDS_LIMIT = "VALUE EXCEEDS LIMIT";
+    public const string RAW_SYNTAX_ERROR_MESSAGE = "RAW SYNTAX ERROR MESSAGE";
+    public const string REPEATED_ID = "REPEATED ID";
 }

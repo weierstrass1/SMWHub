@@ -1,5 +1,4 @@
 ﻿using LogRegister;
-using FormatReadLibrary.Logging.Categories;
 
 namespace FormatReadLibrary.Logging.LoggingRegisters;
 

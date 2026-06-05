@@ -1,23 +1,41 @@
-﻿using FormatReadLibrary.Logging.Categories;
-using LogRegister;
+﻿using LogRegister;
 
 namespace FormatReadLibrary.Logging.LoggingRegisters;
 
-public sealed class SyntaxError : ILoggingEntry
+public sealed class SyntaxError : ILoggingEntryWithNestedMessage
 {
     public bool AppearWithoutVerbose => true;
     public bool AppearInErrors => true;
     public string MessageTypeKey => LogMessageTypeKeys.SYNTAX_ERROR;
     public IReadOnlyDictionary<string, string> Parameters { get; private set; }
-    public SyntaxError(int line, string file, string lineContent, string message = "")
+    public IReadOnlyDictionary<string, ILoggingEntry> NestedEntries { get; private set; }
+    public SyntaxError(int line, string file, string lineContent, ILoggingEntry entry)
     {
+        NestedEntries = new Dictionary<string, ILoggingEntry>()
+        {
+            { "message", entry }
+        }.AsReadOnly();
+
         Parameters = new Dictionary<string, string>
         {
             { "file", $"'{file}'" },
             { "line", $"'{line+1}'" },
-            { "message", string.IsNullOrWhiteSpace(message) ?
-                "" :
-                $".\n\t\t{message}"},
+            { "lineContent", $"'{lineContent}'"   }
+        }.AsReadOnly();
+    }
+    public SyntaxError(int line, string file, string lineContent, string message = "")
+    {
+        NestedEntries = new Dictionary<string, ILoggingEntry>()
+        {
+            { "message", new LogEntry(LogMessageTypeKeys.RAW_SYNTAX_ERROR_MESSAGE, new Dictionary<string, string>(){
+                {"message",message}
+            }) }
+        }.AsReadOnly();
+
+        Parameters = new Dictionary<string, string>
+        {
+            { "file", $"'{file}'" },
+            { "line", $"'{line+1}'" },
             { "lineContent", $"'{lineContent}'"   }
         }.AsReadOnly();
     }

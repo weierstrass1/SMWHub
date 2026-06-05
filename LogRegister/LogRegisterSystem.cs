@@ -56,9 +56,11 @@ public sealed class LogRegisterSystem
     }
     public void Add(ILoggingEntry logEntry)
     {
-        _events.Add(GetMessageType(logEntry.MessageTypeKey) == _unknownMessageType ?
+        logEntry = GetMessageType(logEntry.MessageTypeKey) == _unknownMessageType ?
             new UnknownLogEntry(logEntry.MessageTypeKey) :
-            logEntry);
+            logEntry;
+        GetMessageType(logEntry.MessageTypeKey).Validate(logEntry);
+        _events.Add(logEntry);
     }
     public IReadOnlyList<ILoggingEntry> GetEntries()
     {

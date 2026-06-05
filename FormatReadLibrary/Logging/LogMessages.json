@@ -66,6 +66,13 @@
   },
   "SYNTAX ERROR": {
     "Category": "Error",
-    "Message": "\tSyntax Error in file {file}, line {line}{message}.\n\t\tLine Content: {lineContent}."
+    "Message": "\tSyntax Error in file {file}, line {line}{{message}}.\n\t\tLine Content: {lineContent}."
+  },
+  "RAW SYNTAX ERROR MESSAGE": {
+    "Category": "Error",
+    "Message": "\n\t\t{message}"
+  },
+  "REPEATED ID": {
+    "CATEG"
   }
 }
