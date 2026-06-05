@@ -1,16 +1,22 @@
 ﻿using FormatReadLibrary.Logging.LoggingRegisters;
+using FormatReadLibrary.Readers.Enumerators;
 using StateMachine;
 
 namespace FormatReadLibrary.Readers.Validators;
-[RequiresStateVariable("Values", typeof(int[]))]
-public sealed class ValidateEntryVariables(ParsingContext context, FileEnumeratorWithLog fileEnumerator, bool allowedVariables = false) : Validator(context)
+public sealed class ValidateEntryVariables(FileEnumeratorWithLog fileEnumerator, bool allowedVariables = false) : Validator()
 {
+    private static readonly VariableValidator variableValidator = new("Values", typeof(int[]));
     private readonly FileEnumeratorWithLog _fileEnumerator = fileEnumerator;
     private readonly bool _allowedVariables = allowedVariables;
-    public override bool Validate(ParsingContext ctx)
+    public override bool Validate(IHaveState ctx)
     {
+        variableValidator.Validate(ctx);
         State state = ctx.State;
         int[]? values = state.Get<int[]>("Values");
+        return Validate(values);
+    }
+    public bool Validate(int[]? values)
+    {
         if (values == null || values.Length == 0)
             return true;
         if (values.Any(v => v < 0 || v > 255))

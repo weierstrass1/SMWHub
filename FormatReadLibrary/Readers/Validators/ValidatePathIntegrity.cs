@@ -1,16 +1,17 @@
-﻿namespace FormatReadLibrary.Readers.Validators
+﻿using FormatReadLibrary.Readers.Enumerators;
+
+namespace FormatReadLibrary.Readers.Validators;
+
+public class ValidatePathIntegrity(FileEnumeratorWithLog fileEnumerator) : Validator()
 {
-    public class ValidatePathIntegrity(ParsingContext context, FileEnumeratorWithLog fileEnumerator) : Validator(context)
+    private readonly FileEnumeratorWithLog _fileEnumerator = fileEnumerator;
+    public override bool Validate(IHaveState ctx)
     {
-        private readonly FileEnumeratorWithLog _fileEnumerator = fileEnumerator;
-        public override bool Validate(ParsingContext ctx)
+        if (_fileEnumerator.Current.IndexOfAny(Path.GetInvalidPathChars()) >= 0)
         {
-            if (_fileEnumerator.Current.IndexOfAny(Path.GetInvalidPathChars()) >= 0)
-            {
-                _fileEnumerator.AddSyntaxErrorLog("Invalid path");
-                    return false;
-            }
-            return true;
+            _fileEnumerator.AddSyntaxErrorLog("Invalid path");
+                return false;
         }
+        return true;
     }
 }

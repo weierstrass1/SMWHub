@@ -1,11 +1,13 @@
-﻿namespace FormatReadLibrary.Readers.Validators;
+﻿using FormatReadLibrary.Readers.Enumerators;
+
+namespace FormatReadLibrary.Readers.Validators;
 
 [RequiresStateVariable("Start", typeof(int))]
 [RequiresStateVariable("End", typeof(int))]
-public sealed class ValidateGPSBlockLine(ParsingContext context, FileEnumeratorWithLog fileEnumerator) : Validator(context)
+public sealed class ValidateGPSBlockLine(IHaveState context, FileEnumeratorWithLog fileEnumerator) : Validator(context)
 {
     private readonly FileEnumeratorWithLog _fileEnumerator = fileEnumerator;
-    public override bool Validate(ParsingContext ctx)
+    public override bool Validate(IHaveState ctx)
     {
         int start = ctx.State.Get<int>("Start");
         int end = ctx.State.Get<int>("End");

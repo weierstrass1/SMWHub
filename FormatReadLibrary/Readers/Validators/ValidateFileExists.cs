@@ -2,14 +2,19 @@
 using LogRegister;
 using StateMachine;
 namespace FormatReadLibrary.Readers.Validators;
-[RequiresStateVariable("Filepath", typeof(string))]
-public sealed class ValidateFileExists(ParsingContext context, LogRegisterSystem log) : Validator(context)
+public sealed class ValidateFileExists(LogRegisterSystem log) : Validator()
 {
+    private readonly static VariableValidator _variableValidator = new("Filepath", typeof(string));
     private readonly LogRegisterSystem _log = log;
-    public override bool Validate(ParsingContext ctx)
+    public override bool Validate(IHaveState ctx)
     {
+        _variableValidator.Validate(ctx);
         State state = ctx.State;
         var filepath = state.Get<string>("Filepath")!;
+        return Validate(filepath);
+    }
+    public bool Validate(string filepath)
+    {
         if (!File.Exists(filepath))
         {
             _log.Add(new ResourceNotFound(filepath));

@@ -1,16 +1,13 @@
-﻿using FormatReadLibrary.Logging.Categories;
-using LogRegister;
+﻿using LogRegister;
 
 namespace FormatReadLibrary.Logging.LoggingRegisters;
 
 public sealed class DataUsage : ILoggingRegister
 {
     public bool AppearWithoutVerbose => true;
-		public bool AppearInErrors => false;
-    public ILogCategory Category => new Info();
-    public string MessageType => "DATA USAGE";
+	public bool AppearInErrors => false;
+    public LogMessageType MessageType => "DATA USAGE";
     public IReadOnlyDictionary<string, string> Parameters { get; }
-
     public DataUsage(string name, long size)
 		{
 			float banks = size / (32 * 1024f);

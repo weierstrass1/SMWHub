@@ -3,7 +3,7 @@ using LogRegister;
 using System.Collections;
 using System.Text.RegularExpressions;
 
-namespace FormatReadLibrary.Readers;
+namespace FormatReadLibrary.Readers.Enumerators;
 
 public sealed class FileReaderWithLog : IEnumerable<string>
 {

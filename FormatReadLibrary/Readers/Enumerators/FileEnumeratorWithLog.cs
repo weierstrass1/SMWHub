@@ -2,7 +2,7 @@
 using LogRegister;
 using System.Collections;
 
-namespace FormatReadLibrary.Readers;
+namespace FormatReadLibrary.Readers.Enumerators;
 public sealed class FileEnumeratorWithLog : IEnumerator<string>
 {
     private readonly FileReaderWithLog _reader;

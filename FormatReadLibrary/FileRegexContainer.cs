@@ -8,9 +8,15 @@ public static partial class FileRegexContainer
     [StringSyntax(StringSyntaxAttribute.Regex)]
     public const string RANGE_PATTERN = @"(?<ids>(?<range>(?<start>\d+)\.\.(?<end>\d+))|(?<single>\d+)|(?<multiple>\[\s*(\d+|\d+\.\.\d+)(\s*,\s*(\d+|\d+\.\.\d+))*\s*\]))";
     [StringSyntax(StringSyntaxAttribute.Regex)]
+    public const string FILE_LIST_PATTERN = @"(?<filelist>([^\s:\/\\]+(?:[\/\\][^\s:\/\\]+)*\.[A-Za-z0-9]+)(:\s*(\@\d+|[0-9a-fA-F]+)(\s((\@\d+|[0-9a-fA-F]+)))*)?(\s*,\s*([^\s:\/\\]+(?:[\/\\][^\s:\/\\]+)*\.[A-Za-z0-9]+)(:\s*(\@\d+|[0-9a-fA-F]+)(\s((\@\d+|[0-9a-fA-F]+)))*)?)*)";
+    [StringSyntax(StringSyntaxAttribute.Regex)]
     public const string FILE_PATTERN = @"(?<file>[^\s:\/\\]+(?:[\/\\][^\s:\/\\]+)*\.[A-Za-z0-9]+)";
     [StringSyntax(StringSyntaxAttribute.Regex)]
     public const string VALUES_PATTERN = @"(:\s*(?<var>(\@\d+|[0-9a-fA-F]+)(\s((\@\d+|[0-9a-fA-F]+)))*))?";
+    [GeneratedRegex(FILE_PATTERN)]
+    public static partial Regex FileRegex();
+    [GeneratedRegex(FILE_PATTERN + VALUES_PATTERN)]
+    public static partial Regex EntryFileRegex();
     [GeneratedRegex(RANGE_PATTERN)]
     public static partial Regex RangeRegex();
     [GeneratedRegex(@"\s+")]
@@ -29,8 +35,23 @@ public static partial class FileRegexContainer
     public static partial Regex NumOfTilesRegex();
     [GeneratedRegex(@"^\.(?<directives>[a-zA-Z]+)((?<start>\d+)(\.\.(?<end>\d+))?)?:? (?<values>(\$[a-fA-F0-9]{2}|\d+)(,(\$[a-fA-F0-9]{2}|\d+))*)$")]
     public static partial Regex DirectiveRegex();
-    [GeneratedRegex(@"^(?<id>[0-9A-Fa-f]+)\s" + FILE_PATTERN + VALUES_PATTERN + @"$")]
+    [GeneratedRegex(@"^(?<id>([0-9A-Fa-f]+)|\*)\s" + FILE_PATTERN + VALUES_PATTERN + @"$")]
     public static partial Regex ListEntryRegex();
     [GeneratedRegex(@"^(?<r>r|R)?(?<idstart>[a-fA-F0-9]+)(-(?<idend>[a-fA-F0-9]+))?(\s*:\s*(?<actlike>[a-fA-F0-9]+))?\s" + FILE_PATTERN + VALUES_PATTERN + @"$")]
     public static partial Regex GPSListEntryRegex();
+    [GeneratedRegex(@"([a-z])([A-Z])")]
+    private static partial Regex LowerUpperRegex();
+
+    public static string ToUpperSpacedName(this Type type)
+    {
+        string name = type.Name;
+
+        int genericIndex = name.IndexOf('`');
+        if (genericIndex >= 0)
+            name = name[..genericIndex];
+
+        name = LowerUpperRegex().Replace(name, "$1 $2");
+
+        return name.ToUpperInvariant();
+    }
 }
