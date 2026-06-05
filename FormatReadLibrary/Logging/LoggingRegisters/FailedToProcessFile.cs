@@ -7,8 +7,7 @@ public sealed class FailedToProcessFile : ILoggingEntry
 {
     public bool AppearWithoutVerbose => true;
     public bool AppearInErrors => true;
-    public ILogCategory Category => new Error();
-    public string MessageType => "FAILED TO PROCESS FILE";
+    public string MessageTypeKey => LogMessageTypeKeys.FAILED_TO_PROCESS_FILE;
     public IReadOnlyDictionary<string, string> Parameters { get; }
     public FailedToProcessFile(string filePath)
     {

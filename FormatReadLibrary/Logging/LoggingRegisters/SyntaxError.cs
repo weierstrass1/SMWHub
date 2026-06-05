@@ -7,10 +7,7 @@ public sealed class SyntaxError : ILoggingEntry
 {
     public bool AppearWithoutVerbose => true;
     public bool AppearInErrors => true;
-    public ILogCategory Category => new Error();
-
-    public string MessageType => "SYNTAX ERROR";
-
+    public string MessageTypeKey => LogMessageTypeKeys.SYNTAX_ERROR;
     public IReadOnlyDictionary<string, string> Parameters { get; private set; }
     public SyntaxError(int line, string file, string lineContent, string message = "")
     {

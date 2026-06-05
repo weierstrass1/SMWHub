@@ -5,14 +5,12 @@ namespace FormatReadLibrary.Readers.Validators;
 public sealed class ValidateEntryFormat : Validator
 {
     private readonly FileEnumeratorWithLog _fileEnumerator;
-
     public ValidateEntryFormat(IHaveState context, FileEnumeratorWithLog fileEnumerator, string variableName = "Match") : base(context)
     {
         _fileEnumerator = fileEnumerator;
-        if (!context.State.HasVariableOfType<Match>(variableName))
-            throw new KeyNotFoundException($"Missing \"{variableName}\" variable of type {getFriendlyName(typeof(Match))} in {getFriendlyName(context.GetType())}'s state.");
+        VariableValidator validator = new(variableName, typeof(Match));
+        validator.Validate(context);
     }
-
     public override bool Validate(IHaveState ctx)
     {
         Match match = ctx.State.Get<Match>("Match")!;

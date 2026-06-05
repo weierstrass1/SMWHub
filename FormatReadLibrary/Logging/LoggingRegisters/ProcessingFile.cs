@@ -7,8 +7,7 @@ public sealed class ProcessingFile : ILoggingEntry
 {
     public bool AppearWithoutVerbose => false;
     public bool AppearInErrors => true;
-    public ILogCategory Category => new Info();
-    public string MessageType => "PROCESSING FILE";
+    public string MessageTypeKey => LogMessageTypeKeys.PROCESSING_FILE;
     public IReadOnlyDictionary<string, string> Parameters { get; }
     public ProcessingFile(string filePath)
     {

@@ -6,8 +6,7 @@ public sealed class DynamicInfoWithoutChunks : ILoggingEntry
 {
     public bool AppearWithoutVerbose => true;
     public bool AppearInErrors => true;
-    public ILogCategory Category => new Categories.Error();
-    public string MessageType => "DYNAMIC INFO WITHOUT CHUNKS";
+    public string MessageTypeKey => LogMessageTypeKeys.DYNAMIC_INFO_WITHOUT_CHUNKS;
     public IReadOnlyDictionary<string, string> Parameters { get; private set; }
     public DynamicInfoWithoutChunks(string context)
     {

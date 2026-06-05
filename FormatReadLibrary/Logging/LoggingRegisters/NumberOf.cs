@@ -7,8 +7,7 @@ public sealed class NumberOf : ILoggingEntry
 {
     public bool AppearWithoutVerbose => true;
     public bool AppearInErrors => false;
-    public ILogCategory Category => new Info();
-    public string MessageType => "NUMBER OF";
+    public string MessageTypeKey => LogMessageTypeKeys.NUMBER_OF;
     public IReadOnlyDictionary<string, string> Parameters { get; }
     public NumberOf(string name, long quantity, long? size = null)
     {

@@ -34,26 +34,22 @@ public sealed partial class LogMessageType
             });
         }
     }
-    public static LogMessageType FromDTO(LogRegisterSystem log, LogMessageTypeDTO messageDTO)
+    public static LogMessageType FromDTO(LogRegisterSystem log, string category, LogMessageTypeDTO messageDTO)
     {
-        ILogCategory? cat = log.GetCategory(messageDTO.Category) ?? 
-            throw new InvalidOperationException($"Error in Message \"{messageDTO.MessageType}\": Category {messageDTO.Category} doesn't exist.");
-        LogMessageType reg = new(messageDTO.MessageType, messageDTO.Message, cat);
+        ILogCategory? cat = log.GetCategory(category) ?? 
+            throw new InvalidOperationException($"Error in Message \"{category}\": Category {messageDTO.Category} doesn't exist.");
+        LogMessageType reg = new(category, messageDTO.Message, cat);
 
         return reg;
     }
     public void Validate(ILoggingEntry entry)
     {
-        foreach (var param in entry.Parameters.Keys)
-        {
-            if (!_variables.ContainsKey(param))
-                throw new InvalidOperationException($"Parameter {param} is invalid.");
-        }
-        foreach(var vt in _variables.Keys)
-        {
-            if (!entry.Parameters.ContainsKey(vt))
-                throw new InvalidOperationException($"Parameter {vt} is missing.");
-        }
+        string? param = entry.Parameters.Keys.FirstOrDefault(p => !_variables.ContainsKey(p));
+        if (param != null)
+            throw new InvalidOperationException($"Parameter {param} is invalid.");
+        string? variable = _variables.Keys.FirstOrDefault(v => !entry.Parameters.ContainsKey(v));
+        if(variable != null)
+            throw new InvalidOperationException($"Parameter {variable} is missing.");
     }
     public LogRenderResult GetMessage(ILoggingEntry logEntry)
     {

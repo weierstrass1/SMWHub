@@ -6,7 +6,7 @@ public sealed class DataUsage : ILoggingEntry
 {
     public bool AppearWithoutVerbose => true;
 	public bool AppearInErrors => false;
-    public LogMessageType MessageType => "DATA USAGE";
+    public string MessageTypeKey => LogMessageTypeKeys.DATA_USAGE;
     public IReadOnlyDictionary<string, string> Parameters { get; }
     public DataUsage(string name, long size)
 		{

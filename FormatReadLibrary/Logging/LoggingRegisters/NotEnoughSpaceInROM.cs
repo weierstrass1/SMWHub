@@ -7,8 +7,7 @@ public sealed class NotEnoughSpaceInROM : ILoggingEntry
 {
     public bool AppearWithoutVerbose => true;
     public bool AppearInErrors => true;
-    public ILogCategory Category => new Error();
-    public string MessageType => "NOT ENOUGH SPACE IN ROM";
+    public string MessageTypeKey => LogMessageTypeKeys.NOT_ENOUGH_SPACE_IN_ROM;
     public IReadOnlyDictionary<string, string> Parameters { get; }
     public NotEnoughSpaceInROM()
     {

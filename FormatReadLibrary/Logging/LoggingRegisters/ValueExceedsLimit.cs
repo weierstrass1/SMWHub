@@ -6,8 +6,7 @@ public sealed class ValueExceedsLimit : ILoggingEntry
 {
     public bool AppearWithoutVerbose => true;
     public bool AppearInErrors => true;
-    public ILogCategory Category => new Error();
-    public string MessageType => "VALUE EXCEEDS LIMIT";
+    public string MessageTypeKey => LogMessageTypeKeys.VALUE_EXCEEDS_LIMIT;
     public IReadOnlyDictionary<string, string> Parameters { get; }
     public ValueExceedsLimit(string context, string parameter, int value, int limit)
     {

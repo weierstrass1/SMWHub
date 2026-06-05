@@ -7,8 +7,7 @@ public sealed class DynamicInfoSizeMismatch : ILoggingEntry
 {
     public bool AppearWithoutVerbose => true;
     public bool AppearInErrors => true;
-    public ILogCategory Category => new Error();
-    public string MessageType => "DYNAMIC INFO SIZE MISMATCH";
+    public string MessageTypeKey => LogMessageTypeKeys.DYNAMIC_INFO_SIZE_MISMATCH;
     public IReadOnlyDictionary<string, string> Parameters { get; }
     public DynamicInfoSizeMismatch(string contextName, long size1, long size2)
     {

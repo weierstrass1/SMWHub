@@ -8,7 +8,7 @@ public sealed class ValidateDuplicateID<TKey, TValue>(IHaveState context, FileEn
     private readonly static VariableValidator _variableValidator = new("ID", typeof(TKey));
     private readonly FileEnumeratorWithLog _fileEnumerator = fileEnumerator;
     private readonly Dictionary<TKey, TValue> _entries = entries;
-    private bool _allowMultiIDs = allowMultiIDs;
+    private readonly bool _allowMultiIDs = allowMultiIDs;
     public override bool Validate(IHaveState ctx)
     {
         _variableValidator.Validate(ctx);

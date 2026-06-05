@@ -7,8 +7,7 @@ public sealed class RemovedBufferAt : ILoggingEntry
 {
     public bool AppearWithoutVerbose => false;
     public bool AppearInErrors => false;
-    public ILogCategory Category => new Info();
-    public string MessageType => "REMOVED BUFFER AT";
+    public string MessageTypeKey => LogMessageTypeKeys.REMOVED_BUFFER_AT;
     public IReadOnlyDictionary<string, string> Parameters { get; }
     public RemovedBufferAt(long address, long size)
     {

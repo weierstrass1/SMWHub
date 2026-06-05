@@ -3,6 +3,7 @@ using FormatReadLibrary.Logging.Categories;
 using FormatReadLibrary.Logging.Wrappers;
 using FormatReadLibrary.Readers;
 using LogRegister;
+using System.Reflection;
 
 namespace SMWHub;
 public class Program
@@ -11,7 +12,11 @@ public class Program
     {
         AppDomain.CurrentDomain.ProcessExit += (_, __) => Console.ResetColor();
 
-        LogRegisterSystem log = new(Path.Combine("Logging", "LogMessages.json"));
+        string loggingFilePath = Path.Combine("Logging", "LogMessages.json");
+        string loggingFileContent = File.ReadAllText(loggingFilePath);
+        Assembly categoryAssembly = typeof(Error).Assembly;
+
+        LogRegisterSystem log = new(loggingFileContent, categoryAssembly);
 
         CommonListReader reader = new([
             new("Sprites","Sprites"),
@@ -29,14 +34,15 @@ public class Program
         direader.Read("DKCMasterGnawty.dynamicinfo", log, out DynamicInfo? dynamicInfo);
         direader.Read("SMWVanillaBoo.dynamicinfo", log, out DynamicInfo? dynamicInfo1);
 
-
-        LogRenderer renderer = new(log);
         RawTextWrapper rawText = new();
         MultiWrapper mw = new();
         mw.Actions += ConsoleWrapper.RenderAction;
         mw.Actions += rawText.RenderAction;
         bool hasErrors = log.HasLogsOfType<Error>();
-        renderer.RenderAll(log.GetEntries(), mw.RenderAction, error: false, verbose: true);
+
+        LogRenderer renderer = new(log, mw.RenderAction);
+        renderer.RenderAll(log.GetEntries(), error: false, verbose: true);
+
         File.WriteAllText("log.txt", rawText.ToString());
         Console.ResetColor();
         Console.Read();

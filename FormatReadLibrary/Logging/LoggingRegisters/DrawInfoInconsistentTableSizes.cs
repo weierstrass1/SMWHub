@@ -7,8 +7,7 @@ public sealed class DrawInfoInconsistentTableSizes : ILoggingEntry
 {
     public bool AppearWithoutVerbose => true;
     public bool AppearInErrors => true;
-    public ILogCategory Category => new Error();
-    public string MessageType => "DRAW INFO INCONSISTENT TABLE SIZES";
+    public string MessageTypeKey => LogMessageTypeKeys.DRAW_INFO_INCONSISTENT_TABLE_SIZES;
     public IReadOnlyDictionary<string, string> Parameters { get; }
     public DrawInfoInconsistentTableSizes(string context)
     {

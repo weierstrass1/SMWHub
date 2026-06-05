@@ -6,8 +6,7 @@ public sealed class Title : ILoggingEntry
 {
     public bool AppearWithoutVerbose { get; set; } = false;
     public bool AppearInErrors { get; set; } = false;
-    public ILogCategory Category => new Categories.Title();
-    public string MessageType => "TITLE";
+    public string MessageTypeKey => LogMessageTypeKeys.TITLE;
     public IReadOnlyDictionary<string, string> Parameters { get; }
     public Title(string title)
     {

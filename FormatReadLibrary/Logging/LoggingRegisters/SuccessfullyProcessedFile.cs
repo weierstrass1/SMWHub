@@ -7,8 +7,7 @@ public sealed class SuccessfullyProcessedFile : ILoggingEntry
 {
     public bool AppearWithoutVerbose => false;
     public bool AppearInErrors => false;
-    public ILogCategory Category => new Success();
-    public string MessageType => "SUCCESSFULLY PROCESSED FILE";
+    public string MessageTypeKey => LogMessageTypeKeys.SUCCESSFULLY_PROCESSED_FILE;
     public IReadOnlyDictionary<string, string> Parameters { get; }
     public SuccessfullyProcessedFile(string filePath)
     {

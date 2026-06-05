@@ -7,8 +7,7 @@ public sealed class InsertedPaletteEffect : ILoggingEntry
 {
     public bool AppearWithoutVerbose => false;
     public bool AppearInErrors => false;
-    public ILogCategory Category => new Info();
-    public string MessageType => "PALETTE EFFECT COLLECTION INSERTED";
+    public string MessageTypeKey => LogMessageTypeKeys.PALETTE_EFFECT_COLLECTION_INSERTED;
     public IReadOnlyDictionary<string, string> Parameters { get; }
     public InsertedPaletteEffect(string name, int length)
     {

@@ -7,8 +7,7 @@ public sealed class FileIsToBig : ILoggingEntry
 {
     public bool AppearWithoutVerbose => true;
     public bool AppearInErrors => true;
-    public ILogCategory Category => new Error();
-    public string MessageType => "FILE IS TOO BIG";
+    public string MessageTypeKey => LogMessageTypeKeys.FILE_IS_TOO_BIG;
     public IReadOnlyDictionary<string, string> Parameters { get; }
     public FileIsToBig(string filePath, long fileSize, long maxSize)
     {

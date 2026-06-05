@@ -7,8 +7,7 @@ public sealed class SyntaxErrorMessage : ILoggingEntry
 {
     public bool AppearWithoutVerbose => true;
     public bool AppearInErrors => true;
-    public ILogCategory Category => new Error();
-    public string MessageType { get; private set; }
+    public string MessageTypeKey { get; private set; }
     public IReadOnlyDictionary<string, string> Parameters { get; private set; }
     public SyntaxErrorMessage(string messageType)
     {
