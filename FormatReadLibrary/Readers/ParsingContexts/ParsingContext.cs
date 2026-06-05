@@ -1,4 +1,4 @@
-﻿using FormatReadLibrary.Readers.Enumerators;
+﻿using FormatReadLibrary.Logging.Enumerators;
 using FormatReadLibrary.Readers.Validators;
 
 namespace FormatReadLibrary.Readers.ParsingContexts;

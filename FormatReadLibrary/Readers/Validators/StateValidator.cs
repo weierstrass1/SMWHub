@@ -15,13 +15,13 @@ public abstract class StateValidator : IHaveState
     {
         _validators.Add(validator);
     }
-    protected virtual bool validate()
+    protected virtual ValidationResult validate()
     {
+        ValidationResult result = new();
         foreach (var validator in _validators)
         {
-            if (!validator.Validate(this))
-                return false;
+            result.Merge(validator.Validate(this));
         }
-        return true;
+        return result;
     }
 }

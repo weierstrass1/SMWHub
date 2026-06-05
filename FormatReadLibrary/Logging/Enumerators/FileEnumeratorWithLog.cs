@@ -2,10 +2,11 @@
 using LogRegister;
 using System.Collections;
 
-namespace FormatReadLibrary.Readers.Enumerators;
+namespace FormatReadLibrary.Logging.Enumerators;
 public sealed class FileEnumeratorWithLog : IEnumerator<string>
 {
     private readonly FileReaderWithLog _reader;
+    public string Path => _reader.Path;
     public LogRegisterSystem Log => _reader.Log;
     public int LineIndex { get; private set; }
     public string Current
@@ -33,14 +34,6 @@ public sealed class FileEnumeratorWithLog : IEnumerator<string>
         _minLimit = Math.Max(0, minLimit);
         _maxLimit = Math.Min(reader.Length - 1, maxLimit);
         LineIndex = _minLimit - 1;
-    }
-    public void AddSyntaxErrorLog(string message = "")
-    {
-        _reader.AddLog(LineIndex , (i, path, line) => new SyntaxError(i, path, line, message));
-    }
-    public void AddLog(Func<int, string, string, ILoggingEntry> entryFunc)
-    {
-        _reader.AddLog(LineIndex, entryFunc);
     }
     public bool MoveNext()
     {

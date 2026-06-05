@@ -1,5 +1,5 @@
 ﻿using FormatReadLibrary.Entries;
-using FormatReadLibrary.Readers.Enumerators;
+using FormatReadLibrary.Logging.Enumerators;
 using LogRegister;
 
 namespace FormatReadLibrary.Readers;

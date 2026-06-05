@@ -1,18 +1,17 @@
-﻿using FormatReadLibrary.Readers.Enumerators;
+﻿using FormatReadLibrary.Logging;
+using FormatReadLibrary.Logging.Enumerators;
 
 namespace FormatReadLibrary.Readers.Validators;
 
-public class ValidateIfHasNext(IHaveState context, FileEnumeratorWithLog fileEnumerator) : Validator(context)
+public class ValidateIfHasNext(FileEnumeratorWithLog fileEnumerator) : Validator()
 {
     private readonly FileEnumeratorWithLog _fileEnumerator = fileEnumerator;
-    public override bool Validate(IHaveState ctx)
+    public override ValidationResult Validate(IHaveState ctx)
     {
+        ValidationResult validationResult = new();
         if (_fileEnumerator.IsLastLine())
-        {
-            _fileEnumerator.AddSyntaxErrorLog("Expected more entries in the file, but reached the end");
-            return false;
-        }
-        return true;
+            validationResult.AddError(ValidatorMessagetypeKeys.EOF);
+        return validationResult;
     }
     public void MoveToTheNextNotEmptyLine()
     {

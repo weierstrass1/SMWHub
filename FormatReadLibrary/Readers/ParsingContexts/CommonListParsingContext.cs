@@ -1,5 +1,5 @@
 ﻿using FormatReadLibrary.Entries;
-using FormatReadLibrary.Readers.Enumerators;
+using FormatReadLibrary.Logging.Enumerators;
 using FormatReadLibrary.Readers.ParsingContexts;
 using FormatReadLibrary.Readers.StateVariables;
 using FormatReadLibrary.Readers.Validators;

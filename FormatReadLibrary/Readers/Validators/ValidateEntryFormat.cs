@@ -1,24 +1,22 @@
-﻿using FormatReadLibrary.Readers.Enumerators;
+﻿using FormatReadLibrary.Logging;
+using FormatReadLibrary.Readers.Enumerators;
 using System.Text.RegularExpressions;
 
 namespace FormatReadLibrary.Readers.Validators;
 public sealed class ValidateEntryFormat : Validator
 {
-    private readonly FileEnumeratorWithLog _fileEnumerator;
-    public ValidateEntryFormat(IHaveState context, FileEnumeratorWithLog fileEnumerator, string variableName = "Match") : base(context)
+    public ValidateEntryFormat(IHaveState context, string variableName = "Match") : base()
     {
-        _fileEnumerator = fileEnumerator;
         VariableValidator validator = new(variableName, typeof(Match));
         validator.Validate(context);
     }
-    public override bool Validate(IHaveState ctx)
+    public override ValidationResult Validate(IHaveState ctx)
     {
+        ValidationResult validationResult = new();
         Match match = ctx.State.Get<Match>("Match")!;
         if (!match.Success)
-        {
-            _fileEnumerator.AddSyntaxErrorLog("Invalid Entry");
-            return false;
-        }
-        return true;
+            validationResult.AddError(ValidatorMessagetypeKeys.INVALID_ENTRY_FORMAT);
+
+        return validationResult;
     }
 }

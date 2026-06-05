@@ -3,7 +3,7 @@ using LogRegister;
 using System.Collections;
 using System.Text.RegularExpressions;
 
-namespace FormatReadLibrary.Readers.Enumerators;
+namespace FormatReadLibrary.Logging.Enumerators;
 
 public sealed class FileReaderWithLog : IEnumerable<string>
 {
@@ -13,23 +13,19 @@ public sealed class FileReaderWithLog : IEnumerable<string>
     }
     public int Length => _fileContentLines.Length;
     public readonly LogRegisterSystem Log;
-    private readonly string _path;
+    public readonly string Path;
     private readonly string[] _fileContentLines;
     public FileReaderWithLog(string path, LogRegisterSystem log)
     {
         Log = log;
-        _path = path;
+        Path = path;
         _fileContentLines = FileUtils.CleanFileContent(path).Split('\n');
     }
     public FileReaderWithLog(string name, string content, LogRegisterSystem log)
     {
         Log = log;
-        _path = Path.Combine("internal", name);
+        Path = System.IO.Path.Combine("internal", name);
         _fileContentLines = FileUtils.CleanString(content).Split('\n');
-    }
-    public void AddLog(int i ,Func<int, string, string, ILoggingEntry> entryFunc)
-    {
-        Log.Add(entryFunc(i, _path, _fileContentLines[i]));
     }
     public IEnumerator<string> GetEnumerator()
     {
@@ -86,12 +82,12 @@ public sealed class FileReaderWithLog : IEnumerable<string>
         id = getID(currentLine);
         if (enumerators.ContainsKey(id))
         {
-            Log.Add(new SyntaxError(i, _path, currentLine, $"Repeated Section {id}"));
+            Log.Add(new SyntaxError(i, Path, currentLine, $"Repeated Section {id}"));
             return false;
         }
         if (section == null && lastNotEmptyLine >= 0)
         {
-            Log.Add(new SyntaxError(i, _path, currentLine, "\"Section doesn't contain title\""));
+            Log.Add(new SyntaxError(i, Path, currentLine, "\"Section doesn't contain title\""));
             return false;
         }
         if (section != null && lastNotEmptyLine >= 0)

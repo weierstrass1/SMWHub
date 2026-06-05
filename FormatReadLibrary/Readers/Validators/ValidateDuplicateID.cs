@@ -1,28 +1,40 @@
-﻿using FormatReadLibrary.Readers.Enumerators;
+﻿using FormatReadLibrary.Logging;
 using StateMachine;
 
 namespace FormatReadLibrary.Readers.Validators;
 
-public sealed class ValidateDuplicateID<TKey, TValue>(IHaveState context, FileEnumeratorWithLog fileEnumerator, Dictionary<TKey, TValue> entries, bool allowMultiIDs = false) : Validator(context) where TKey : notnull
+public sealed class ValidateDuplicateID<TKey, TValue> : Validator where TKey : notnull
 {
     private readonly static VariableValidator _variableValidator = new("ID", typeof(TKey));
-    private readonly FileEnumeratorWithLog _fileEnumerator = fileEnumerator;
-    private readonly Dictionary<TKey, TValue> _entries = entries;
-    private readonly bool _allowMultiIDs = allowMultiIDs;
-    public override bool Validate(IHaveState ctx)
+    private readonly Dictionary<TKey, TValue> _entries;
+    private readonly Func<TKey, string> _format;
+    private readonly bool _allowMultiIDs;
+    public ValidateDuplicateID(Dictionary<TKey, TValue> entries, bool allowMultiIDs = false) : base()
+    {
+        _entries = entries;
+        _allowMultiIDs = allowMultiIDs;
+        _format = key => key.ToString()!;
+    }
+    public ValidateDuplicateID(Dictionary<TKey, TValue> entries, Func<TKey, string> format, bool allowMultiIDs = false) : base()
+    {
+        _entries = entries;
+        _allowMultiIDs = allowMultiIDs;
+        _format = format;
+    }
+
+    public override ValidationResult Validate(IHaveState ctx)
     {
         _variableValidator.Validate(ctx);
         State state = ctx.State;
         var id = state.Get<TKey>("ID")!;
         return Validate(id);
     }
-    public bool Validate(TKey id)
+    public ValidationResult Validate(TKey id)
     {
+        ValidationResult validationResult = new();
         if (!_allowMultiIDs && _entries.ContainsKey(id))
-        {
-            _fileEnumerator.AddSyntaxErrorLog("Repeated ID");
-            return false;
-        }
-        return true;
+            validationResult.AddError(ValidatorMessagetypeKeys.REPEATED_ID, new() { { "id", _format(id) } });
+
+        return validationResult;
     }
 }

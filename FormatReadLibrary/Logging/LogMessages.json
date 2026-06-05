@@ -73,6 +73,55 @@
     "Message": "\n\t\t{message}"
   },
   "REPEATED ID": {
-    "CATEG"
+    "Category": "Error",
+    "Message": "\n\t\tID {id} is Repeated"
+  },
+  "INVALID ENTRY FORMAT": {
+    "Category": "Error",
+    "Message": "\n\t\tEntry {entry} has invalid format."
+  },
+  "ID SURPASS LIMIT": {
+    "Category": "Error",
+    "Message": "\n\t\tID {id} is over the maximum value ({maxID})"
+  },
+  "PARAMETER OUT OF RANGE": {
+    "Category": "Error",
+    "Message": "\n\t\tParameter {parameter}{value} ({valueHex}) is out of range. Values must be between {minLimit} and {maxLimit} ([{minLimitHex}-{maxLimitHex}])"
+  },
+  "LIST DOESNT ALLOW PARAMETERS": {
+    "Category": "Error",
+    "Message": "\n\t\tThis list doesn't allow parameters"
+  },
+  "INVALID GPS BLOCK LINE": {
+    "Category": "Error",
+    "Message": "\n\t\tInvalid GPS Block Line Range ({start}-{end})"
+  },
+  "EOF": {
+    "Category": "Error",
+    "Message": "\n\t\tUnexpected end of file (EOF). More content was expected but the file ended prematurely"
+  },
+  "INVALID PATH": {
+    "Category": "Error",
+    "Message": "\n\t\tInvalid Path {path}"
+  },
+  "VALUES SET ALLOW 1 VALUE": {
+    "Category": "Error",
+    "Message": "\n\t\tYou Should use 1 value"
+  },
+  "VALUES SET ALLOW N VALUES": {
+    "Category": "Error",
+    "Message": "\n\t\tYou Should use {size} values"
+  },
+  "VALUES SET ALLOW BETWEEN N AND M VALUES": {
+    "Category": "Error",
+    "Message": "\n\t\tYou Should use between {minSize} and {maxSize} values"
+  },
+  "MISSING TABLE INITIATOR": {
+    "Category": "Error",
+    "Message": "\n\t\tTable must start with {initiator}"
+  },
+  "UNEXPECTED TABLE INITIATOR": {
+    "Category": "Error",
+    "Message": "\n\t\tTable start with {unexpected} and must start with {initiator}"
   }
 }

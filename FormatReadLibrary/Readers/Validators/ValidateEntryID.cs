@@ -1,27 +1,28 @@
-﻿using FormatReadLibrary.Readers.Enumerators;
+﻿using FormatReadLibrary.Logging;
+using FormatReadLibrary.Readers.Enumerators;
 using StateMachine;
 
 namespace FormatReadLibrary.Readers.Validators;
-public sealed class ValidateEntryID(FileEnumeratorWithLog fileEnumerator, int maxID = 255) : Validator()
+public sealed class ValidateEntryID(int maxID = 255) : Validator()
 {
     private static readonly VariableValidator _variableValidator = new("ID", typeof(int?));
-    private readonly FileEnumeratorWithLog _fileEnumerator = fileEnumerator;
     private readonly int _maxID = maxID;
-    public override bool Validate(IHaveState ctx)
+    public override ValidationResult Validate(IHaveState ctx)
     {
         _variableValidator.Validate(ctx);
         State state = ctx.State;
         var id = state.Get<int>("ID")!;
         return Validate(id);
     }
-    public bool Validate(int id)
+    public ValidationResult Validate(int id)
     {
+        ValidationResult validationResult = new();
         if (id > _maxID)
-        {
-            _fileEnumerator.AddSyntaxErrorLog($"ID is over the maximum value ({_maxID:X2})");
-            return false;
-        }
+            validationResult.AddError(ValidatorMessagetypeKeys.ID_SURPASS_LIMIT, new() { 
+                { "id", id.ToString("X2") },
+                { "maxID", _maxID.ToString("X2")}
+            });
 
-        return true;
+        return validationResult;
     }
 }

@@ -1,4 +1,4 @@
-﻿using FormatReadLibrary.Readers.Enumerators;
+﻿using FormatReadLibrary.Logging;
 
 namespace FormatReadLibrary.Readers.Validators;
 
@@ -9,18 +9,28 @@ public enum TableValueSize
     dl,
     dd
 }
-internal class ValidateTableValueSize(IHaveState context, FileEnumeratorWithLog fileEnumerator, TableValueSize valueSize) : Validator(context)
+public class ValidateTableValueSize(Func<string> getter, TableValueSize valueSize) : Validator()
 {
-    private readonly FileEnumeratorWithLog _fileEnumerator = fileEnumerator;
+    private readonly Func<string> _getter = getter;
     private readonly TableValueSize _valueSize = valueSize;
-    public override bool Validate(IHaveState ctx)
+    public override ValidationResult Validate(IHaveState ctx)
     {
+        ValidationResult validationResult = new();
         string name = _valueSize.ToString();
-        if (_fileEnumerator.Current.Length > 1 && _fileEnumerator.Current[0..2] != name)
-        {
-            _fileEnumerator.AddSyntaxErrorLog($"Should use {name}");
-            return false;
-        }
-        return true;
+        string line = _getter();
+        if (string.IsNullOrWhiteSpace(line) ||
+            line.Length < 2 ||
+            string.IsNullOrWhiteSpace(line[0..2]))
+            validationResult.AddError(ValidatorMessagetypeKeys.MISSING_TABLE_INITIATOR, new()
+            {
+                {"initiator", name}
+            });
+        else if (line.Length > 1 && line[0..2] != name)
+            validationResult.AddError(ValidatorMessagetypeKeys.UNEXPECTED_TABLE_INITIATOR, new()
+            {
+                {"unexpected",  $"'{line[0..2]}'"},
+                {"initiator", name}
+            });
+        return validationResult;
     }
 }

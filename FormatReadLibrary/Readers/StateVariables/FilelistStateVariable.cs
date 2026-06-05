@@ -1,4 +1,4 @@
-﻿using FormatReadLibrary.Readers.Enumerators;
+﻿using FormatReadLibrary.Logging.Enumerators;
 using StateMachine;
 using System.Text.RegularExpressions;
 

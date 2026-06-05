@@ -3,7 +3,7 @@ namespace FormatReadLibrary.Readers.Validators;
 
 public abstract class Validator
 {
-    public abstract bool Validate(IHaveState ctx);
+    public abstract ValidationResult Validate(IHaveState ctx);
     public Validator(IHaveState context)
     {
         var requirements =

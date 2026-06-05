@@ -1,17 +1,20 @@
-﻿using FormatReadLibrary.Readers.Enumerators;
+﻿using FormatReadLibrary.Logging;
+using StateMachine;
 
 namespace FormatReadLibrary.Readers.Validators;
-
-public class ValidatePathIntegrity(FileEnumeratorWithLog fileEnumerator) : Validator()
+[RequiresStateVariable("Filepath", typeof(string))]
+public class ValidatePathIntegrity(IHaveState ctx) : Validator(ctx)
 {
-    private readonly FileEnumeratorWithLog _fileEnumerator = fileEnumerator;
-    public override bool Validate(IHaveState ctx)
+    public override ValidationResult Validate(IHaveState ctx)
     {
-        if (_fileEnumerator.Current.IndexOfAny(Path.GetInvalidPathChars()) >= 0)
-        {
-            _fileEnumerator.AddSyntaxErrorLog("Invalid path");
-                return false;
-        }
-        return true;
+        ValidationResult validationResult = new();
+        State state = ctx.State;
+        var filepath = state.Get<string>("Filepath")!;
+        if (filepath.IndexOfAny(Path.GetInvalidPathChars()) >= 0)
+            validationResult.AddError(ValidatorMessagetypeKeys.INVALID_PATH, new()
+            {
+                { "path", $"'{filepath}'"}
+            });
+        return validationResult;
     }
 }

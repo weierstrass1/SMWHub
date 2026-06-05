@@ -1,4 +1,4 @@
-﻿using FormatReadLibrary.Readers.Enumerators;
+﻿using FormatReadLibrary.Logging.Enumerators;
 using FormatReadLibrary.Readers.Validators;
 using StateMachine;
 using System.Text.RegularExpressions;
@@ -12,7 +12,7 @@ public class FilepathStateVariable : StateValidator, IStateVariable<string>
     object? IStateVariable.Value { get => Value; set => Value = (string?)value; }
     private readonly ValidatePathIntegrity _validatePathIntegrity;
     private readonly ValidateFileExists _validateFileExists;
-    private readonly ValidateEntryVariables _validateEntryVariables;
+    private readonly ValidateEntryParameters _validateEntryVariables;
     public FilepathStateVariable(FileEnumeratorWithLog fileEnumerator, bool allowedVariables)
     {
         _validatePathIntegrity = new(fileEnumerator);
