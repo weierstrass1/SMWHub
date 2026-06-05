@@ -6,7 +6,6 @@ public struct LogRenderResult
     public ILogCategory Category;
     public string Text;
     public IReadOnlyList<LogSpan> Spans;
-
     public readonly void Render(LogRenderAction action, bool mustWrite = false)
     {
         int cursor = 0;

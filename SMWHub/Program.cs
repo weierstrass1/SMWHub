@@ -11,7 +11,7 @@ public class Program
     {
         AppDomain.CurrentDomain.ProcessExit += (_, __) => Console.ResetColor();
 
-        LogRegisterSystem log = new();
+        LogRegisterSystem log = new(Path.Combine("Logging", "LogMessages.json"));
 
         CommonListReader reader = new([
             new("Sprites","Sprites"),
@@ -30,13 +30,13 @@ public class Program
         direader.Read("SMWVanillaBoo.dynamicinfo", log, out DynamicInfo? dynamicInfo1);
 
 
-        LogRenderer renderer = new(Path.Combine("Logging", "LogMessages.json"));
+        LogRenderer renderer = new(log);
         RawTextWrapper rawText = new();
         MultiWrapper mw = new();
         mw.Actions += ConsoleWrapper.RenderAction;
         mw.Actions += rawText.RenderAction;
         bool hasErrors = log.HasLogsOfType<Error>();
-        renderer.RenderAll(log.GetRegisters(), mw.RenderAction, error: false, verbose: true);
+        renderer.RenderAll(log.GetEntries(), mw.RenderAction, error: false, verbose: true);
         File.WriteAllText("log.txt", rawText.ToString());
         Console.ResetColor();
         Console.Read();

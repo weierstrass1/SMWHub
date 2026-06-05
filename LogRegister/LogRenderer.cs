@@ -1,17 +1,19 @@
 ﻿namespace LogRegister;
 
-public sealed class LogRenderer
+public sealed class LogRenderer(LogRegisterSystem log)
 {
-    public void RenderAll(IEnumerable<ILoggingRegister> logRegister, LogRenderAction action, bool verbose = false, bool error = false)
+    private readonly LogRegisterSystem _log = log;
+    public void RenderAll(IEnumerable<ILoggingEntry> logEntry, LogRenderAction action, bool verbose = false, bool error = false)
     {
-        foreach (var log in logRegister)
+        foreach (var log in logEntry)
         {
             var result = Render(log);
             result.Render(action, mustWrite: (!error && (verbose || log.AppearWithoutVerbose)) || (error && log.AppearInErrors));
         }
     }
-    public LogRenderResult Render(ILoggingRegister logRegister)
+    public LogRenderResult Render(ILoggingEntry logEntry)
     {
-        return logRegister.MessageType.GetMessage(logRegister);
+        LogMessageType messageType = _log.GetMessageType(logEntry.MessageTypeKey);
+        return messageType.GetMessage(logEntry);
     }
 }

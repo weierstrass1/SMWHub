@@ -12,7 +12,7 @@ public sealed partial class DynamicInfoReader
     private sealed class DynamicInfoCurrentFormatParsingContext : ParsingContext
     {
         public required DynamicInfo DynamicInfo { get; init; }
-        private static Regex _entryRegex = FileRegexContainer.DynInfoCurrentRegex();
+        private readonly static Regex _entryRegex = FileRegexContainer.DynInfoCurrentRegex();
         private readonly Dictionary<int, string> _currentNumberOf16x16TilesPerPose = [];
         public DynamicInfoCurrentFormatParsingContext(FileEnumeratorWithLog fileEnumerator) : base(fileEnumerator)
         {

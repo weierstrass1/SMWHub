@@ -10,6 +10,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Configs\Configs.csproj" />
+    <ProjectReference Include="..\LogRegister\LogRegister.csproj" />
     <ProjectReference Include="..\ResourceManagement\ResourceManagement.csproj" />
     <ProjectReference Include="..\StateMachine\StateMachine.csproj" />
   </ItemGroup>

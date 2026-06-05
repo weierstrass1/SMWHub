@@ -2,7 +2,7 @@
 
 namespace FormatReadLibrary.Logging.LoggingRegisters;
 
-public sealed class DataUsage : ILoggingRegister
+public sealed class DataUsage : ILoggingEntry
 {
     public bool AppearWithoutVerbose => true;
 	public bool AppearInErrors => false;

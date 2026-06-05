@@ -1,13 +1,12 @@
-﻿namespace LogRegister;
+﻿using Newtonsoft.Json;
+
+namespace LogRegister;
 public sealed class LogMessageTypeDTO
 {
-    public string Category { get; set; }
-    public string Message { get; set; }
-    public string MessageType { get; set; }
-    public LogMessageDTOVariableType[] variables;
-}
-public sealed class LogMessageDTOVariableType
-{
-    public string Name;
-    public string Type;
+    [JsonProperty(Required = Required.Always)]
+    public required string Category { get; set; }
+    [JsonProperty(Required = Required.Always)]
+    public required string Message { get; set; }
+    [JsonProperty(Required = Required.Always)]
+    public required string MessageType { get; set; }
 }

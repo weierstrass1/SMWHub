@@ -17,6 +17,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ResourceManagement", "Resou
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Configs", "Configs\Configs.csproj", "{82AD541C-A951-407B-A822-676419B29535}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LogRegister", "LogRegister\LogRegister.csproj", "{C929F844-A184-B1D7-9891-79E39E0F82B6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -51,6 +53,10 @@ Global
 		{82AD541C-A951-407B-A822-676419B29535}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{82AD541C-A951-407B-A822-676419B29535}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{82AD541C-A951-407B-A822-676419B29535}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C929F844-A184-B1D7-9891-79E39E0F82B6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C929F844-A184-B1D7-9891-79E39E0F82B6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C929F844-A184-B1D7-9891-79E39E0F82B6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C929F844-A184-B1D7-9891-79E39E0F82B6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

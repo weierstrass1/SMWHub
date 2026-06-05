@@ -38,9 +38,9 @@ public sealed class FileEnumeratorWithLog : IEnumerator<string>
     {
         _reader.AddLog(LineIndex , (i, path, line) => new SyntaxError(i, path, line, message));
     }
-    public void AddLog(Func<int, string, string, ILoggingRegister> registerFunc)
+    public void AddLog(Func<int, string, string, ILoggingEntry> entryFunc)
     {
-        _reader.AddLog(LineIndex, registerFunc);
+        _reader.AddLog(LineIndex, entryFunc);
     }
     public bool MoveNext()
     {

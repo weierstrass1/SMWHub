@@ -2,7 +2,7 @@
 
 namespace FormatReadLibrary.Logging.LoggingRegisters;
 
-public sealed class Title : ILoggingRegister
+public sealed class Title : ILoggingEntry
 {
     public bool AppearWithoutVerbose { get; set; } = false;
     public bool AppearInErrors { get; set; } = false;

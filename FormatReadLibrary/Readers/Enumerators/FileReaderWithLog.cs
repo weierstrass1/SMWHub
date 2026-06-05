@@ -27,9 +27,9 @@ public sealed class FileReaderWithLog : IEnumerable<string>
         _path = Path.Combine("internal", name);
         _fileContentLines = FileUtils.CleanString(content).Split('\n');
     }
-    public void AddLog(int i ,Func<int, string, string, ILoggingRegister> registerFunc)
+    public void AddLog(int i ,Func<int, string, string, ILoggingEntry> entryFunc)
     {
-        Log.Add(registerFunc(i, _path, _fileContentLines[i]));
+        Log.Add(entryFunc(i, _path, _fileContentLines[i]));
     }
     public IEnumerator<string> GetEnumerator()
     {
@@ -59,7 +59,6 @@ public sealed class FileReaderWithLog : IEnumerable<string>
         string? section = null;
         string currentLine;
         int i;
-        string id;
         int lastNotEmptyLine = -1;
         for (i = 0; i < Length; i++)
         {
@@ -71,14 +70,14 @@ public sealed class FileReaderWithLog : IEnumerable<string>
                 lastNotEmptyLine = i;
                 continue;
             }
-            if(!processSection(enumerators, getID, sectionStart, section, currentLine, lastNotEmptyLine, i, out id, skipTitle))
+            if(!processSection(enumerators, getID, sectionStart, section, currentLine, lastNotEmptyLine, i, out string id, skipTitle))
                 return false;
             section = id;
             sectionStart = i;
             lastNotEmptyLine = -1;
         }
         currentLine = _fileContentLines[lastNotEmptyLine];
-        return processSection(enumerators, getID, sectionStart, section, currentLine, lastNotEmptyLine, lastNotEmptyLine, out id, skipTitle);
+        return processSection(enumerators, getID, sectionStart, section, currentLine, lastNotEmptyLine, lastNotEmptyLine, out _, skipTitle);
     }
     private bool processSection(Dictionary<string, FileEnumeratorWithLog> enumerators, Func<string, string> getID, 
         int sectionStart, string? section, string currentLine, int lastNotEmptyLine, 

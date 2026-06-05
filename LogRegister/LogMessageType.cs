@@ -1,77 +1,77 @@
-﻿using Microsoft.Win32;
-using System.Text;
+﻿using System.Text;
 using System.Text.RegularExpressions;
 
 namespace LogRegister;
 
-public sealed partial class LogMessageType(string type, string text, IDictionary<string, LogMessageVariableType> variableTypes)
+public sealed partial class LogMessageType
 {
-    public required ILogCategory Category { get; init; }
-    public string Type { get; private set; } = type;
-    public string Text { get; private set; } = text;
-    private readonly IDictionary<string, LogMessageVariableType> _variableTypes = variableTypes;
+    public string Key { get; private set; }
+    public string Text { get; private set; }
+    public ILogCategory Category { get; private init; }
+    private LogSpan _prefixSpan;
+    private readonly Dictionary<string, LogSpan> _variables;
+    public LogMessageType(string key, string text, ILogCategory category)
+    {
+        Key = key;
+        Text = $"[{Key}]: {text}";
+        Category = category;
+        _prefixSpan = new()
+        {
+            Category = Category,
+            Start = 0,
+            Length = Key.Length + 4,
+            Type = SpanType.Prefix
+        };
+        _variables = [];
+        foreach (Match match in ParameterRegex().Matches(Text))
+        {
+            _variables.Add(match.Value[1..^1], new()
+            {
+                Category = Category,
+                Start = match.Index,
+                Length = match.Length,
+                Type = SpanType.Parameter
+            });
+        }
+    }
     public static LogMessageType FromDTO(LogRegisterSystem log, LogMessageTypeDTO messageDTO)
     {
-        ILogCategory? cat = log.GetCategory(messageDTO.Category);
-        if (cat == null)
+        ILogCategory? cat = log.GetCategory(messageDTO.Category) ?? 
             throw new InvalidOperationException($"Error in Message \"{messageDTO.MessageType}\": Category {messageDTO.Category} doesn't exist.");
-
-        IDictionary<string, LogMessageVariableType> vars = messageDTO
-            .variables
-            .Select(v =>
-            {
-                return log.CreateVariableType(v.Name, v.Type);
-            })
-            .ToDictionary(v => v.Name, v => v);
-        LogMessageType reg = new(messageDTO.MessageType, messageDTO.Message, vars)
-        {
-            Category = cat
-        };
+        LogMessageType reg = new(messageDTO.MessageType, messageDTO.Message, cat);
 
         return reg;
     }
-    public void Validate(ILoggingRegister register)
+    public void Validate(ILoggingEntry entry)
     {
-        foreach (var param in register.Parameters.Values)
+        foreach (var param in entry.Parameters.Keys)
         {
-            if (!_variableTypes.ContainsKey(param.Name))
-                throw new InvalidOperationException($"Parameter {param.Name} is invalid.");
+            if (!_variables.ContainsKey(param))
+                throw new InvalidOperationException($"Parameter {param} is invalid.");
         }
-        foreach(var vt in _variableTypes.Values)
+        foreach(var vt in _variables.Keys)
         {
-            if (!register.Parameters.ContainsKey(vt.Name))
-                throw new InvalidOperationException($"Parameter {vt.Name} of type {vt.VariableType.Name} is missing.");
-            vt.Validate(register.Parameters[vt.Name]);
+            if (!entry.Parameters.ContainsKey(vt))
+                throw new InvalidOperationException($"Parameter {vt} is missing.");
         }
     }
-    public LogRenderResult GetMessage(ILoggingRegister logRegister)
+    public LogRenderResult GetMessage(ILoggingEntry logEntry)
     {
-        Validate(logRegister);
+        Validate(logEntry);
         var sb = new StringBuilder();
-        string text = $"[{Type}]: {Text}";
         int lastIndex = 0;
-        string replace;
-        List<LogSpan> spans = [new()
-            {
-                Category = Category,
-                Start = 0,
-                Length = Type.Length + 4,
-                Type = SpanType.Prefix
-            }];
 
-        foreach (Match match in ParameterRegex().Matches(Text))
+        List<LogSpan> spans = [_prefixSpan];
+
+        foreach ((string key, LogSpan span) in _variables)
         {
-            if (match.Index > lastIndex)
+            if (span.Start > lastIndex)
             {
-                sb.Append(text, lastIndex, match.Index - lastIndex);
+                sb.Append(Text, lastIndex, span.Start - lastIndex);
             }
 
-            string key = match.Groups[1].Value;
-            logRegister.Parameters.TryGetValue(key, out LogMessageParameter? value);
-
-            replace = value == null ? 
-                match.Value : 
-                value.Value.ToString()!;
+            if (!logEntry.Parameters.TryGetValue(key, out string? value))
+                value = $"{{{key}}}";
 
             int start = sb.Length;
 
@@ -81,15 +81,15 @@ public sealed partial class LogMessageType(string type, string text, IDictionary
             {
                 Category = Category,
                 Start = start,
-                Length = replace.Length,
+                Length = value.Length,
                 Type = SpanType.Parameter
             });
 
-            lastIndex = match.Index + match.Length;
+            lastIndex = span.Start + span.Length;
         }
-        if (lastIndex < text.Length)
+        if (lastIndex < Text.Length)
         {
-            sb.Append(text, lastIndex, text.Length - lastIndex);
+            sb.Append(Text, lastIndex, Text.Length - lastIndex);
         }
         return new()
         {
