@@ -1,5 +1,4 @@
 ﻿using FormatReadLibrary.Readers.Enumerators;
-using FormatReadLibrary.Readers.Validators;
 using StateMachine;
 using System.Text.RegularExpressions;
 

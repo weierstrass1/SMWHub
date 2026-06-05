@@ -4,31 +4,42 @@ namespace LogRegister;
 
 public sealed class LogRegisterSystem
 {
+    private readonly static LogMessageType _unknownMessageType = new(UnknownCategory.KEY,
+        "Key {key} not found in Log file.",
+        new UnknownCategory());
     private readonly List<ILoggingEntry> _events = [];
-    private readonly ILogCategory[] _possibleCategories;
+    private readonly Dictionary<string, ILogCategory> _possibleCategories;
     private readonly Dictionary<string, LogMessageType> _messageTypes;
     public LogRegisterSystem(string loggingFile, params ILogCategory[] possibleCategories)
     {
         if (!File.Exists(loggingFile))
             throw new FileNotFoundException(nameof(loggingFile), loggingFile);
         _possibleCategories = possibleCategories != null ?
-        [.. possibleCategories.DistinctBy(c => c.GetType().Name)] :
+        possibleCategories
+            .DistinctBy(c => c.GetType().Name)
+            .ToDictionary(c => c.GetType().Name, c=> c) :
         [];
 
         var dtos = JsonConvert.DeserializeObject<Dictionary<string, LogMessageTypeDTO>>(loggingFile);
         _messageTypes = dtos!.ToDictionary(dto => dto.Key, dto => LogMessageType.FromDTO(this, dto.Value));
     }
-    public LogMessageType GetMessageType(string type)
+    public LogMessageType GetMessageType(string key)
     {
-        return _messageTypes[type];
+        if (!_possibleCategories.ContainsKey(key))
+            return _unknownMessageType;
+        return _messageTypes[key];
     }
     public ILogCategory? GetCategory(string name)
     {
-        return _possibleCategories.FirstOrDefault(c => c.GetType().Name == name);
+        if (!_possibleCategories.ContainsKey(name))
+            return _unknownMessageType.Category;
+        return _possibleCategories[name];
     }
     public void Add(ILoggingEntry logEntry)
     {
-        _events.Add(logEntry);
+        _events.Add(GetMessageType(logEntry.MessageTypeKey) == _unknownMessageType ?
+            new UnknownLogEntry(logEntry.MessageTypeKey) :
+            logEntry);
     }
     public IReadOnlyList<ILoggingEntry> GetEntries()
     {
