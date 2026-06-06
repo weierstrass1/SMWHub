@@ -1,6 +1,7 @@
 ﻿using FormatReadLibrary.Entries;
 using FormatReadLibrary.Logging.Enumerators;
 using LogRegister;
+using System.Collections.Generic;
 
 namespace FormatReadLibrary.Readers;
 public sealed partial class CommonListReader
@@ -46,9 +47,14 @@ public sealed partial class CommonListReader
     public IEnumerable<CommonListEntry> GetEntries()
     {
         List<CommonListEntry> entries = [];
+        IEnumerable < List < CommonListEntry >> entriesListOfLists;
         foreach (var entry in _entriesList)
         {
-            entries.AddRange(entry.Value.OrderBy(kvp => kvp.Key).Select(kvp => kvp.Value));
+            entriesListOfLists = entry.Value
+                .OrderBy(kvp => kvp.Key)
+                .Select(kvp => kvp.Value);
+            foreach (var entriesList in entriesListOfLists)
+                entries.AddRange(entriesList);
         }
         return entries;
     }

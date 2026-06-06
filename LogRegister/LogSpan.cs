@@ -23,4 +23,8 @@ public readonly struct LogSpan
             Type = Type
         };
     }
+    public override string ToString()
+    {
+        return $"{Type}: ({Start},{Start + Length}) (size {Length})";
+    }
 }

@@ -2,7 +2,6 @@
 using FormatReadLibrary.Logging.Enumerators;
 using FormatReadLibrary.Readers.ParsingContexts;
 using FormatReadLibrary.Readers.StateVariables;
-using FormatReadLibrary.Readers.Validators;
 using System.Text.RegularExpressions;
 
 namespace FormatReadLibrary.Readers;
@@ -12,23 +11,20 @@ public sealed partial class DynamicInfoReader
     private sealed class DynamicInfoCurrentFormatParsingContext : ParsingContext
     {
         public required DynamicInfo DynamicInfo { get; init; }
-        private readonly static Regex _entryRegex = FileRegexContainer.DynInfoCurrentRegex();
+        private readonly static Regex _entryRegex = RegexContainer.DynInfoCurrentRegex();
         private readonly Dictionary<int, string> _currentNumberOf16x16TilesPerPose = [];
+        private Match _match => State.Get<Match>("Match")!;
         public DynamicInfoCurrentFormatParsingContext(FileEnumeratorWithLog fileEnumerator) : base(fileEnumerator)
         {
-            State.AddVariable("Match", new MatchStateVariable());
-            State.AddVariable("IDs", new ValuesStateVariable());
-            addValidator(new ValidateEntryFormat(this, FileEnumerator));
+            State.AddVariable("Match", new MatchStateVariable("Match", _entryRegex));
+            State.AddVariable("IDs", new IntegerIDListStateVariable<string>(_currentNumberOf16x16TilesPerPose, 1000, true));
         }
-
         public override bool ProcessEntry()
         {
-            Match match = setupMatch();
-
-            if (!validate())
+            if (!getSelfValidatedVariables(FileEnumerator.Current))
                 return false;
 
-            addValues(match);
+            addValues();
 
             if (!FileEnumerator.IsLastLine())
                 return true;
@@ -36,23 +32,17 @@ public sealed partial class DynamicInfoReader
             DynamicInfo.FromNumberOf16x16Tiles(_currentNumberOf16x16TilesPerPose);
             return true;
         }
-        private void addValues(Match match)
+        private void addValues()
         {
-            var idsVar = State.GetVariable<ValuesStateVariable>("IDs");
-            int[] ids = idsVar.GetFrom(match)!;
+            var idsVar = State.GetVariable<IntegerIDListStateVariable<string>>("IDs");
+            int[] ids = idsVar.Value!;
 
-            string value = $"{match.Groups["tiles"]}{match.Groups["modifier"]}";
+            string value = $"{_match.Groups["tiles"]}{_match.Groups["modifier"]}";
 
             foreach (int id in ids)
             {
                 _currentNumberOf16x16TilesPerPose[id] = value;
             }
-        }
-        private Match setupMatch()
-        {
-            var matchVar = State.GetVariable<MatchStateVariable>("Match");
-            Match match = matchVar.GetFrom(FileEnumerator.Current, _entryRegex)!;
-            return match;
         }
     }
 }

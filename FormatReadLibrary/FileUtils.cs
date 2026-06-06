@@ -6,9 +6,9 @@ public static class FileUtils
 {
     public static string CleanString(string str)
     {
-        string content = FileRegexContainer.CommentRegex().Replace(str, "");
+        string content = RegexContainer.CommentRegex().Replace(str, "");
 
-        Regex space = FileRegexContainer.SpaceRegex();
+        Regex space = RegexContainer.SpaceRegex();
 
         content = string.Join('\n', content
                                 .Split('\n')

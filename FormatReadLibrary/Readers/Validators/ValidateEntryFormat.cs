@@ -1,19 +1,19 @@
-﻿using FormatReadLibrary.Logging;
-using FormatReadLibrary.Readers.Enumerators;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 
 namespace FormatReadLibrary.Readers.Validators;
 public sealed class ValidateEntryFormat : Validator
 {
+    private readonly string _variableName;
     public ValidateEntryFormat(IHaveState context, string variableName = "Match") : base()
     {
+        _variableName = variableName;
         VariableValidator validator = new(variableName, typeof(Match));
         validator.Validate(context);
     }
     public override ValidationResult Validate(IHaveState ctx)
     {
+        Match match = ctx.State.Get<Match>(_variableName)!;
         ValidationResult validationResult = new();
-        Match match = ctx.State.Get<Match>("Match")!;
         if (!match.Success)
             validationResult.AddError(ValidatorMessagetypeKeys.INVALID_ENTRY_FORMAT);
 

@@ -1,4 +1,5 @@
-﻿using StateMachine;
+﻿using FormatReadLibrary.Readers.StateVariables;
+using StateMachine;
 
 namespace FormatReadLibrary.Readers.Validators;
 
@@ -14,6 +15,18 @@ public abstract class StateValidator : IHaveState
     protected void addValidator(Validator validator)
     {
         _validators.Add(validator);
+    }
+    protected virtual ValidationResult getSelfValidatedVariables(string entry)
+    {
+        ValidationResult result = new();
+        var selfValidatedVariables = State.Variables.Values
+            .Where(v => v is ISelfValidatedStateVariable)
+            .Cast<ISelfValidatedStateVariable>();
+        foreach (var variable in selfValidatedVariables)
+        {
+            result.Merge(variable.GetFrom(entry));
+        }
+        return result;
     }
     protected virtual ValidationResult validate()
     {

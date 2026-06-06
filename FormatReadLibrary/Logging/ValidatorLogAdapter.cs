@@ -7,7 +7,7 @@ namespace FormatReadLibrary.Logging;
 
 public static class ValidatorLogAdapter
 {
-    public static void LogValidatorErrores(FileEnumeratorWithLog fileEnumerator, ValidationResult result)
+    public static void LogValidatorResult(FileEnumeratorWithLog fileEnumerator, ValidationResult result)
     {
         foreach(var error in result.Errors)
             fileEnumerator.Log.Add(getEntry(fileEnumerator, error));

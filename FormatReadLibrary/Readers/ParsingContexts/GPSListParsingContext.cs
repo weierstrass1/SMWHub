@@ -1,4 +1,5 @@
 ﻿using FormatReadLibrary.Entries;
+using FormatReadLibrary.Logging;
 using FormatReadLibrary.Readers.ParsingContexts;
 using FormatReadLibrary.Readers.StateVariables;
 using FormatReadLibrary.Readers.Validators;
@@ -11,10 +12,12 @@ public sealed partial class GPSListReader
 {
     private sealed class GPSListParsingContext : ParsingContext
     {
-        private static readonly Regex _entryRegex = FileRegexContainer.GPSListEntryRegex();
+        private static readonly Regex _entryRegex = RegexContainer.GPSListEntryRegex();
         private readonly ValidateGPSBlockLine _validateGPSBlockLine;
         private readonly string _baseDirectory;
         private readonly Dictionary<int, GPSListEntry> _entriesList;
+        private Match _match => State.Get<Match>("Match")!;
+        private FilePath[] _filepaths => State.Get<FilePath[]>("Filelist")!;
         public GPSListParsingContext(GPSListParserOptions options) : base(options.FileEnumerator)
         {
             _baseDirectory = options.BaseDirectory;
@@ -22,42 +25,30 @@ public sealed partial class GPSListReader
 
             State.AddVariable("Start", new StateVariable<int>());
             State.AddVariable("End", new StateVariable<int>());
-            State.AddVariable("Match", new MatchStateVariable());
-            State.AddVariable("Filepath", new StateVariable<string>());
-            State.AddVariable("Values", new ValuesStateVariable());
+            State.AddVariable("Match", new MatchStateVariable("Match", _entryRegex));
+            State.AddVariable("Filelist", new FilelistStateVariable(_baseDirectory, true, true));
 
-            addValidator(new ValidateEntryFormat(this, FileEnumerator));
-            //AddValidator(new ValidateFileExists(this,  FileEnumerator.Log));
-            addValidator(new ValidateEntryVariables(this, FileEnumerator));
-            _validateGPSBlockLine = new(this, FileEnumerator);
+            _validateGPSBlockLine = new(this);
         }
         public override bool ProcessEntry()
         {
-            setupStateVariables(out Match match, out string filepath, out int[]? values);
-
-            if (!validate())
+            if (!getSelfValidatedVariables(FileEnumerator.Current))
                 return false;
 
-            setupEntryRange(match, out int start, out int end, out bool rectangle);
+            setupEntryRange(_match, out int start, out int end, out bool rectangle);
 
             if (!rectangle && !validateStartEnd(start, end))
                 return false;
 
-            int actlike = match.Groups["actlike"].Success ?
-                actlike = Convert.ToInt32(match.Groups["actlike"].Value, 16) :
+            int actlike = _match.Groups["actlike"].Success ?
+                actlike = Convert.ToInt32(_match.Groups["actlike"].Value, 16) :
                 -1;
 
-            addEntries(filepath, values, start, end, actlike);
+            foreach(var filepath in _filepaths)
+            {
+                addEntries(filepath.Path, filepath.Values, start, end, actlike);
+            }
             return true;
-        }
-        private void setupStateVariables(out Match match, out string filepath, out int[]? values)
-        {
-            var matchVar = State.GetVariable<MatchStateVariable>("Match");
-            match = matchVar.GetFrom(FileEnumerator.Current, _entryRegex)!;
-            filepath = Path.Combine(_baseDirectory, match.Groups["file"].Value);
-            State.Set("Filepath", filepath);
-            var valuesVar = State.GetVariable<ValuesStateVariable>("Values");
-            values = valuesVar.GetFrom(match);
         }
         private static void setupEntryRange(Match match, out int start, out int end, out bool rectangle)
         {
@@ -75,7 +66,11 @@ public sealed partial class GPSListReader
             State.Set("Start", start);
             State.Set("End", end);
 
-            return _validateGPSBlockLine.Validate(this);
+            ValidationResult result = _validateGPSBlockLine.Validate(this);
+            if (!result)
+                ValidatorLogAdapter.LogValidatorResult(FileEnumerator, result);
+
+            return result;
         }
         private void addEntries(string filepath, int[]? values, int start, int end, int actlike)
         {

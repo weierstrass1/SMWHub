@@ -2,7 +2,6 @@
 using FormatReadLibrary.Logging.Enumerators;
 using FormatReadLibrary.Readers.ParsingContexts;
 using FormatReadLibrary.Readers.StateVariables;
-using FormatReadLibrary.Readers.Validators;
 using System.Text.RegularExpressions;
 
 namespace FormatReadLibrary.Readers;
@@ -11,56 +10,41 @@ public sealed partial class CommonListReader
 {
     private sealed class CommonListParsingContext : ParsingContext
     {
-        private static readonly Regex _entryRegex = FileRegexContainer.ListEntryRegex();
+        private static readonly Regex _entryRegex = RegexContainer.ListEntryRegex();
         private readonly Dictionary<int, List<CommonListEntry>> _entriesList = [];
         private readonly CommonListSectionTuple _section;
+        private int[] _ids => State.Get<int[]>("IDs")!;
+        private FilePath[] _filepaths => State.Get<FilePath[]>("FileList")!;
         public CommonListParsingContext(FileEnumeratorWithLog fileEnumerator, CommonListSectionTuple section, int maxID = 255, bool allowVariables = false, bool allowMultiIDs = false) : base(fileEnumerator)
         {
             _section = section;
-            State.AddVariable("Match", new MatchStateVariable());
-            State.AddVariable("IDs", new ValuesStateVariable());
-            State.AddVariable("FileList", new FilelistStateVariable(fileEnumerator));
-            State.AddVariable("Filepath", new FilepathStateVariable());
-            State.AddVariable("Values", new ValuesStateVariable());
-
-            addValidator(new ValidateEntryFormat(this, fileEnumerator));
-            addValidator(new ValidateEntryID(this, fileEnumerator, maxID));
-            //AddValidator(new ValidateFileExists(this, FileEnumerator.Log));
-            addValidator(new ValidateEntryVariables(this, fileEnumerator, allowVariables));
-            addValidator(new ValidateDuplicateID<int, List<CommonListEntry>>(this, fileEnumerator, _entriesList, allowMultiIDs));
+            State.AddVariable("Match", new MatchStateVariable("Match", _entryRegex));
+            State.AddVariable("IDs", new IntegerIDListStateVariable<List<CommonListEntry>>(_entriesList));
+            State.AddVariable("FileList", new FilelistStateVariable(_section.BaseDirectory, allowVariables, allowMultiIDs));
         }
         public override bool ProcessEntry()
         {
-            setupStateVariables(out int[] ids, out string filepath, out int[]? values);
-
-            if (!validate())
+            if (!getSelfValidatedVariables(FileEnumerator.Current))
                 return false;
-
-            foreach (int id in ids)
-            {
-                _entriesList[id].Add(new()
-                {
-                    ID = id,
-                    EntryType = _section.Title,
-                    Path = filepath,
-                    Values = values,
-                });
-            }
+            addEntries();
             return true;
         }
-        private void setupStateVariables(out int[] ids, out string filepath, out int[]? values)
+        private void addEntries()
         {
-            var matchVar = State.GetVariable<MatchStateVariable>("Match");
-            Match match = matchVar.GetFrom(FileEnumerator.Current, _entryRegex)!;
-
-            var idsVar = State.GetVariable<ValuesStateVariable>("Values");
-            ids = idsVar.GetFrom(match)!;
-
-            filepath = Path.Combine(_section.BaseDirectory, match.Groups["file"].Value);
-            State.Set("Filepath", filepath);
-
-            var valuesVar = State.GetVariable<ValuesStateVariable>("Values");
-            values = valuesVar.GetFrom(match);
+            foreach (int id in _ids)
+            {
+                _entriesList[id] = [];
+                foreach (var filepath in _filepaths)
+                {
+                    _entriesList[id].Add(new()
+                    {
+                        ID = id,
+                        EntryType = _section.Title,
+                        Path = filepath.Path,
+                        Values = filepath.Values,
+                    });
+                }
+            }
         }
         public Dictionary<int, List<CommonListEntry>> GetEntries()
         {

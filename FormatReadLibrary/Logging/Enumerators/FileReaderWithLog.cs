@@ -13,18 +13,18 @@ public sealed class FileReaderWithLog : IEnumerable<string>
     }
     public int Length => _fileContentLines.Length;
     public readonly LogRegisterSystem Log;
-    public readonly string Path;
+    public readonly string FilePath;
     private readonly string[] _fileContentLines;
     public FileReaderWithLog(string path, LogRegisterSystem log)
     {
         Log = log;
-        Path = path;
+        FilePath = path;
         _fileContentLines = FileUtils.CleanFileContent(path).Split('\n');
     }
     public FileReaderWithLog(string name, string content, LogRegisterSystem log)
     {
         Log = log;
-        Path = System.IO.Path.Combine("internal", name);
+        FilePath = Path.Combine("internal", name);
         _fileContentLines = FileUtils.CleanString(content).Split('\n');
     }
     public IEnumerator<string> GetEnumerator()
@@ -82,12 +82,12 @@ public sealed class FileReaderWithLog : IEnumerable<string>
         id = getID(currentLine);
         if (enumerators.ContainsKey(id))
         {
-            Log.Add(new SyntaxError(i, Path, currentLine, $"Repeated Section {id}"));
+            Log.Add(new SyntaxError(i, FilePath, currentLine, $"Repeated Section {id}"));
             return false;
         }
         if (section == null && lastNotEmptyLine >= 0)
         {
-            Log.Add(new SyntaxError(i, Path, currentLine, "\"Section doesn't contain title\""));
+            Log.Add(new SyntaxError(i, FilePath, currentLine, "\"Section doesn't contain title\""));
             return false;
         }
         if (section != null && lastNotEmptyLine >= 0)

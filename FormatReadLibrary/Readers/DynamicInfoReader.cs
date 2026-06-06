@@ -11,9 +11,9 @@ public sealed partial class DynamicInfoReader
     public bool Read(string path, LogRegisterSystem log, out DynamicInfo? dynamicInfo)
     {
         string content = File.ReadAllText(path);
-        return Read(Path.GetFileNameWithoutExtension(path), content, log, out dynamicInfo);
+        return Read(Path.GetFileNameWithoutExtension(path), content, Path.GetDirectoryName(path)!, log, out dynamicInfo);
     }
-    public bool Read(string name, string dynamicInfoContent, LogRegisterSystem log, out DynamicInfo? dynamicInfo)
+    public bool Read(string name, string dynamicInfoContent, string baseDirectory, LogRegisterSystem log, out DynamicInfo? dynamicInfo)
     {
         FileReaderWithLog fReader = new(name, dynamicInfoContent, log);
 
@@ -30,7 +30,7 @@ public sealed partial class DynamicInfoReader
 
         foreach (var section in enumerators)
         {
-            ctx = createContext(section.Key, dynamicInfo, section.Value);
+            ctx = createContext(section.Key, dynamicInfo, baseDirectory, section.Value);
             while (section.Value.MoveNext())
             {
                 if (string.IsNullOrWhiteSpace(section.Value.Current))
@@ -53,15 +53,15 @@ public sealed partial class DynamicInfoReader
         }
         return true;
     }
-    private ParsingContext createContext(string section, DynamicInfo dynamicInfo, FileEnumeratorWithLog fileEnumerator)
+    private ParsingContext createContext(string section, DynamicInfo dynamicInfo, string baseDirectory, FileEnumeratorWithLog fileEnumerator)
     {
         return section switch
         {
-            "posesgraphics:" => new DynamicInfoResourceListParsingContext(fileEnumerator, DynamicInfoSection.PosesGraphics)
+            "posesgraphics:" => new DynamicInfoResourceListParsingContext(fileEnumerator, baseDirectory, DynamicInfoSection.PosesGraphics)
             { DynamicInfo = dynamicInfo },
-            "palettes:" => new DynamicInfoResourceListParsingContext(fileEnumerator, DynamicInfoSection.Palettes)
+            "palettes:" => new DynamicInfoResourceListParsingContext(fileEnumerator, baseDirectory, DynamicInfoSection.Palettes)
             { DynamicInfo = dynamicInfo },
-            "resources:" => new DynamicInfoResourceListParsingContext(fileEnumerator, DynamicInfoSection.Resources)
+            "resources:" => new DynamicInfoResourceListParsingContext(fileEnumerator, baseDirectory, DynamicInfoSection.Resources)
             { DynamicInfo = dynamicInfo },
             "poseschunkssizes:" => new DynamicInfoLegacyFormatParsingContext(fileEnumerator)
             { DynamicInfo = dynamicInfo },

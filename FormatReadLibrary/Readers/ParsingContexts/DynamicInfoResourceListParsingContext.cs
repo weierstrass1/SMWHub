@@ -1,6 +1,7 @@
 ﻿using FormatReadLibrary.Infos;
 using FormatReadLibrary.Logging.Enumerators;
 using FormatReadLibrary.Readers.ParsingContexts;
+using FormatReadLibrary.Readers.StateVariables;
 using FormatReadLibrary.Readers.Validators;
 
 namespace FormatReadLibrary.Readers;
@@ -12,17 +13,18 @@ public sealed partial class DynamicInfoReader
         public required DynamicInfo DynamicInfo { get; init; }
         private readonly List<string> _list = [];
         private readonly DynamicInfoSection _section;
-        public DynamicInfoResourceListParsingContext(FileEnumeratorWithLog fileEnumerator, DynamicInfoSection section) : base(fileEnumerator)
+        private string _filepath => State.Get<FilePath>("Filepath")!.Path;
+        public DynamicInfoResourceListParsingContext(FileEnumeratorWithLog fileEnumerator, string baseDirectory, DynamicInfoSection section) : base(fileEnumerator)
         {
             _section = section;
-            addValidator(new ValidatePathIntegrity(this, FileEnumerator));
+            State.AddVariable("Filepath", new FilepathStateVariable(baseDirectory, false));
         }
         public override bool ProcessEntry()
         {
-            if (!validate())
+            if (!getSelfValidatedVariables(FileEnumerator.Current))
                 return false;
 
-            _list.Add(FileEnumerator.Current);
+            _list.Add(_filepath);
             if (!FileEnumerator.IsLastLine())
                 return true;
 

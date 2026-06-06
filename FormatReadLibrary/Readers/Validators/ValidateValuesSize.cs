@@ -1,6 +1,4 @@
-﻿using FormatReadLibrary.Logging;
-
-namespace FormatReadLibrary.Readers.Validators;
+﻿namespace FormatReadLibrary.Readers.Validators;
 
 [RequiresStateVariable("Values", typeof(int[]))]
 public class ValidateValuesSize : Validator

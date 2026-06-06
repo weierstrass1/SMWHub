@@ -1,4 +1,5 @@
 ﻿using FormatReadLibrary.Infos;
+using FormatReadLibrary.Logging;
 using FormatReadLibrary.Logging.Enumerators;
 using FormatReadLibrary.Readers.ParsingContexts;
 using FormatReadLibrary.Readers.StateVariables;
@@ -13,25 +14,21 @@ public sealed partial class DynamicInfoReader
     private sealed class DynamicInfoLegacyFormatParsingContext : ParsingContext
     {
         public required DynamicInfo DynamicInfo { get; init; }
-        private static Regex _entryRegex = FileRegexContainer.DynInfoLegacyRegex();
-        private static Regex _entryTableRegex = FileRegexContainer.NumberTableRegex();
+        private static Regex _entryRegex = RegexContainer.DynInfoLegacyRegex();
+        private static Regex _entryTableRegex = RegexContainer.NumberTableRegex();
+        private static readonly MatchStateVariable _matchTitle = new("Match", _entryRegex);
         private readonly Dictionary<string, (int, int)> _poseChunkSizes = [];
-        private readonly ValidateEntryFormat _validateEntryFormat;
         private readonly ValidateIfHasNext _ifHasNext;
         private readonly ValidateDuplicateID<string, (int, int)> _validateDuplicateID;
         public DynamicInfoLegacyFormatParsingContext(FileEnumeratorWithLog fileEnumerator) : base(fileEnumerator)
         {
-            State.AddVariable("Match", new MatchStateVariable());
-            State.AddVariable("MatchTable", new MatchStateVariable());
+            State.AddVariable("MatchTable", new MatchStateVariable("MatchTable", _entryTableRegex));
             State.AddVariable("ID", new StateVariable<string>());
-            State.AddVariable("Values", new ValuesStateVariable());
-            _validateEntryFormat = new ValidateEntryFormat(this, FileEnumerator);
-            _validateDuplicateID = new ValidateDuplicateID<string, (int, int)>(this, FileEnumerator, _poseChunkSizes);
-            _ifHasNext = new ValidateIfHasNext(this, FileEnumerator);
-            addValidator(new ValidateTableValueSize(this, FileEnumerator, TableValueSize.db));
-            addValidator(new ValidateEntryFormat(this, FileEnumerator, "MatchTable"));
-            addValidator(new ValidateValuesSize(this, FileEnumerator, 2, 2));
-
+            State.AddVariable("Values", new StateVariable<int[]>());
+            _ifHasNext = new ValidateIfHasNext(fileEnumerator);
+            _validateDuplicateID = new ValidateDuplicateID<string, (int, int)>(this, _poseChunkSizes);
+            addValidator(new ValidateTableValueSize(() => fileEnumerator.Current, TableValueSize.db));
+            addValidator(new ValidateValuesSize(this, 2, 2));
         }
         public override bool ProcessEntry()
         {
@@ -42,6 +39,9 @@ public sealed partial class DynamicInfoReader
             if (!_ifHasNext.Validate(this))
                 return false;
             _ifHasNext.MoveToTheNextNotEmptyLine();
+
+            if (!getSelfValidatedVariables(FileEnumerator.Current))
+                return false;
 
             int[]? values = setupValues();
             if (!validate())
@@ -54,27 +54,33 @@ public sealed partial class DynamicInfoReader
             setupDynamicInfoPosesChunksSizes();
             return true;
         }
-        private int[]? setupValues()
-        {
-            var matchTableVar = State.GetVariable<MatchStateVariable>("MatchTable");
-            matchTableVar.GetFrom(FileEnumerator.Current, _entryTableRegex);
-            var valuesVar = State.GetVariable<ValuesStateVariable>("Values");
-            return valuesVar.GetFrom(FileEnumerator.Current);
-        }
         private bool validatePoseChunksTitle(out string id)
         {
-            var matchVar = State.GetVariable<MatchStateVariable>("Match");
-            Match match = matchVar.GetFrom(FileEnumerator.Current, _entryRegex)!;
-
-            id = "";
-
-            if (!_validateEntryFormat.Validate(this))
+            ValidationResult result = _matchTitle.GetFrom(FileEnumerator.Current);
+            if (!result.IsValid)
+            {
+                ValidatorLogAdapter.LogValidatorResult(FileEnumerator, result);
+                id = "";
                 return false;
+            }
+
+            Match match = _matchTitle.Value!;
 
             id = match.Groups["id"].Value;
             State.Set("ID", id);
 
-            return _validateDuplicateID.Validate(this);
+            result.Merge(_validateDuplicateID.Validate(this));
+
+            if (!result.IsValid)
+                ValidatorLogAdapter.LogValidatorResult(FileEnumerator, result);
+
+            return result;
+        }
+        private int[] setupValues()
+        {
+            var valuesVar = State.GetVariable<StateVariable<int[]>>("Values");
+            valuesVar.Value = HexUtils.GetValues(FileEnumerator.Current);
+            return valuesVar.Value;
         }
         private void setupDynamicInfoPosesChunksSizes()
         {

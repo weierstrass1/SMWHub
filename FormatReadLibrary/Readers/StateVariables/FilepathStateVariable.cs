@@ -1,33 +1,49 @@
-﻿using FormatReadLibrary.Logging.Enumerators;
+﻿using FormatReadLibrary.Logging;
+using FormatReadLibrary.Logging.Enumerators;
 using FormatReadLibrary.Readers.Validators;
 using StateMachine;
 using System.Text.RegularExpressions;
 
 namespace FormatReadLibrary.Readers.StateVariables;
 
-public class FilepathStateVariable : StateValidator, IStateVariable<string>
+public class FilepathStateVariable : StateValidator, IStateVariable<FilePath>, ISelfValidatedStateVariable
 {
-    public string? Value { get; set; }
+    private static readonly Regex filepathRegex = RegexContainer.EntryFileRegex();
+    public FilePath? Value { get; set; }
     public bool CleanOnReset { get; set; } = false;
-    object? IStateVariable.Value { get => Value; set => Value = (string?)value; }
-    private readonly ValidatePathIntegrity _validatePathIntegrity;
-    private readonly ValidateFileExists _validateFileExists;
-    private readonly ValidateEntryParameters _validateEntryVariables;
-    public FilepathStateVariable(FileEnumeratorWithLog fileEnumerator, bool allowedVariables)
+    object? IStateVariable.Value { get => Value; set => Value = (FilePath?)value; }
+    private readonly string _baseDirectory;
+    public FilepathStateVariable(string baseDirectory, bool allowedVariables)
     {
-        _validatePathIntegrity = new(fileEnumerator);
-        _validateFileExists = new(fileEnumerator.Log);
-        _validateEntryVariables = new(fileEnumerator, allowedVariables);
+        _baseDirectory = baseDirectory;
+        State.AddVariable("Filepath", new StateVariable<string>());
+        State.AddVariable("Parameters", new ParametersStateVariable());
+        addValidator(new ValidatePathIntegrity(this));
+        //addValidator(new ValidateFileExists(this));
     }
-    public string? GetFrom(Match match, string basedirectory = "")
+    public ValidationResult GetFrom(string fileEntry)
     {
-        Value = match.Groups["file"].Success ?
-            Path.Combine(basedirectory, match.Groups["file"].Value) :
-            null;
-        return Value;
-    }
-    public bool Validate()
-    {
+        Match match = filepathRegex.Match(fileEntry);
+        if(!match.Success)
+        {
+            Value = null;
+            return new();
+        }
+        string filepath = Path.Combine(_baseDirectory, match.Groups["file"].Value)!;
+        State.Set("Filepath", filepath);
 
+        ValidationResult result = validate();
+        var parVars = State.GetVariable<ParametersStateVariable>("Parameters");
+        result.Merge(parVars.GetFrom(fileEntry));
+        Value = new(filepath, parVars.Value!);
+        return result;
+    }
+    public ValidationResult validate(FileEnumeratorWithLog fileEnumerator)
+    {
+        ValidationResult result = base.validate();
+        if (!result)
+            ValidatorLogAdapter.LogValidatorResult(fileEnumerator, result);
+        return result;
     }
 }
+public record FilePath(string Path, int[] Values);

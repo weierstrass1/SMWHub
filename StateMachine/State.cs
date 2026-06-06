@@ -2,6 +2,7 @@
 
 public class State
 {
+    public IReadOnlyDictionary<string, IStateVariable> Variables => _variables.AsReadOnly();
     private readonly Dictionary<string, IStateVariable> _variables;
     public State()
     {

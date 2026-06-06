@@ -1,4 +1,5 @@
-﻿using LogRegister;
+﻿using FormatReadLibrary.Readers.Validators;
+using LogRegister;
 
 namespace FormatReadLibrary.Logging.LoggingRegisters;
 
@@ -27,7 +28,7 @@ public sealed class SyntaxError : ILoggingEntryWithNestedMessage
     {
         NestedEntries = new Dictionary<string, ILoggingEntry>()
         {
-            { "message", new LogEntry(LogMessageTypeKeys.RAW_SYNTAX_ERROR_MESSAGE, new Dictionary<string, string>(){
+            { "message", new LogEntry(ValidatorMessagetypeKeys.RAW_SYNTAX_ERROR_MESSAGE, new Dictionary<string, string>(){
                 {"message",message}
             }) }
         }.AsReadOnly();

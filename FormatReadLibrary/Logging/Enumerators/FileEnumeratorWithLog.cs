@@ -1,12 +1,11 @@
-﻿using FormatReadLibrary.Logging.LoggingRegisters;
-using LogRegister;
+﻿using LogRegister;
 using System.Collections;
 
 namespace FormatReadLibrary.Logging.Enumerators;
 public sealed class FileEnumeratorWithLog : IEnumerator<string>
 {
     private readonly FileReaderWithLog _reader;
-    public string Path => _reader.Path;
+    public string Path => _reader.FilePath;
     public LogRegisterSystem Log => _reader.Log;
     public int LineIndex { get; private set; }
     public string Current

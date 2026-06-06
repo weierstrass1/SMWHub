@@ -14,7 +14,7 @@ public sealed class LogRenderer(LogRegisterSystem log, LogRenderAction renderAct
     public void Render(ILoggingEntry logEntry, bool mustWrite = true)
     {
         LogMessageType messageType = _log.GetMessageType(logEntry.MessageTypeKey);
-        LogRenderResult result = messageType.GetMessage(logEntry);
+        LogRenderResult result = messageType.GetMessage(_log, logEntry);
         int cursor = 0;
 
         foreach (var span in result.Spans)

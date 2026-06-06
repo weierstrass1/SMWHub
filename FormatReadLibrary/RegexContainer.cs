@@ -3,7 +3,7 @@ using System.Text.RegularExpressions;
 
 namespace FormatReadLibrary;
 
-public static partial class FileRegexContainer
+public static partial class RegexContainer
 {
     [StringSyntax(StringSyntaxAttribute.Regex)]
     public const string RANGE_PATTERN = @"(?<ids>(?<range>(?<start>\d+)\.\.(?<end>\d+))|(?<single>\d+)|(?<multiple>\[\s*(\d+|\d+\.\.\d+)(\s*,\s*(\d+|\d+\.\.\d+))*\s*\]))";
@@ -13,12 +13,16 @@ public static partial class FileRegexContainer
     public const string FILE_PATTERN = @"(?<file>[^\s:\/\\]+(?:[\/\\][^\s:\/\\]+)*\.[A-Za-z0-9]+)";
     [StringSyntax(StringSyntaxAttribute.Regex)]
     public const string VALUES_PATTERN = @"(:\s*(?<var>(\@\d+|[0-9a-fA-F]+)(\s((\@\d+|[0-9a-fA-F]+)))*))?";
+    [GeneratedRegex(FILE_LIST_PATTERN)]
+    public static partial Regex FileListRegex();
     [GeneratedRegex(FILE_PATTERN)]
     public static partial Regex FileRegex();
     [GeneratedRegex(FILE_PATTERN + VALUES_PATTERN)]
     public static partial Regex EntryFileRegex();
     [GeneratedRegex(RANGE_PATTERN)]
     public static partial Regex RangeRegex();
+    [GeneratedRegex(VALUES_PATTERN)]
+    public static partial Regex ValuesRegex();
     [GeneratedRegex(@"\s+")]
     public static partial Regex SpaceRegex();
     [GeneratedRegex(@";.*")]

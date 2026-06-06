@@ -1,5 +1,4 @@
-﻿using FormatReadLibrary.Logging;
-using StateMachine;
+﻿using StateMachine;
 
 namespace FormatReadLibrary.Readers.Validators;
 [RequiresStateVariable("Filepath", typeof(string))]

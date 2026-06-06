@@ -40,11 +40,11 @@ public sealed class LogRegisterSystem
 
         var dtos = JsonSerializer.Deserialize<Dictionary<string, LogMessageTypeDTO>>(loggingFileContent, _deserializeOptions) ??
             throw new InvalidOperationException("Failed to deserialize logging file.");
-        _messageTypes = dtos!.ToDictionary(dto => dto.Key, dto => LogMessageType.FromDTO(this, dto.Value));
+        _messageTypes = dtos!.ToDictionary(dto => dto.Key, dto => LogMessageType.FromDTO(this, dto.Key, dto.Value));
     }
     public LogMessageType GetMessageType(string key)
     {
-        if (!_possibleCategories.ContainsKey(key))
+        if (!_messageTypes.ContainsKey(key))
             return _unknownMessageType;
         return _messageTypes[key];
     }

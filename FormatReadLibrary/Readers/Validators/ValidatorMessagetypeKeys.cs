@@ -2,7 +2,6 @@
 
 public static class ValidatorMessagetypeKeys
 {
-    public const string VALUE_EXCEEDS_LIMIT = "VALUE EXCEEDS LIMIT";
     public const string RAW_SYNTAX_ERROR_MESSAGE = "RAW SYNTAX ERROR MESSAGE";
     public const string REPEATED_ID = "REPEATED ID";
     public const string INVALID_ENTRY_FORMAT = "INVALID ENTRY FORMAT";
@@ -17,4 +16,8 @@ public static class ValidatorMessagetypeKeys
     public const string VALUES_SET_ALLOW_BETWEEN_N_AND_M_VALUES = "VALUES SET ALLOW BETWEEN N AND M VALUES";
     public const string MISSING_TABLE_INITIATOR = "MISSING TABLE INITIATOR";
     public const string UNEXPECTED_TABLE_INITIATOR = "UNEXPECTED TABLE INITIATOR";
+    public const string MISSING_FILEPATH = "MISSING FILEPATH";
+    public const string MORE_THAN_1_FILEPATH = "MORE THAN 1 FILEPATH";
+    public const string INVALID_ID = "INVALID ID";
+    public const string MULTI_ID_NOT_ALLOWED = "MULTI ID NOT ALLOWED";
 }
