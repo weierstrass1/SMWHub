@@ -1,4 +1,5 @@
-﻿using FormatReadLibrary.Entries;
+﻿using FormatReadLibrary.LineContexts;
+using FormatReadLibrary.Entries;
 using SMWHubEnumerators;
 using Validations;
 
@@ -30,7 +31,7 @@ public sealed partial class CommonListReader
 
         foreach (var section in enumerators)
         {
-            ctx = new(section.Value, _sections[section.Key], maxID, allowVariables, allowMultiIDs);
+            ctx = new((FileEnumeratorLineContext)section.Value, _sections[section.Key], maxID, allowVariables, allowMultiIDs);
             while (section.Value.MoveNext())
             {
                 if (string.IsNullOrWhiteSpace(section.Value.Current))

@@ -7,6 +7,7 @@ public sealed class FileEnumerator : IEnumerator<string>
     private readonly FileReader _reader;
     public string FilePath => _reader.FilePath;
     public int LineIndex { get; private set; }
+    public bool IsLastLine => LineIndex == _maxLimit;
     public string Current
     {
         get
@@ -49,9 +50,5 @@ public sealed class FileEnumerator : IEnumerator<string>
     }
     public void Dispose()
     {
-    }
-    public bool IsLastLine()
-    {
-        return LineIndex == _maxLimit;
     }
 }

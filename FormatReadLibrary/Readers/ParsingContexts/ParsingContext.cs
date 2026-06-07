@@ -1,10 +1,9 @@
-﻿using SMWHubEnumerators;
+﻿using FormatReadLibrary.LineContexts;
 using Validations;
 
 namespace FormatReadLibrary.Readers.ParsingContexts;
-
-public abstract class ParsingContext(FileEnumerator fileEnumerator) : StateValidator
+public abstract class ParsingContext(LineContext context) : StateValidator
 {
-    public FileEnumerator FileEnumerator { get; private set; } = fileEnumerator;
+    public LineContext LineContext { get; private set; } = context;
     public abstract ValidationResult ProcessEntry();
 }

@@ -1,4 +1,5 @@
 ﻿using FormatReadLibrary.Infos;
+using FormatReadLibrary.LineContexts;
 using FormatReadLibrary.Readers.ParsingContexts;
 using SMWHubEnumerators;
 using SMWHubValidations;
@@ -33,7 +34,7 @@ public sealed partial class DynamicInfoReader
 
         foreach (var section in enumerators)
         {
-            ctx = createContext(section.Key, dynamicInfo, baseDirectory, section.Value);
+            ctx = createContext(section.Key, dynamicInfo, baseDirectory, (FileEnumeratorLineContext)section.Value);
             while (section.Value.MoveNext())
             {
                 if (string.IsNullOrWhiteSpace(section.Value.Current))
@@ -57,19 +58,19 @@ public sealed partial class DynamicInfoReader
         }
         return result;
     }
-    private static ParsingContext createContext(string section, DynamicInfo dynamicInfo, string baseDirectory, FileEnumerator fileEnumerator)
+    private static ParsingContext createContext(string section, DynamicInfo dynamicInfo, string baseDirectory, FileEnumeratorLineContext context)
     {
         return section switch
         {
-            "posesgraphics:" => new DynamicInfoResourceListParsingContext(fileEnumerator, baseDirectory, DynamicInfoSection.PosesGraphics)
+            "posesgraphics:" => new DynamicInfoResourceListParsingContext(context, baseDirectory, DynamicInfoSection.PosesGraphics)
             { DynamicInfo = dynamicInfo },
-            "palettes:" => new DynamicInfoResourceListParsingContext(fileEnumerator, baseDirectory, DynamicInfoSection.Palettes)
+            "palettes:" => new DynamicInfoResourceListParsingContext(context, baseDirectory, DynamicInfoSection.Palettes)
             { DynamicInfo = dynamicInfo },
-            "resources:" => new DynamicInfoResourceListParsingContext(fileEnumerator, baseDirectory, DynamicInfoSection.Resources)
+            "resources:" => new DynamicInfoResourceListParsingContext(context, baseDirectory, DynamicInfoSection.Resources)
             { DynamicInfo = dynamicInfo },
-            "poseschunkssizes:" => new DynamicInfoLegacyFormatParsingContext(fileEnumerator)
+            "poseschunkssizes:" => new DynamicInfoLegacyFormatParsingContext(context)
             { DynamicInfo = dynamicInfo },
-            "numberof16x16tilesperpose:" => new DynamicInfoCurrentFormatParsingContext(fileEnumerator)
+            "numberof16x16tilesperpose:" => new DynamicInfoCurrentFormatParsingContext(context)
             { DynamicInfo = dynamicInfo },
             _ => throw new Exception($"Unknown section type: {section}")
         };

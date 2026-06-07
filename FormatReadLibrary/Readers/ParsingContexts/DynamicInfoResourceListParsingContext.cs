@@ -1,4 +1,5 @@
 ﻿using FormatReadLibrary.Infos;
+using FormatReadLibrary.LineContexts;
 using FormatReadLibrary.Readers.ParsingContexts;
 using FormatReadLibrary.Readers.StateVariables;
 using SMWHubEnumerators;
@@ -12,23 +13,25 @@ public sealed partial class DynamicInfoReader
     private sealed class DynamicInfoResourceListParsingContext : ParsingContext
     {
         public required DynamicInfo DynamicInfo { get; init; }
+        private FileEnumeratorLineContext _fileEnumeratorLineContext;
         private readonly List<string> _list = [];
         private readonly DynamicInfoSection _section;
         private string _filepath => State.Get<FilePath>("Filepath")!.Path;
-        public DynamicInfoResourceListParsingContext(FileEnumerator fileEnumerator, string baseDirectory, DynamicInfoSection section) : base(fileEnumerator)
+        public DynamicInfoResourceListParsingContext(FileEnumeratorLineContext context, string baseDirectory, DynamicInfoSection section) : base(context)
         {
+            _fileEnumeratorLineContext = context;
             _section = section;
             State.AddVariable("Filepath", new FilepathStateVariable(baseDirectory, false));
         }
         public override ValidationResult ProcessEntry()
         {
-            Context = FileEnumerator.Context;
-            ValidationResult result = getSelfValidatedVariables(FileEnumerator.Current);
+            Context = LineContext;
+            ValidationResult result = getSelfValidatedVariables(LineContext.LineContent);
             if (!result)
                 return result;
 
             _list.Add(_filepath);
-            if (!FileEnumerator.IsLastLine())
+            if (!_fileEnumeratorLineContext.IsLastLine)
                 return result;
 
             setupDynamicInfoList();

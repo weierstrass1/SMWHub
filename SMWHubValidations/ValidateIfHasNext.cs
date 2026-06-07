@@ -10,7 +10,7 @@ public class ValidateIfHasNext(FileEnumerator fileEnumerator) : Validator()
     public override ValidationResult Validate(IValidationState ctx)
     {
         ValidationResult validationResult = new(ctx.Context);
-        if (_fileEnumerator.IsLastLine())
+        if (_fileEnumerator.IsLastLine)
             validationResult.AddError(ValidatorMessagetypeKeys.EOF);
         return validationResult;
     }

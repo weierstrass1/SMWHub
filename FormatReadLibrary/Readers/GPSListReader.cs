@@ -17,7 +17,7 @@ public sealed partial class GPSListReader(string baseDirectory)
         GPSListParserOptions opts = new()
         {
             EntriesList = _entriesList,
-            FileEnumerator = fileEnumerator,
+            Context = (LineContexts.FileEnumeratorLineContext)fileEnumerator,
             BaseDirectory = _baseDirectory
         };
 
@@ -34,11 +34,5 @@ public sealed partial class GPSListReader(string baseDirectory)
     public IEnumerable<GPSListEntry> GetEntries()
     {
         return _entriesList.OrderBy(kvp => kvp.Key).Select(kvp => kvp.Value);
-    }
-    private sealed class GPSListParserOptions
-    {
-        public required Dictionary<int, GPSListEntry> EntriesList { get; init; }
-        public required FileEnumerator FileEnumerator { get; init; }
-        public required string BaseDirectory { get; init; }
     }
 }

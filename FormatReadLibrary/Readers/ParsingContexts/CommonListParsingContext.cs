@@ -1,7 +1,7 @@
-﻿using FormatReadLibrary.Entries;
+﻿using FormatReadLibrary.LineContexts;
+using FormatReadLibrary.Entries;
 using FormatReadLibrary.Readers.ParsingContexts;
 using FormatReadLibrary.Readers.StateVariables;
-using SMWHubEnumerators;
 using SMWHubValidations;
 using System.Text.RegularExpressions;
 using Validations;
@@ -17,7 +17,7 @@ public sealed partial class CommonListReader
         private readonly CommonListSectionTuple _section;
         private int[] _ids => State.Get<int[]>("IDs")!;
         private FilePath[] _filepaths => State.Get<FilePath[]>("FileList")!;
-        public CommonListParsingContext(FileEnumerator fileEnumerator, CommonListSectionTuple section, int maxID = 255, bool allowVariables = false, bool allowMultiIDs = false) : base(fileEnumerator)
+        public CommonListParsingContext(LineContext context, CommonListSectionTuple section, int maxID = 255, bool allowVariables = false, bool allowMultiIDs = false) : base(context)
         {
             _section = section;
             State.AddVariable("Match", new MatchStateVariable("Match", _entryRegex));
@@ -26,8 +26,8 @@ public sealed partial class CommonListReader
         }
         public override ValidationResult ProcessEntry()
         {
-            Context = FileEnumerator.Context;
-            ValidationResult result = getSelfValidatedVariables(FileEnumerator.Current);
+            Context = LineContext;
+            ValidationResult result = getSelfValidatedVariables(LineContext.LineContent);
             if (!result)
                 return result;
             addEntries();

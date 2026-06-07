@@ -1,6 +1,8 @@
 ﻿using FormatReadLibrary.Entries;
+using FormatReadLibrary.LineContexts;
 using FormatReadLibrary.Readers.ParsingContexts;
 using FormatReadLibrary.Readers.StateVariables;
+using SMWHubEnumerators;
 using SMWHubValidations;
 using StateMachine;
 using System.Text.RegularExpressions;
@@ -18,7 +20,7 @@ public sealed partial class GPSListReader
         private readonly Dictionary<int, GPSListEntry> _entriesList;
         private Match _match => State.Get<Match>("Match")!;
         private FilePath[] _filepaths => State.Get<FilePath[]>("Filelist")!;
-        public GPSListParsingContext(GPSListParserOptions options) : base(options.FileEnumerator)
+        public GPSListParsingContext(GPSListParserOptions options) : base(options.Context)
         {
             _baseDirectory = options.BaseDirectory;
             _entriesList = options.EntriesList;
@@ -32,8 +34,8 @@ public sealed partial class GPSListReader
         }
         public override ValidationResult ProcessEntry()
         {
-            Context = FileEnumerator.Context;
-            ValidationResult result = getSelfValidatedVariables(FileEnumerator.Current);
+            Context = LineContext;
+            ValidationResult result = getSelfValidatedVariables(LineContext.LineContent);
             if (!result)
                 return result;
 
@@ -99,5 +101,11 @@ public sealed partial class GPSListReader
                 }
             }
         }
+    }
+    private sealed class GPSListParserOptions
+    {
+        public required Dictionary<int, GPSListEntry> EntriesList { get; init; }
+        public required FileEnumeratorLineContext Context { get; init; }
+        public required string BaseDirectory { get; init; }
     }
 }
