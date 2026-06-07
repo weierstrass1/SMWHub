@@ -14,7 +14,7 @@ public sealed partial class DynamicInfoReader
         private readonly static Regex _entryRegex = RegexContainer.DynInfoCurrentRegex();
         private readonly Dictionary<int, string> _currentNumberOf16x16TilesPerPose = [];
         private Match _match => State.Get<Match>("Match")!;
-        public DynamicInfoCurrentFormatParsingContext(FileEnumeratorWithLog fileEnumerator) : base(fileEnumerator)
+        public DynamicInfoCurrentFormatParsingContext(FileEnumerator fileEnumerator) : base(fileEnumerator)
         {
             State.AddVariable("Match", new MatchStateVariable("Match", _entryRegex));
             State.AddVariable("IDs", new IntegerIDListStateVariable<string>(_currentNumberOf16x16TilesPerPose, 1000, true, false));

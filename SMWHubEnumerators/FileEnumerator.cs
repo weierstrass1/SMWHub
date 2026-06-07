@@ -1,12 +1,10 @@
-﻿using LogRegister;
-using System.Collections;
+﻿using System.Collections;
 
 namespace SMWHubEnumerators;
-public sealed class FileEnumeratorWithLog : IEnumerator<string>
+public sealed class FileEnumerator : IEnumerator<string>
 {
-    private readonly FileReaderWithLog _reader;
+    private readonly FileReader _reader;
     public string Path => _reader.FilePath;
-    public LogRegisterSystem Log => _reader.Log;
     public int LineIndex { get; private set; }
     public string Current
     {
@@ -20,14 +18,14 @@ public sealed class FileEnumeratorWithLog : IEnumerator<string>
     object IEnumerator.Current => Current;
     private int _minLimit;
     private int _maxLimit;
-    public FileEnumeratorWithLog(FileReaderWithLog reader)
+    public FileEnumerator(FileReader reader)
     {
         _reader = reader;
         _minLimit = 0;
         _maxLimit = reader.Length - 1;
         LineIndex = -1;
     }
-    public FileEnumeratorWithLog(FileReaderWithLog reader, int minLimit, int maxLimit)
+    public FileEnumerator(FileReader reader, int minLimit, int maxLimit)
     {
         _reader = reader;
         _minLimit = Math.Max(0, minLimit);

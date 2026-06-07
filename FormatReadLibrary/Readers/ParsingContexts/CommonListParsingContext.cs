@@ -1,6 +1,7 @@
 ﻿using FormatReadLibrary.Entries;
 using FormatReadLibrary.Readers.ParsingContexts;
 using FormatReadLibrary.Readers.StateVariables;
+using SMWHubEnumerators;
 using System.Text.RegularExpressions;
 
 namespace FormatReadLibrary.Readers;
@@ -14,7 +15,7 @@ public sealed partial class CommonListReader
         private readonly CommonListSectionTuple _section;
         private int[] _ids => State.Get<int[]>("IDs")!;
         private FilePath[] _filepaths => State.Get<FilePath[]>("FileList")!;
-        public CommonListParsingContext(FileEnumeratorWithLog fileEnumerator, CommonListSectionTuple section, int maxID = 255, bool allowVariables = false, bool allowMultiIDs = false) : base(fileEnumerator)
+        public CommonListParsingContext(FileEnumerator fileEnumerator, CommonListSectionTuple section, int maxID = 255, bool allowVariables = false, bool allowMultiIDs = false) : base(fileEnumerator)
         {
             _section = section;
             State.AddVariable("Match", new MatchStateVariable("Match", _entryRegex));

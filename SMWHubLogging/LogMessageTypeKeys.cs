@@ -18,4 +18,5 @@ public static class LogMessageTypeKeys
     public const string RESOURCE_NOT_FOUND = "RESOURCE NOT FOUND";
     public const string SYNTAX_ERROR = "SYNTAX ERROR";
     public const string VALUE_EXCEEDS_LIMIT = "VALUE EXCEEDS LIMIT";
+    public const string RAW_SYNTAX_ERROR_MESSAGE = "RAW SYNTAX ERROR MESSAGE";
 }

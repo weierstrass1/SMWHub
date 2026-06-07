@@ -3,9 +3,9 @@ using Validations;
 
 namespace SMWHubValidations;
 
-public class ValidateIfHasNext(FileEnumeratorWithLog fileEnumerator) : Validator()
+public class ValidateIfHasNext(FileEnumerator fileEnumerator) : Validator()
 {
-    private readonly FileEnumeratorWithLog _fileEnumerator = fileEnumerator;
+    private readonly FileEnumerator _fileEnumerator = fileEnumerator;
     public override ValidationResult Validate(IHaveState ctx)
     {
         ValidationResult validationResult = new();

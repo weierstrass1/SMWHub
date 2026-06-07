@@ -5,8 +5,8 @@ namespace FormatReadLibrary.Readers.ParsingContexts;
 
 public abstract class ParsingContext : StateValidator
 {
-    public FileEnumeratorWithLog FileEnumerator { get; private set; }
-    public ParsingContext(FileEnumeratorWithLog fileEnumerator)
+    public FileEnumerator FileEnumerator { get; private set; }
+    public ParsingContext(FileEnumerator fileEnumerator)
     {
         FileEnumerator = fileEnumerator;
     }
@@ -21,8 +21,7 @@ public abstract class ParsingContext : StateValidator
     }
     private ValidationResult logValidationResult(ValidationResult result)
     {
-        if (!result)
-            ValidatorLogAdapter.LogValidatorResult(FileEnumerator, result);
+        result.AddLine(FileEnumerator.LineIndex,FileEnumerator.)
 
         return result;
     }

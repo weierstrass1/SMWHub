@@ -8,7 +8,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ASMCodeUtils\ASMCodeUtils.csproj" />
-    <ProjectReference Include="..\LogRegister\LogRegister.csproj" />
     <ProjectReference Include="..\Validations\Validations.csproj" />
   </ItemGroup>
 

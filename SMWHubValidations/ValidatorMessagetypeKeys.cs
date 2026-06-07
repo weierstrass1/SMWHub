@@ -1,7 +1,7 @@
 ﻿namespace SMWHubValidations;
 public static class ValidatorMessagetypeKeys
 {
-    public const string RAW_SYNTAX_ERROR_MESSAGE = "RAW SYNTAX ERROR MESSAGE";
+    public const string RESOURCE_NOT_FOUND = "RESOURCE NOT FOUND";
     public const string REPEATED_ID = "REPEATED ID";
     public const string INVALID_ENTRY_FORMAT = "INVALID ENTRY FORMAT";
     public const string ID_SURPASS_LIMIT = "ID SURPASS LIMIT";
