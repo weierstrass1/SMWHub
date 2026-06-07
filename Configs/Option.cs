@@ -2,7 +2,7 @@
 
 namespace Configs;
 
-public abstract class  Option
+public abstract class Option
 {
     public static K? FromFile<K>(string path) where K : Option, new()
     {

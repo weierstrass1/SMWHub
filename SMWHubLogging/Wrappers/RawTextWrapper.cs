@@ -6,7 +6,7 @@ namespace SMWHubLogging.Wrappers;
 public sealed class RawTextWrapper : ILogWrapper
 {
     private readonly StringBuilder _builder;
-    public RawTextWrapper() 
+    public RawTextWrapper()
     {
         _builder = new();
     }

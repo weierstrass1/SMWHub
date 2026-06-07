@@ -2,7 +2,8 @@
 
 namespace LogRegister;
 
-public enum SpanType {         
+public enum SpanType
+{
     Timestamp,
     Prefix,
     NormalText,

@@ -42,7 +42,7 @@ public sealed partial class LogMessageType
         ILogCategory? cat = log.GetCategory(messageDTO.Category);
         if (cat == null || cat.GetType().Name == typeof(UnknownCategory).Name)
             throw new InvalidOperationException($"Error in Message \"{key}\": Category {messageDTO.Category} doesn't exist.");
-        
+
         LogMessageType reg = new(key, messageDTO.Message, cat);
 
         return reg;
@@ -59,7 +59,7 @@ public sealed partial class LogMessageType
             throw new InvalidOperationException($"Parameter {unexpectedParam} is invalid.");
 
         var missingParam = variables.Keys.FirstOrDefault(v => !entry.Parameters.ContainsKey(v));
-        if(missingParam != null)
+        if (missingParam != null)
             throw new InvalidOperationException($"Parameter {missingParam} is missing.");
         if (entry is not ILoggingEntryWithNestedMessage entryWithNestedMessage)
             return;
@@ -108,7 +108,7 @@ public sealed partial class LogMessageType
         {
             nestedMessages = loggingEntryWithNestedMessage
                 .NestedEntries
-                .ToDictionary(ne => ne.Key, 
+                .ToDictionary(ne => ne.Key,
                     ne => log.GetMessageType(ne.Value.MessageTypeKey).GetMessage(log, ne.Value));
         }
 

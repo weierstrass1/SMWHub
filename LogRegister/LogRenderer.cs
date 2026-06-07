@@ -14,7 +14,7 @@ public sealed class LogRenderer
     public LogRenderer(LogRegisterSystem log, params ILogWrapper[] wrappers)
     {
         _log = log;
-        foreach(var w in wrappers)
+        foreach (var w in wrappers)
             _renderAction += w.RenderAction;
     }
     public void RenderAll(IEnumerable<ILoggingEntry> logEntry, bool verbose = false, bool error = false)

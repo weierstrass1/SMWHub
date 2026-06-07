@@ -1,7 +1,7 @@
 ﻿namespace SMWHubSharedCodeLibrary;
 
 public enum SharedCodeTypes
-{ 
+{
     Macros,
     Defines,
     Routines
@@ -27,7 +27,7 @@ public class SharedCodePathProcessor
     public static SharedCode[] FindSharedCodes()
     {
         List<SharedCode> files = [];
-        foreach(var scope in _sharedCodeRoots)
+        foreach (var scope in _sharedCodeRoots)
             files.AddRange(getSharedCodeTypesFiles(scope));
         return [.. files];
     }

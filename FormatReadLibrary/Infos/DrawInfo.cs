@@ -1,7 +1,5 @@
 ﻿using LogRegister;
 using SMWHubLogging.LoggingRegisters;
-using System.Diagnostics.CodeAnalysis;
-using System.Xml.Linq;
 
 namespace FormatReadLibrary.Infos;
 
@@ -146,7 +144,7 @@ public sealed class DrawInfo(int id, string contextName, string name)
     public static Dictionary<string, List<DrawInfo>> GroupByContextName(List<DrawInfo> list)
     {
         Dictionary<string, List<DrawInfo>> groups = [];
-        foreach(var fi in list)
+        foreach (var fi in list)
         {
             if (!groups.ContainsKey(fi.ContextName))
                 groups.Add(fi.ContextName, []);

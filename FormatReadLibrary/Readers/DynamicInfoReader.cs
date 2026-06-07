@@ -10,11 +10,11 @@ namespace FormatReadLibrary.Readers;
 public sealed partial class DynamicInfoReader
 {
     private static readonly string[] _sections = [
-        "posesgraphics:", 
-        "palettes:", 
-        "resources:", 
-        "poseschunkssizes:", 
-        "numberof16x16tilesperpose:"    
+        "posesgraphics:",
+        "palettes:",
+        "resources:",
+        "poseschunkssizes:",
+        "numberof16x16tilesperpose:"
         ];
     public static ValidationResult Read(string path, out DynamicInfo? dynamicInfo)
     {

@@ -2,7 +2,6 @@
 using FormatReadLibrary.LineContexts;
 using FormatReadLibrary.Readers.ParsingContexts;
 using FormatReadLibrary.Readers.StateVariables;
-using SMWHubEnumerators;
 using System.Text.RegularExpressions;
 using Validations;
 
@@ -13,7 +12,7 @@ public sealed partial class DynamicInfoReader
     private sealed class DynamicInfoCurrentFormatParsingContext : ParsingContext
     {
         public required DynamicInfo DynamicInfo { get; init; }
-        private FileEnumeratorLineContext _fileEnumeratorLineContext;
+        private readonly FileEnumeratorLineContext _fileEnumeratorLineContext;
         private readonly static Regex _entryRegex = RegexContainer.DynInfoCurrentRegex();
         private readonly Dictionary<int, string> _currentNumberOf16x16TilesPerPose = [];
         private Match _match => State.Get<Match>("Match")!;

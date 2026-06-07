@@ -39,7 +39,7 @@ public sealed partial class DynamicInfo(string contextName)
                 }
             }
         }
-        if(Resources != null)
+        if (Resources != null)
         {
             for (int i = 0; i < Resources.Length; i++)
             {
@@ -59,7 +59,7 @@ public sealed partial class DynamicInfo(string contextName)
         if (PoseGraphics == null || PoseGraphics.Length == 0)
             return result;
         long totalSize = 0;
-       
+
         for (int i = 0; i < PoseGraphics.Length; i++)
         {
             path = Path.Combine(resourceDirectory, PoseGraphics[i]);
@@ -81,7 +81,7 @@ public sealed partial class DynamicInfo(string contextName)
         foreach (var size in PosesChunksSizes)
             totalSizeFromResSizes += size;
         totalSizeFromResSizes *= 32;
-        if (totalSize != totalSizeFromResSizes )
+        if (totalSize != totalSizeFromResSizes)
         {
             logging.Add(new DynamicInfoSizeMismatch(ContextName, totalSize, totalSizeFromResSizes));
             result = false;
@@ -152,7 +152,7 @@ public sealed partial class DynamicInfo(string contextName)
         int i = idOffset;
         foreach (var path in Palettes)
         {
-            if(result.ContainsKey(path) || currentPalettes.ContainsKey(path))
+            if (result.ContainsKey(path) || currentPalettes.ContainsKey(path))
                 continue;
             b = File.ReadAllBytes(Path.Combine("DynamicResources", path));
             result.Add(path, new(i, Path.GetFileNameWithoutExtension(path),
@@ -163,14 +163,14 @@ public sealed partial class DynamicInfo(string contextName)
     }
     public IReadOnlyDictionary<string, Resource> GetResourceData(int idOffset, IReadOnlyDictionary<string, Resource> currentResources)
     {
-        if(Resources == null || Resources.Length == 0)
+        if (Resources == null || Resources.Length == 0)
             return new Dictionary<string, Resource>().AsReadOnly();
         byte[] b;
         Dictionary<string, Resource> result = [];
         int i = idOffset;
         foreach (var path in Resources)
         {
-            if(currentResources.ContainsKey(path) || result.ContainsKey(path))
+            if (currentResources.ContainsKey(path) || result.ContainsKey(path))
                 continue;
             b = File.ReadAllBytes(Path.Combine("DynamicResources", path));
             result.Add(path, new(i, Path.GetFileNameWithoutExtension(path),
@@ -217,7 +217,7 @@ public sealed partial class DynamicInfo(string contextName)
             newVal += (PosesChunksSizes[i] + PosesChunksSizes[i + 1]) * 32;
             b = wholeGFX[index..newVal];
             size += b.Length;
-            if(size > lens[gfxInd])
+            if (size > lens[gfxInd])
             {
                 gfxInd++;
                 fInd = 0;
@@ -243,15 +243,15 @@ public sealed partial class DynamicInfo(string contextName)
     public int GetPoseSize(int id)
     {
         int id2 = id * 2;
-        return PosesChunksSizes == null ? 
+        return PosesChunksSizes == null ?
                     -1 :
-                    id2 >= PosesChunksSizes.Length ? 
-                        -1 : 
+                    id2 >= PosesChunksSizes.Length ?
+                        -1 :
                         32 * (PosesChunksSizes[id2] + PosesChunksSizes[id2 + 1]);
     }
     public int[] GetPosesBlocks()
     {
-        if( PosesChunksSizes == null )
+        if (PosesChunksSizes == null)
             return [];
         int[] res = new int[PosesChunksSizes.Length / 2];
         for (int i = 0; i < res.Length; i++)
@@ -266,7 +266,7 @@ public sealed partial class DynamicInfo(string contextName)
         int baseBlocks = PosesChunksSizes[id2] / 32;
         baseBlocks *= 8;
         int lastRowBlock = Math.Max(PosesChunksSizes[id2] % 32, PosesChunksSizes[id2 + 1]);
-        if(lastRowBlock <= 16)
+        if (lastRowBlock <= 16)
         {
             lastRowBlock += lastRowBlock % 2;
             lastRowBlock /= 2;
@@ -286,10 +286,10 @@ public sealed partial class DynamicInfo(string contextName)
     }
     public int[] GetLastRow()
     {
-        if(PosesLastRow == null || PosesChunksSizes == null)
+        if (PosesLastRow == null || PosesChunksSizes == null)
             return [];
         if (PosesLastRow.Length == PosesChunksSizes.Length / 2)
-            return [.. PosesLastRow.Select(x => x*16)];
+            return [.. PosesLastRow.Select(x => x * 16)];
         int[] lr = new int[PosesChunksSizes.Length / 2];
         for (int i = 0; i < lr.Length; i++)
             lr[i] = PosesLastRow[0] * 16;
@@ -308,7 +308,7 @@ public sealed partial class DynamicInfo(string contextName)
             return;
         PosesLastRow = new int[PosesChunksSizes.Length / 2];
         int val;
-        for (int i = 0; i < PosesChunksSizes.Length; i += 2) 
+        for (int i = 0; i < PosesChunksSizes.Length; i += 2)
         {
             val = PosesChunksSizes[i] / 32;
             val *= 2;
@@ -319,7 +319,7 @@ public sealed partial class DynamicInfo(string contextName)
     }
     public void FromNumberOf16x16Tiles(IDictionary<int, string> numberOf16x16TilesPerPose)
     {
-        if(PoseGraphics == null || PoseGraphics.Length == 0)
+        if (PoseGraphics == null || PoseGraphics.Length == 0)
         {
             return;
         }
@@ -331,7 +331,7 @@ public sealed partial class DynamicInfo(string contextName)
         long gtiles;
         string file;
         byte[] bytes;
-        foreach(var pg in  PoseGraphics) 
+        foreach (var pg in PoseGraphics)
         {
             file = Path.Combine("DynamicResources", pg);
             if (!File.Exists(file))
@@ -465,7 +465,7 @@ public sealed partial class DynamicInfo(string contextName)
         PoseGraphics = [$"{ContextName}.bin.tmp"];
         PosesChunksSizes = [.. posechunks];
         File.WriteAllBytes(Path.Combine("DynamicResources", $"{ContextName}.bin.tmp"), [.. result]);
-        
+
         GenerateLastRow();
     }
     private static long getNumberOfTilesPerGraphic(string path)

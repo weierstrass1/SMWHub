@@ -7,7 +7,7 @@ public sealed class ValidationResult(ValidationContext? context = null)
     public List<ValidationError> Errors { get; } = [];
     public void AddError(string messageTypeKey)
     {
-        if(Context == null)
+        if (Context == null)
             throw new NullReferenceException(nameof(Context));
         Errors.Add(new ValidationError(Context, messageTypeKey));
     }

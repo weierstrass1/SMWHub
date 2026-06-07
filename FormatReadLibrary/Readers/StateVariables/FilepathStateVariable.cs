@@ -26,7 +26,7 @@ public class FilepathStateVariable : StateValidator, IStateVariable<FilePath>, I
     {
         Context = context;
         Match match = _filepathRegex.Match(fileEntry);
-        if(!match.Success)
+        if (!match.Success)
         {
             Value = null;
             return new(Context);

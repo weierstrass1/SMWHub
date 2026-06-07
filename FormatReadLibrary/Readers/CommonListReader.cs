@@ -1,5 +1,5 @@
-﻿using FormatReadLibrary.LineContexts;
-using FormatReadLibrary.Entries;
+﻿using FormatReadLibrary.Entries;
+using FormatReadLibrary.LineContexts;
 using SMWHubEnumerators;
 using Validations;
 
@@ -26,7 +26,7 @@ public sealed partial class CommonListReader
         FileReader fReader = new(path);
 
         ValidationResult result = fReader.SplitBySections(out Dictionary<string, FileEnumerator> enumerators, true, [.. _entriesList.Keys]);
-        
+
         CommonListParsingContext ctx;
 
         foreach (var section in enumerators)
@@ -45,7 +45,7 @@ public sealed partial class CommonListReader
     public IEnumerable<CommonListEntry> GetEntries()
     {
         List<CommonListEntry> entries = [];
-        IEnumerable < List < CommonListEntry >> entriesListOfLists;
+        IEnumerable<List<CommonListEntry>> entriesListOfLists;
         foreach (var entry in _entriesList)
         {
             entriesListOfLists = entry.Value

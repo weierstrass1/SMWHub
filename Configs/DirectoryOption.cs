@@ -16,7 +16,7 @@ public sealed class DirectoryOption : Option<string>
     }
     public override bool Validate(string value)
     {
-        if(Path.GetExtension(value) != ".exe" && !GetFromSettings)
+        if (Path.GetExtension(value) != ".exe" && !GetFromSettings)
             return false;
         string? directory = Path.GetDirectoryName(value);
         return string.IsNullOrWhiteSpace(directory) || Directory.Exists(directory);

@@ -68,7 +68,7 @@ public sealed partial class IntegerIDListStateVariable<TValue> : IStateVariable<
         if (!_allowMultiID && Value.Length != 1)
             result.AddError(ValidatorMessagetypeKeys.MULTI_ID_NOT_ALLOWED);
 
-        if(!result.IsValid)
+        if (!result.IsValid)
             Value = [];
 
         return result;

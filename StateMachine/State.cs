@@ -29,7 +29,7 @@ public class State
     }
     public bool HasVariableOfType<T>(string key)
     {
-        if(!HasVariable(key)) 
+        if (!HasVariable(key))
             return false;
         if (_variables[key] is IStateVariable<T>)
             return true;

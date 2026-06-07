@@ -10,8 +10,8 @@ namespace FormatReadLibrary.Readers.StateVariables;
 public class ParametersStateVariable : StateValidator, IStateVariable<int[]>, ISelfValidatedStateVariable
 {
     private readonly static Regex _valuesRegex = RegexContainer.ValuesRegex();
-    public int[]? Value 
-    { 
+    public int[]? Value
+    {
         get => State.Get<int[]>("Parameters");
         set => State.Set("Parameters", value);
     }

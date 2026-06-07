@@ -7,7 +7,7 @@ public static class ValidatorLogAdapter
 {
     public static void LogValidatorResult(LogRegisterSystem log, ValidationResult result)
     {
-        foreach(var error in result.Errors)
+        foreach (var error in result.Errors)
             log.Add(LoggingEntryFactory.CreateEntry(error));
     }
 }

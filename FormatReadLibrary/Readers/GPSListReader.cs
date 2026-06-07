@@ -23,7 +23,7 @@ public sealed partial class GPSListReader(string baseDirectory)
 
         GPSListParsingContext ctx = new(opts);
         ValidationResult result = new();
-        while(fileEnumerator.MoveNext())
+        while (fileEnumerator.MoveNext())
         {
             if (string.IsNullOrWhiteSpace(fileEnumerator.Current))
                 continue;

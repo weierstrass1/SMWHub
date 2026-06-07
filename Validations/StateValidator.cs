@@ -8,7 +8,7 @@ public abstract class StateValidator : IValidationState
     public State State { get; private set; }
     public ValidationContext? Context { get; set; }
     protected List<Validator> _validators { get; private set; }
-    public StateValidator() 
+    public StateValidator()
     {
         State = new();
         _validators = [];

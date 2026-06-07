@@ -2,7 +2,6 @@
 using FormatReadLibrary.LineContexts;
 using FormatReadLibrary.Readers.ParsingContexts;
 using FormatReadLibrary.Readers.StateVariables;
-using SMWHubEnumerators;
 using SMWHubValidations;
 using Validations;
 
@@ -13,7 +12,7 @@ public sealed partial class DynamicInfoReader
     private sealed class DynamicInfoResourceListParsingContext : ParsingContext
     {
         public required DynamicInfo DynamicInfo { get; init; }
-        private FileEnumeratorLineContext _fileEnumeratorLineContext;
+        private readonly FileEnumeratorLineContext _fileEnumeratorLineContext;
         private readonly List<string> _list = [];
         private readonly DynamicInfoSection _section;
         private string _filepath => State.Get<FilePath>("Filepath")!.Path;

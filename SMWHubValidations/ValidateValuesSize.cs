@@ -12,7 +12,7 @@ public class ValidateValuesSize : Validator
     public ValidateValuesSize(IValidationState context, uint minSize, uint maxSize) : base(context)
     {
         if (minSize > maxSize)
-            ArgumentOutOfRangeException.ThrowIfGreaterThan(minSize,maxSize, nameof(minSize));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(minSize, maxSize, nameof(minSize));
 
         _minSize = minSize;
         _maxSize = maxSize;
@@ -25,7 +25,7 @@ public class ValidateValuesSize : Validator
             (values != null && values.Length >= _minSize && values.Length <= _maxSize))
             return validationResult;
 
-        if(_minSize != _maxSize)
+        if (_minSize != _maxSize)
         {
             validationResult.AddError(ValidatorMessagetypeKeys.VALUES_SET_ALLOW_BETWEEN_N_AND_M_VALUES, new()
             {
@@ -34,7 +34,7 @@ public class ValidateValuesSize : Validator
             });
             return validationResult;
         }
-        if(_minSize == 1)
+        if (_minSize == 1)
             validationResult.AddError(ValidatorMessagetypeKeys.VALUES_SET_ALLOW_1_VALUE);
         else
             validationResult.AddError(ValidatorMessagetypeKeys.VALUES_SET_ALLOW_N_VALUES, new()

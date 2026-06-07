@@ -17,7 +17,7 @@ public sealed class ValidateEntryParameters(IValidationState ctx, int minLimit =
         ValidationResult validationResult = new(ctx.Context);
         if (parameters == null || parameters.Length == 0)
             return validationResult;
-        foreach(var par in parameters)
+        foreach (var par in parameters)
         {
             if (par < _minLimit || par > _maxLimit)
                 validationResult.AddError(ValidatorMessagetypeKeys.PARAMETER_OUT_OF_RANGE, new()

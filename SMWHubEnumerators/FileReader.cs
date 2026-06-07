@@ -83,7 +83,7 @@ public sealed class FileReader : IEnumerable<string>
         tryAddEnumerator(enumerators, skipTitle, sectionStart, section, lastNotEmptyLine);
         return result;
     }
-    private static ValidationResult validateSection(ValidationContext context, Dictionary<string, FileEnumerator> enumerators, 
+    private static ValidationResult validateSection(ValidationContext context, Dictionary<string, FileEnumerator> enumerators,
         string? section, int lastNotEmptyLine, string id)
     {
         ValidationResult result = new(context);
@@ -92,7 +92,7 @@ public sealed class FileReader : IEnumerable<string>
             {
                 { "section", id }
             });
-        
+
         if (lastNotEmptyLine < 0)
             return result;
 
@@ -103,7 +103,7 @@ public sealed class FileReader : IEnumerable<string>
     private void tryAddEnumerator(Dictionary<string, FileEnumerator> enumerators, bool skipTitle, int sectionStart, string? section, int lastNotEmptyLine)
     {
         if (section != null)
-        enumerators.Add(section, new FileEnumerator(this, sectionStart + (skipTitle ? 1 : 0), lastNotEmptyLine));
+            enumerators.Add(section, new FileEnumerator(this, sectionStart + (skipTitle ? 1 : 0), lastNotEmptyLine));
     }
     IEnumerator IEnumerable.GetEnumerator()
     {

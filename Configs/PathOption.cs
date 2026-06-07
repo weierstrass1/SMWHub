@@ -4,7 +4,7 @@
 public sealed class PathOption : Option<string>
 {
     public bool ExistCheck;
-    public PathOption(): base()
+    public PathOption() : base()
     {
         ExistCheck = true;
     }
@@ -19,7 +19,7 @@ public sealed class PathOption : Option<string>
         if (Path.GetExtension(value) != ".smc")
             return false;
         string directory = Path.GetDirectoryName(value)!;
-        if(string.IsNullOrWhiteSpace(directory))
+        if (string.IsNullOrWhiteSpace(directory))
             directory = ".\\";
         if (!Directory.Exists(directory))
         {

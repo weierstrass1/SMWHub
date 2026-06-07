@@ -6,7 +6,7 @@ public class LazyStateVariable<T>(Func<T> getter, bool cleanOnReset = true) : IS
 {
     public bool CleanOnReset { get; set; } = cleanOnReset;
     public T? Value
-    { 
+    {
         get
         {
             _value ??= _getter();

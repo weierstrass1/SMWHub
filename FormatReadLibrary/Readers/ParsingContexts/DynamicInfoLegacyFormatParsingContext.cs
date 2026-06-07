@@ -2,7 +2,6 @@
 using FormatReadLibrary.LineContexts;
 using FormatReadLibrary.Readers.ParsingContexts;
 using FormatReadLibrary.Readers.StateVariables;
-using SMWHubEnumerators;
 using SMWHubValidations;
 using StateMachine;
 using System.Text.RegularExpressions;

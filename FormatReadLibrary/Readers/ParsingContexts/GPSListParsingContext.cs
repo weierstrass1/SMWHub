@@ -2,7 +2,6 @@
 using FormatReadLibrary.LineContexts;
 using FormatReadLibrary.Readers.ParsingContexts;
 using FormatReadLibrary.Readers.StateVariables;
-using SMWHubEnumerators;
 using SMWHubValidations;
 using StateMachine;
 using System.Text.RegularExpressions;
@@ -51,7 +50,7 @@ public sealed partial class GPSListReader
                 Convert.ToInt32(_match.Groups["actlike"].Value, 16) :
                 -1;
 
-            foreach(var filepath in _filepaths)
+            foreach (var filepath in _filepaths)
             {
                 addEntries(filepath.Path, filepath.Values, start, end, actlike);
             }

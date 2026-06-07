@@ -34,7 +34,7 @@ public sealed class Options
     [JsonIgnore]
     public string[] FeaturesList;
     public Settings Settings;
-    private Options() 
+    private Options()
     {
         InputRomPath = Option.FromFile<PathOption>(INPUT_ROM_PATH_FILE)!;
         OutputRomPath = Option.FromFile<PathOption>(OUTPUT_ROM_PATH_FILE)!;
@@ -113,7 +113,7 @@ public sealed class Options
     }
     public void Save()
     {
-        
+
         string jsonString = JsonConvert.SerializeObject(InputRomPath, Formatting.Indented);
         File.WriteAllText(INPUT_ROM_PATH_FILE, jsonString);
         jsonString = JsonConvert.SerializeObject(OutputRomPath, Formatting.Indented);

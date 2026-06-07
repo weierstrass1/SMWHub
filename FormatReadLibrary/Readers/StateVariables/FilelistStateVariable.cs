@@ -11,10 +11,10 @@ public class FilelistStateVariable : StateValidator, IStateVariable<FilePath[]>,
 {
     private static readonly Regex _fileListRegex = RegexContainer.FileListRegex();
     public bool CleanOnReset { get; set; } = false;
-    public FilePath[]? Value 
-    { 
-        get => State.Get<FilePath[]>("Filelist"); 
-        set => State.Set("Filelist", value); 
+    public FilePath[]? Value
+    {
+        get => State.Get<FilePath[]>("Filelist");
+        set => State.Set("Filelist", value);
     }
     object? IStateVariable.Value { get => Value; set => Value = (FilePath[]?)value!; }
     private readonly bool _allowedVariables;
@@ -51,7 +51,7 @@ public class FilelistStateVariable : StateValidator, IStateVariable<FilePath[]>,
         Value = [.. fpaths.Where(fp => fp != null).Select(fp => fp!)];
 
         result.Merge(validate());
-        if(!result.IsValid)
+        if (!result.IsValid)
             Value = [];
 
         return result;

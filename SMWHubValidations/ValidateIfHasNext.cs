@@ -16,7 +16,7 @@ public class ValidateIfHasNext(FileEnumerator fileEnumerator) : Validator()
     }
     public void MoveToTheNextNotEmptyLine()
     {
-        while(_fileEnumerator.MoveNext() && string.IsNullOrWhiteSpace(_fileEnumerator.Current))
+        while (_fileEnumerator.MoveNext() && string.IsNullOrWhiteSpace(_fileEnumerator.Current))
         {
         }
     }

@@ -8,7 +8,7 @@ public sealed class BoolOption : Option<bool>
     }
     public override bool ParseFromString(string value)
     {
-        if(string.IsNullOrWhiteSpace(value)) 
+        if (string.IsNullOrWhiteSpace(value))
             return false;
         string v = value.ToLower().Trim();
         return v.Equals("true") || v.Equals("yes") || v.Equals("y") || v.Equals("t");

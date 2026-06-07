@@ -1,5 +1,5 @@
-﻿using FormatReadLibrary.LineContexts;
-using FormatReadLibrary.Entries;
+﻿using FormatReadLibrary.Entries;
+using FormatReadLibrary.LineContexts;
 using FormatReadLibrary.Readers.ParsingContexts;
 using FormatReadLibrary.Readers.StateVariables;
 using SMWHubValidations;
