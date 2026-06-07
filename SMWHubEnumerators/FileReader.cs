@@ -69,9 +69,9 @@ public sealed class FileReader : IEnumerable<string>
             id = getID(currentLine);
             r = validateSection(new(FilePath, i, currentLine), enumerators, section, lastNotEmptyLine, id);
             result.Merge(r);
-            if (!r || 
-                !tryAddEnumerator(enumerators, skipTitle, sectionStart, section, lastNotEmptyLine))
+            if (!r)
                 continue;
+            tryAddEnumerator(enumerators, skipTitle, sectionStart, section, lastNotEmptyLine);
             section = id;
             sectionStart = i;
             lastNotEmptyLine = -1;
@@ -80,8 +80,7 @@ public sealed class FileReader : IEnumerable<string>
         id = getID(currentLine);
         r = validateSection(new(FilePath, lastNotEmptyLine, currentLine), enumerators, section, lastNotEmptyLine, id);
         result.Merge(r);
-        if (r)
-            tryAddEnumerator(enumerators, skipTitle, sectionStart, section, lastNotEmptyLine);
+        tryAddEnumerator(enumerators, skipTitle, sectionStart, section, lastNotEmptyLine);
         return result;
     }
     private ValidationResult validateSection(ValidationContext context, Dictionary<string, FileEnumerator> enumerators, 
@@ -101,12 +100,10 @@ public sealed class FileReader : IEnumerable<string>
             result.AddError(SMWHubEnumeratorsMessageTypeKeys.SECTION_WITHOUT_TITLE);
         return result;
     }
-    private bool tryAddEnumerator(Dictionary<string, FileEnumerator> enumerators, bool skipTitle, int sectionStart, string? section, int lastNotEmptyLine)
+    private void tryAddEnumerator(Dictionary<string, FileEnumerator> enumerators, bool skipTitle, int sectionStart, string? section, int lastNotEmptyLine)
     {
-        if (section == null)
-            return false;
+        if (section != null)
         enumerators.Add(section, new FileEnumerator(this, sectionStart + (skipTitle ? 1 : 0), lastNotEmptyLine));
-        return true;
     }
     IEnumerator IEnumerable.GetEnumerator()
     {

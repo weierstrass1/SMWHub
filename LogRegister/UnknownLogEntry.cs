@@ -1,4 +1,6 @@
-﻿namespace LogRegister;
+﻿using LogRegister.Interfaces;
+
+namespace LogRegister;
 
 public class UnknownLogEntry : ILoggingEntry
 {

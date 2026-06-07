@@ -2,6 +2,7 @@
 using FormatReadLibrary.ResourceManagement.ResourceTypes;
 using LogRegister;
 using ResourceManagement;
+using SMWHubLogging.LoggingRegisters;
 using System.Text.RegularExpressions;
 
 namespace FormatReadLibrary.Infos;

@@ -1,4 +1,4 @@
-﻿namespace StateMachine;
+﻿namespace StateMachine.Interfaces;
 
 public interface IHaveState
 {

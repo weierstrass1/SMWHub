@@ -1,11 +1,12 @@
 ﻿using StateMachine;
+using Validations.Interfaces;
 
 namespace Validations;
 
 public abstract class StateValidator : IValidationState
 {
     public State State { get; private set; }
-    public ValidationContext? Context { get; protected set; }
+    public ValidationContext? Context { get; set; }
     protected List<Validator> _validators { get; private set; }
     public StateValidator() 
     {
@@ -24,7 +25,7 @@ public abstract class StateValidator : IValidationState
             .Cast<ISelfValidatedStateVariable>();
         foreach (var variable in selfValidatedVariables)
         {
-            result.Merge(variable.GetFrom(entry));
+            result.Merge(variable.GetFrom(Context!, entry));
         }
         return result;
     }

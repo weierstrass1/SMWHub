@@ -33,7 +33,7 @@ public sealed partial class DynamicInfoReader
         public override ValidationResult ProcessEntry()
         {
             Context = FileEnumerator.Context;
-            ValidationResult result = validatePoseChunksTitle(out string id);
+            ValidationResult result = validatePoseChunksTitle(Context, out string id);
             if (!result)
                 return result;
 
@@ -59,9 +59,9 @@ public sealed partial class DynamicInfoReader
             setupDynamicInfoPosesChunksSizes();
             return result;
         }
-        private ValidationResult validatePoseChunksTitle(out string id)
+        private ValidationResult validatePoseChunksTitle(ValidationContext context, out string id)
         {
-            ValidationResult result = _matchTitle.GetFrom(FileEnumerator.Current);
+            ValidationResult result = _matchTitle.GetFrom(context, FileEnumerator.Current);
             if (!result.IsValid)
             {
                 id = "";

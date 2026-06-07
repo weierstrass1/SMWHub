@@ -1,5 +1,6 @@
 ﻿using StateMachine;
 using Validations;
+using Validations.Interfaces;
 
 namespace SMWHubValidations;
 

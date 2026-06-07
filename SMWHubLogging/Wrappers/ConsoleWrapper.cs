@@ -1,11 +1,12 @@
 ﻿using LogRegister;
+using LogRegister.Interfaces;
 using SMWHubLogging.Categories;
 
 namespace SMWHubLogging.Wrappers;
 
-public static class ConsoleWrapper
+public sealed class ConsoleWrapper : ILogWrapper
 {
-    public static void RenderAction(string text, ILogCategory category, SpanType type, bool mustWrite = false)
+    public void RenderAction(string text, ILogCategory category, SpanType type, bool mustWrite = false)
     {
         if (!mustWrite)
             return;

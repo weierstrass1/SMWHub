@@ -1,9 +1,22 @@
-﻿namespace LogRegister;
+﻿using LogRegister.Interfaces;
 
-public sealed class LogRenderer(LogRegisterSystem log, LogRenderAction renderAction)
+namespace LogRegister;
+
+public sealed class LogRenderer
 {
-    private readonly LogRegisterSystem _log = log;
-    private readonly LogRenderAction _renderAction = renderAction;
+    private readonly LogRegisterSystem _log;
+    private event LogRenderAction? _renderAction;
+    public LogRenderer(LogRegisterSystem log, LogRenderAction renderAction)
+    {
+        _log = log;
+        _renderAction += renderAction;
+    }
+    public LogRenderer(LogRegisterSystem log, params ILogWrapper[] wrappers)
+    {
+        _log = log;
+        foreach(var w in wrappers)
+            _renderAction += w.RenderAction;
+    }
     public void RenderAll(IEnumerable<ILoggingEntry> logEntry, bool verbose = false, bool error = false)
     {
         foreach (var log in logEntry)
@@ -20,18 +33,18 @@ public sealed class LogRenderer(LogRegisterSystem log, LogRenderAction renderAct
         foreach (var span in result.Spans)
         {
             if (span.Start > cursor)
-                _renderAction(result.Text[cursor..span.Start], result.Category, SpanType.NormalText, mustWrite: mustWrite);
+                _renderAction?.Invoke(result.Text[cursor..span.Start], result.Category, SpanType.NormalText, mustWrite: mustWrite);
 
             var value = result.Text.Substring(span.Start, span.Length);
 
-            _renderAction(value, result.Category, span.Type, mustWrite: mustWrite);
+            _renderAction?.Invoke(value, result.Category, span.Type, mustWrite: mustWrite);
 
             cursor = span.Start + span.Length;
         }
 
         if (cursor < result.Text.Length)
-            _renderAction(result.Text[cursor..], result.Category, SpanType.NormalText, mustWrite: mustWrite);
+            _renderAction?.Invoke(result.Text[cursor..], result.Category, SpanType.NormalText, mustWrite: mustWrite);
 
-        _renderAction("\n", result.Category, SpanType.NormalText, mustWrite: mustWrite);
+        _renderAction?.Invoke("\n", result.Category, SpanType.NormalText, mustWrite: mustWrite);
     }
 }

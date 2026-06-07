@@ -1,4 +1,4 @@
-﻿namespace Validations;
+﻿namespace Validations.Interfaces;
 
 public interface IVariableValidator
 {

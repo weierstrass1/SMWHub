@@ -1,4 +1,5 @@
 ﻿using LogRegister;
+using SMWHubLogging.LoggingRegisters;
 
 namespace FormatReadLibrary.Infos;
 

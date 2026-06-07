@@ -1,5 +1,7 @@
 ﻿using StateMachine;
 using Validations;
+using Validations.Attributes;
+using Validations.Interfaces;
 
 namespace SMWHubValidations;
 [RequiresStateVariable("ID", typeof(int))]

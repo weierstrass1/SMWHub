@@ -1,6 +1,6 @@
-﻿using StateMachine;
+﻿using StateMachine.Interfaces;
 
-namespace Validations;
+namespace Validations.Interfaces;
 
 public interface IValidationState : IHaveState
 {

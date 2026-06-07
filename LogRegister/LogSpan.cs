@@ -1,4 +1,6 @@
-﻿namespace LogRegister;
+﻿using LogRegister.Interfaces;
+
+namespace LogRegister;
 
 public enum SpanType {         
     Timestamp,

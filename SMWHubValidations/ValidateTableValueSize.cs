@@ -1,4 +1,5 @@
 ﻿using Validations;
+using Validations.Interfaces;
 
 namespace SMWHubValidations;
 public enum TableValueSize

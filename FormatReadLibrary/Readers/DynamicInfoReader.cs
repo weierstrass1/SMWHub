@@ -16,7 +16,7 @@ public sealed partial class DynamicInfoReader
         "poseschunkssizes:", 
         "numberof16x16tilesperpose:"    
         ];
-    public static bool Read(string path, out DynamicInfo? dynamicInfo)
+    public static ValidationResult Read(string path, out DynamicInfo? dynamicInfo)
     {
         string content = File.ReadAllText(path);
         return Read(Path.GetFileNameWithoutExtension(path), content, Path.GetDirectoryName(path)!, out dynamicInfo);

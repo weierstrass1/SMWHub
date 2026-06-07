@@ -1,4 +1,6 @@
-﻿namespace StateMachine;
+﻿using StateMachine.Interfaces;
+
+namespace StateMachine;
 
 public class StateVariable<T> : IStateVariable<T>
 {

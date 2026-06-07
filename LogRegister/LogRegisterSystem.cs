@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using LogRegister.Interfaces;
+using System.Reflection;
 using System.Text.Json;
 
 namespace LogRegister;

@@ -1,5 +1,6 @@
 ﻿using SMWHubEnumerators;
 using Validations;
+using Validations.Interfaces;
 
 namespace SMWHubValidations;
 

@@ -1,5 +1,6 @@
 ﻿using StateMachine;
 using System.Reflection;
+using Validations.Interfaces;
 
 namespace Validations;
 public record VariableValidator : IVariableValidator

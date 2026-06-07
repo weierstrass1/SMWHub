@@ -1,8 +1,9 @@
 ﻿using SMWHubValidations;
-using StateMachine;
+using StateMachine.Interfaces;
 using System.Globalization;
 using System.Text.RegularExpressions;
 using Validations;
+using Validations.Interfaces;
 
 namespace FormatReadLibrary.Readers.StateVariables;
 
@@ -44,14 +45,14 @@ public sealed partial class IntegerIDListStateVariable<TValue> : IStateVariable<
             HexRangeRegex() :
             RangeRegex();
     }
-    public ValidationResult GetFrom(string text)
+    public ValidationResult GetFrom(ValidationContext context, string text)
     {
         Match match = _rangeRegex.Match(text);
         ValidationResult result;
         if (!match.Success)
         {
             Value = [];
-            result = new();
+            result = new(context);
             result.AddError(ValidatorMessagetypeKeys.INVALID_ID);
             return result;
         }
@@ -63,7 +64,7 @@ public sealed partial class IntegerIDListStateVariable<TValue> : IStateVariable<
         else
             Value = getMultiValue(match);
 
-        result = validateValues();
+        result = validateValues(context);
         if (!_allowMultiID && Value.Length != 1)
             result.AddError(ValidatorMessagetypeKeys.MULTI_ID_NOT_ALLOWED);
 
@@ -100,12 +101,14 @@ public sealed partial class IntegerIDListStateVariable<TValue> : IStateVariable<
         }
         return [.. values.Distinct().OrderBy(x => x)];
     }
-    private ValidationResult validateValues()
+    private ValidationResult validateValues(ValidationContext context)
     {
         ValidationResult result = new();
-        IntegerIDStateVariable<TValue> variable = new(_dictionary, _maxID, _allowMultiID);
-
-        foreach(var value in Value!)
+        IntegerIDStateVariable<TValue> variable = new(_dictionary, _maxID, _allowMultiID)
+        {
+            Context = context
+        };
+        foreach (var value in Value!)
         {
             variable.Value = value;
             result.Merge(variable.Validate());

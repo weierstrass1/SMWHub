@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using LogRegister.Interfaces;
+using System.Text;
 
 namespace LogRegister;
 

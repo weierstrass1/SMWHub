@@ -1,0 +1,84 @@
+root = true
+
+[*.cs]
+
+# =========================
+# CONSTANTES -> UPPER_CASE
+# =========================
+
+dotnet_naming_rule.constants_must_be_upper_case.severity = warning
+dotnet_naming_rule.constants_must_be_upper_case.symbols = constants
+dotnet_naming_rule.constants_must_be_upper_case.style = upper_case_style
+
+dotnet_naming_symbols.constants.applicable_kinds = field
+dotnet_naming_symbols.constants.required_modifiers = const
+
+dotnet_naming_style.upper_case_style.capitalization = all_upper
+
+
+# ===================================
+# MIEMBROS PÚBLICOS -> PascalCase
+# ===================================
+
+dotnet_naming_rule.public_members_must_be_pascal_case.severity = warning
+dotnet_naming_rule.public_members_must_be_pascal_case.symbols = public_members
+dotnet_naming_rule.public_members_must_be_pascal_case.style = pascal_case_style
+
+dotnet_naming_symbols.public_members.applicable_kinds = field,property,event,method
+dotnet_naming_symbols.public_members.applicable_accessibilities = public
+
+dotnet_naming_style.pascal_case_style.capitalization = pascal_case
+
+
+# ===================================
+# CAMPOS NO PÚBLICOS -> _camelCase
+# ===================================
+
+dotnet_naming_rule.non_public_fields_must_be_underscore_camel.severity = warning
+dotnet_naming_rule.non_public_fields_must_be_underscore_camel.symbols = non_public_fields
+dotnet_naming_rule.non_public_fields_must_be_underscore_camel.style = underscore_camel_style
+
+dotnet_naming_symbols.non_public_fields.applicable_kinds = field
+dotnet_naming_symbols.non_public_fields.applicable_accessibilities = private,protected,internal,protected_internal,private_protected
+
+dotnet_naming_style.underscore_camel_style.required_prefix = _
+dotnet_naming_style.underscore_camel_style.capitalization = camel_case
+
+
+# ===================================
+# MÉTODOS NO PÚBLICOS -> camelCase
+# ===================================
+
+dotnet_naming_rule.non_public_methods_must_be_camel_case.severity = warning
+dotnet_naming_rule.non_public_methods_must_be_camel_case.symbols = non_public_methods
+dotnet_naming_rule.non_public_methods_must_be_camel_case.style = camel_case_style
+
+dotnet_naming_symbols.non_public_methods.applicable_kinds = method
+dotnet_naming_symbols.non_public_methods.applicable_accessibilities = private,protected,internal,protected_internal,private_protected
+
+dotnet_naming_style.camel_case_style.capitalization = camel_case
+
+
+# ===================================
+# INTERFACES -> IPascalCase
+# ===================================
+
+dotnet_naming_rule.interfaces_must_be_ipascal.severity = warning
+dotnet_naming_rule.interfaces_must_be_ipascal.symbols = interfaces
+dotnet_naming_rule.interfaces_must_be_ipascal.style = interface_style
+
+dotnet_naming_symbols.interfaces.applicable_kinds = interface
+
+dotnet_naming_style.interface_style.required_prefix = I
+dotnet_naming_style.interface_style.capitalization = pascal_case
+
+
+# ===================================
+# CLASES -> PascalCase
+# ===================================
+
+dotnet_naming_rule.classes_must_be_pascal_case.severity = warning
+dotnet_naming_rule.classes_must_be_pascal_case.symbols = classes
+dotnet_naming_rule.classes_must_be_pascal_case.style = pascal_case_style
+
+dotnet_naming_symbols.classes.applicable_kinds = class

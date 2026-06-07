@@ -1,8 +1,9 @@
 ﻿using LogRegister;
+using LogRegister.Interfaces;
 using System.Text;
 
 namespace SMWHubLogging.Wrappers;
-public sealed class RawTextWrapper
+public sealed class RawTextWrapper : ILogWrapper
 {
     private readonly StringBuilder builder;
     public RawTextWrapper() 

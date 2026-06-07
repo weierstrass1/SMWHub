@@ -1,5 +1,6 @@
 ﻿using SMWHubValidations;
 using StateMachine;
+using StateMachine.Interfaces;
 using Validations;
 
 namespace FormatReadLibrary.Readers.StateVariables;

@@ -5,13 +5,14 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <AssemblyVersion>1.0.0.205</AssemblyVersion>
-    <FileVersion>1.0.0.205</FileVersion>
+    <AssemblyVersion>1.0.0.212</AssemblyVersion>
+    <FileVersion>1.0.0.212</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\FormatReadLibrary\FormatReadLibrary.csproj" />
     <ProjectReference Include="..\SharedCodeLibrary\SharedCodeLibrary.csproj" />
+    <ProjectReference Include="..\SMWHubLogging\SMWHubLogging.csproj" />
   </ItemGroup>
 
 </Project>

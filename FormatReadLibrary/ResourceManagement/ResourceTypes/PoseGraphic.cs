@@ -1,4 +1,4 @@
-﻿using ResourceManagement;
+﻿using ResourceManagement.Interfaces;
 
 namespace FormatReadLibrary.ResourceManagement.ResourceTypes;
 public sealed class PoseGraphic : IResourceType

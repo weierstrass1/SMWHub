@@ -1,4 +1,6 @@
-﻿namespace ResourceManagement;
+﻿using ResourceManagement.Interfaces;
+
+namespace ResourceManagement;
 
 public class Resource(int id, string name, IResourceType type, byte[] data)
 {

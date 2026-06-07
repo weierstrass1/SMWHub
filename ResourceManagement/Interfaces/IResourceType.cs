@@ -1,4 +1,4 @@
-﻿namespace ResourceManagement;
+﻿namespace ResourceManagement.Interfaces;
 
 public interface IResourceType
 {

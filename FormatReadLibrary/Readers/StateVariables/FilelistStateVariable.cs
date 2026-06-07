@@ -1,7 +1,9 @@
 ﻿using SMWHubValidations;
 using StateMachine;
+using StateMachine.Interfaces;
 using System.Text.RegularExpressions;
 using Validations;
+using Validations.Interfaces;
 
 namespace FormatReadLibrary.Readers.StateVariables;
 
@@ -17,14 +19,14 @@ public class FilelistStateVariable : StateValidator, IStateVariable<FilePath[]>,
     object? IStateVariable.Value { get => Value; set => Value = (FilePath[]?)value!; }
     private readonly bool _allowedVariables;
     private readonly string _baseDirectory;
-    public FilelistStateVariable(string baseDirectory, bool allowedVariables, bool allowedMultiline)
+    public FilelistStateVariable(string baseDirectory, bool allowedVariables, bool allowedMultifiles)
     {
         _allowedVariables = allowedVariables;
         _baseDirectory = baseDirectory;
         State.AddVariable("Filelist", new StateVariable<FilePath[]>());
-        addValidator(new ValidateFileListAmount(this, allowedMultiline));
+        addValidator(new ValidateFileListAmount(this, allowedMultifiles));
     }
-    public ValidationResult GetFrom(string entry)
+    public ValidationResult GetFrom(ValidationContext context, string entry)
     {
         Match match = _fileListRegex.Match(entry);
         if (!match.Success)
@@ -32,7 +34,7 @@ public class FilelistStateVariable : StateValidator, IStateVariable<FilePath[]>,
             Value = [];
             return new();
         }
-        ValidationResult result = new();
+        ValidationResult result = new(context);
         string[] values = match.Groups["filelist"].Success ?
             [..match.Groups["filelist"].Value
                 .Split(',')
@@ -40,10 +42,10 @@ public class FilelistStateVariable : StateValidator, IStateVariable<FilePath[]>,
             [];
         List<FilePath?> fpaths = [];
 
-        FilepathStateVariable fpathStateVariable = new(_baseDirectory);
-        foreach(var value in values)
+        FilepathStateVariable fpathStateVariable = new(_baseDirectory, _allowedVariables);
+        foreach (var value in values)
         {
-            result.Merge(fpathStateVariable.GetFrom(value));
+            result.Merge(fpathStateVariable.GetFrom(Context!, value));
             fpaths.Add(fpathStateVariable.Value);
         }
         Value = [.. fpaths.Where(fp => fp != null).Select(fp => fp!)];

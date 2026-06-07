@@ -1,4 +1,4 @@
-﻿using LogRegister;
+﻿using LogRegister.Interfaces;
 
 namespace SMWHubLogging.Categories;
 

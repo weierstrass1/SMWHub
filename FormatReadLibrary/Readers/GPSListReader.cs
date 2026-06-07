@@ -1,5 +1,6 @@
 ﻿using FormatReadLibrary.Entries;
-using LogRegister;
+using SMWHubEnumerators;
+using Validations;
 
 namespace FormatReadLibrary.Readers;
 
@@ -8,10 +9,10 @@ public sealed partial class GPSListReader(string baseDirectory)
     private readonly string _baseDirectory = baseDirectory;
     private readonly Dictionary<int, GPSListEntry> _entriesList = [];
 
-    public bool Read(string path, LogRegisterSystem log)
+    public ValidationResult Read(string path)
     {
-        FileReaderWithLog fReader = new(path, log);
-        FileEnumeratorWithLog fileEnumerator = (FileEnumeratorWithLog)fReader.GetEnumerator()!;
+        FileReader fReader = new(path);
+        FileEnumerator fileEnumerator = (FileEnumerator)fReader.GetEnumerator()!;
 
         GPSListParserOptions opts = new()
         {
@@ -21,15 +22,14 @@ public sealed partial class GPSListReader(string baseDirectory)
         };
 
         GPSListParsingContext ctx = new(opts);
-
+        ValidationResult result = new();
         while(fileEnumerator.MoveNext())
         {
             if (string.IsNullOrWhiteSpace(fileEnumerator.Current))
                 continue;
-            if (!ctx.ProcessEntry())
-                return false;
+            result.Merge(ctx.ProcessEntry());
         }
-        return true;
+        return result;
     }
     public IEnumerable<GPSListEntry> GetEntries()
     {
@@ -38,7 +38,7 @@ public sealed partial class GPSListReader(string baseDirectory)
     private sealed class GPSListParserOptions
     {
         public required Dictionary<int, GPSListEntry> EntriesList { get; init; }
-        public required FileEnumeratorWithLog FileEnumerator { get; init; }
+        public required FileEnumerator FileEnumerator { get; init; }
         public required string BaseDirectory { get; init; }
     }
 }

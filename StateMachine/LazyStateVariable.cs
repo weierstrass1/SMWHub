@@ -1,4 +1,6 @@
-﻿namespace StateMachine;
+﻿using StateMachine.Interfaces;
+
+namespace StateMachine;
 
 public class LazyStateVariable<T>(Func<T> getter, bool cleanOnReset = true) : IStateVariable<T>
 {

@@ -1,4 +1,4 @@
-﻿namespace LogRegister;
+﻿namespace LogRegister.Interfaces;
 
 public interface ILoggingEntry
 {

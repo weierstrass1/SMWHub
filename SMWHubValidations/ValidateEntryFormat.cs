@@ -1,5 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 using Validations;
+using Validations.Interfaces;
 
 namespace SMWHubValidations;
 public sealed class ValidateEntryFormat : Validator
