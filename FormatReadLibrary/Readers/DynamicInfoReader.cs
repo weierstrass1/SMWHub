@@ -1,6 +1,5 @@
 ﻿using FormatReadLibrary.Infos;
 using FormatReadLibrary.Readers.ParsingContexts;
-using LogRegister;
 using SMWHubEnumerators;
 using SMWHubValidations;
 using Validations;

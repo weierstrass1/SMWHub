@@ -7,8 +7,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SMWHub", "SMWHub\SMWHub.csp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FormatReadLibrary", "FormatReadLibrary\FormatReadLibrary.csproj", "{E43945FB-97D2-43DD-836F-21B914976708}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SMWHubLibrary", "SMWHubLibrary\SMWHubLibrary.csproj", "{E400F925-5742-4D15-871F-3C6D90A648EB}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StateMachine", "StateMachine\StateMachine.csproj", "{09433522-E08D-463C-8CB4-F02445688D9A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ResourceManagement", "ResourceManagement\ResourceManagement.csproj", "{69F1143D-062C-4C6A-AB40-B28FF17AE795}"
@@ -17,7 +15,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Configs", "Configs\Configs.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LogRegister", "LogRegister\LogRegister.csproj", "{C929F844-A184-B1D7-9891-79E39E0F82B6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharedCodeLibrary", "SharedCodeLibrary\SharedCodeLibrary.csproj", "{8BE91F1F-EBCF-472C-9811-9AA523FB5087}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SMWHubSharedCodeLibrary", "SMWHubSharedCodeLibrary\SMWHubSharedCodeLibrary.csproj", "{8BE91F1F-EBCF-472C-9811-9AA523FB5087}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ASMCodeUtils", "ASMCodeUtils\ASMCodeUtils.csproj", "{1AA3EA10-7BEF-470E-99EF-CC8C93B8ABCD}"
 EndProject
@@ -28,8 +26,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SMWHubLogging", "SMWHubLogging\SMWHubLogging.csproj", "{0E4D7D76-6317-4970-A7F2-77F465EEF5BA}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SMWHubEnumerators", "SMWHubEnumerators\SMWHubEnumerators.csproj", "{1619846B-A9B1-453E-9620-8F70567D4EC1}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Elementos de la solución", "Elementos de la solución", "{D107F4C8-89CC-BEA8-D3D7-CA6B7733353D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,10 +41,6 @@ Global
 		{E43945FB-97D2-43DD-836F-21B914976708}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E43945FB-97D2-43DD-836F-21B914976708}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E43945FB-97D2-43DD-836F-21B914976708}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E400F925-5742-4D15-871F-3C6D90A648EB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E400F925-5742-4D15-871F-3C6D90A648EB}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E400F925-5742-4D15-871F-3C6D90A648EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E400F925-5742-4D15-871F-3C6D90A648EB}.Release|Any CPU.Build.0 = Release|Any CPU
 		{09433522-E08D-463C-8CB4-F02445688D9A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{09433522-E08D-463C-8CB4-F02445688D9A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{09433522-E08D-463C-8CB4-F02445688D9A}.Release|Any CPU.ActiveCfg = Release|Any CPU

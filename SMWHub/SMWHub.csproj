@@ -11,7 +11,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\FormatReadLibrary\FormatReadLibrary.csproj" />
-    <ProjectReference Include="..\SharedCodeLibrary\SharedCodeLibrary.csproj" />
+    <ProjectReference Include="..\SMWHubSharedCodeLibrary\SMWHubSharedCodeLibrary.csproj" />
     <ProjectReference Include="..\SMWHubLogging\SMWHubLogging.csproj" />
   </ItemGroup>
 
