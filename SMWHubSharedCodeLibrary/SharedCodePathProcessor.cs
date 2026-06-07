@@ -1,4 +1,4 @@
-﻿namespace SharedCodeLibrary;
+﻿namespace SMWHubSharedCodeLibrary;
 
 public enum SharedCodeTypes
 { 

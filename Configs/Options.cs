@@ -19,8 +19,7 @@ public sealed class Options
     {
         get
         {
-            if (_instance == null)
-                _instance = new();
+            _instance ??= new();
             return _instance;
         }
     }

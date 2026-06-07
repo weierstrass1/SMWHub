@@ -6,9 +6,9 @@ using SMWHubLogging.LoggingRegisters;
 using System.Text.RegularExpressions;
 
 namespace FormatReadLibrary.Infos;
-public sealed partial class DynamicInfo
+public sealed partial class DynamicInfo(string contextName)
 {
-    public string ContextName { get; set; }
+    public string ContextName { get; set; } = contextName;
     public int[]? PosesChunksSizes { get; set; }
     public int[]? PosesLastRow { get; set; }
     public string[]? PoseGraphics { get; set; }
@@ -17,10 +17,6 @@ public sealed partial class DynamicInfo
     public int PoseLength => PosesChunksSizes == null ? 0 : PosesChunksSizes.Length / 2;
     public int PaletteLength => Palettes == null ? 0 : Palettes.Length;
     public int ResourcesLength => Resources == null ? 0 : Resources.Length;
-    public DynamicInfo(string contextName) 
-    {
-        ContextName = contextName;
-    }
     public bool Validate(string resourceDirectory, LogRegisterSystem logging)
     {
         bool result = true;
@@ -236,7 +232,7 @@ public sealed partial class DynamicInfo
     public int[] GetPosesSizes()
     {
         if (PosesChunksSizes == null)
-            return Array.Empty<int>();
+            return [];
         int[] res = new int[PosesChunksSizes.Length / 2];
         for (int i = 0; i < res.Length; i++)
             res[i] = GetPoseSize(i);
@@ -254,7 +250,7 @@ public sealed partial class DynamicInfo
     public int[] GetPosesBlocks()
     {
         if( PosesChunksSizes == null )
-            return Array.Empty<int>();
+            return [];
         int[] res = new int[PosesChunksSizes.Length / 2];
         for (int i = 0; i < res.Length; i++)
             res[i] = GetPoseBlocks(i);
@@ -280,18 +276,18 @@ public sealed partial class DynamicInfo
     }
     public static int[] GetSizes(IEnumerable<DynamicInfo> dis)
     {
-        List<int> res = new();
+        List<int> res = [];
         foreach (var di in dis)
             if (di.PosesChunksSizes != null)
-                res.AddRange(di.PosesChunksSizes!.Select(x => x * 32).ToList());
-        return res.ToArray();
+                res.AddRange([.. di.PosesChunksSizes!.Select(x => x * 32)]);
+        return [.. res];
     }
     public int[] GetLastRow()
     {
         if(PosesLastRow == null || PosesChunksSizes == null)
-            return Array.Empty<int>();
+            return [];
         if (PosesLastRow.Length == PosesChunksSizes.Length / 2)
-            return PosesLastRow.Select(x => x*16).ToArray();
+            return [.. PosesLastRow.Select(x => x*16)];
         int[] lr = new int[PosesChunksSizes.Length / 2];
         for (int i = 0; i < lr.Length; i++)
             lr[i] = PosesLastRow[0] * 16;
@@ -299,10 +295,10 @@ public sealed partial class DynamicInfo
     }
     public static int[] GetLastRow(IEnumerable<DynamicInfo> dis)
     {
-        List<int> res = new();
+        List<int> res = [];
         foreach (var di in dis)
             res.AddRange(di.GetLastRow());
-        return res.ToArray();
+        return [.. res];
     }
     public void GenerateLastRow()
     {
@@ -470,7 +466,7 @@ public sealed partial class DynamicInfo
         
         GenerateLastRow();
     }
-    private long getNumberOfTilesPerGraphic(string path)
+    private static long getNumberOfTilesPerGraphic(string path)
     {
         using var fs = new FileStream(path, FileMode.Open);
 

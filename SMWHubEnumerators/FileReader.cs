@@ -83,7 +83,7 @@ public sealed class FileReader : IEnumerable<string>
         tryAddEnumerator(enumerators, skipTitle, sectionStart, section, lastNotEmptyLine);
         return result;
     }
-    private ValidationResult validateSection(ValidationContext context, Dictionary<string, FileEnumerator> enumerators, 
+    private static ValidationResult validateSection(ValidationContext context, Dictionary<string, FileEnumerator> enumerators, 
         string? section, int lastNotEmptyLine, string id)
     {
         ValidationResult result = new(context);

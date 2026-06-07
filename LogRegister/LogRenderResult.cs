@@ -10,7 +10,7 @@ public class LogRenderResult(ILogCategory category, string text, IEnumerable<Log
     public string Text { get; private set; } = text;
     public int Length => Text.Length;
     public IReadOnlyList<LogSpan> Spans => _spans.AsReadOnly();
-    public List<LogSpan> _spans = [.. spans];
+    private List<LogSpan> _spans = [.. spans];
     public void RemoveOfType(SpanType type)
     {
         var spans = _spans.Where(s => s.Type == type);

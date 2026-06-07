@@ -14,14 +14,14 @@ public abstract class  Option
 }
 public abstract class Option<T> : Option
 {
-    public string Name;
-    public T Value;
-    public T DefaultValue;
-    public string Description;
-    public string Warning;
-    public string Question;
-    public string RedoError;
-    public string Error;
+    public required string Name;
+    public required T Value;
+    public required T DefaultValue;
+    public required string Description;
+    public required string Warning;
+    public required string Question;
+    public required string RedoError;
+    public required string Error;
     public bool ObtainValue()
     {
         Console.WriteLine();

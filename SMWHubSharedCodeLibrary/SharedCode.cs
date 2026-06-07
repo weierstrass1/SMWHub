@@ -1,4 +1,4 @@
-﻿namespace SharedCodeLibrary;
+﻿namespace SMWHubSharedCodeLibrary;
 
 public class SharedCode(string path, SharedCodeTypes type, SharedCodeScope scope)
 {

@@ -5,6 +5,7 @@ using SharedCodeLibrary;
 using SMWHubLogging;
 using SMWHubLogging.Categories;
 using SMWHubLogging.Wrappers;
+using SMWHubSharedCodeLibrary;
 using System.Reflection;
 using Validations;
 

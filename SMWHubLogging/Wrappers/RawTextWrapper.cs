@@ -5,19 +5,19 @@ using System.Text;
 namespace SMWHubLogging.Wrappers;
 public sealed class RawTextWrapper : ILogWrapper
 {
-    private readonly StringBuilder builder;
+    private readonly StringBuilder _builder;
     public RawTextWrapper() 
     {
-        builder = new();
+        _builder = new();
     }
     public void RenderAction(string text, ILogCategory category, SpanType type, bool mustWrite = false)
     {
         if (type == SpanType.Prefix)
             return;
-        builder.Append(text);
+        _builder.Append(text);
     }
     public override string ToString()
     {
-        return builder.ToString();
+        return _builder.ToString();
     }
 }

@@ -1,14 +1,16 @@
 ﻿using LogRegister;
 using SMWHubLogging.LoggingRegisters;
+using System.Diagnostics.CodeAnalysis;
+using System.Xml.Linq;
 
 namespace FormatReadLibrary.Infos;
 
-public sealed class DrawInfo
+public sealed class DrawInfo(int id, string contextName, string name)
 {
-    public int ID { get; private set; }
+    public int ID { get; private set; } = id;
     public bool IsDynamic { get; set; } = false;
-    public string ContextName { get; set; }
-    public string Name { get; private set; }
+    public string ContextName { get; set; } = contextName;
+    public string Name { get; private set; } = name;
     public int[]? Tiles { get; set; }
     public int[]? Properties { get; set; }
     public int[]? XDisplacements { get; set; }
@@ -17,10 +19,10 @@ public sealed class DrawInfo
     public int[]? FlipYDisplacements { get; set; }
     public int[]? Sizes { get; set; }
     public bool OneTile => Tiles != null && Tiles.Length == 1;
-    public bool HasXDisplacement => XDisplacements != null || !equalArrays(XDisplacements, FlipXDisplacements);
-    public bool HasYDisplacement => YDisplacements != null || !equalArrays(YDisplacements, FlipYDisplacements);
-    public bool HasXFlip => FlipXDisplacements != null && !equalArrays(XDisplacements, FlipXDisplacements);
-    public bool HasYFlip => FlipYDisplacements != null && !equalArrays(YDisplacements, FlipYDisplacements);
+    public bool HasXDisplacement => XDisplacements != null && XDisplacements.Length > 0;
+    public bool HasYDisplacement => YDisplacements != null && YDisplacements.Length > 0;
+    public bool HasXFlip => HasXDisplacement && FlipXDisplacements != null && !equalArrays(XDisplacements!, FlipXDisplacements);
+    public bool HasYFlip => HasYDisplacement && FlipYDisplacements != null && !equalArrays(YDisplacements!, FlipYDisplacements);
     public bool HasXYFlip => HasXFlip && HasYFlip;
     public bool HasProperties => Properties != null && Properties!.FirstOrDefault(p => p != 0) != default;
     public bool HasSizes => Sizes != null;
@@ -64,20 +66,11 @@ public sealed class DrawInfo
                     XDisplacements != null ? XDisplacements.Length :
                     YDisplacements != null ? YDisplacements.Length :
                     Sizes != null ? Sizes.Length : 1;
-    public DrawInfo(int id, string contextName, string name)
-    {
-        ID = id;
-        ContextName = contextName;
-        Name = name;
-    }
+
     public static int GetMaximumRenderBoxXDistanceOutOfScreen(IEnumerable<DrawInfo> list)
-        => maximumValue(list
-            .Select(x => x.RenderBoxXDistanceOutOfScreen)
-            .ToList());
+        => maximumValue([.. list.Select(x => x.RenderBoxXDistanceOutOfScreen)]);
     public static int GetMaximumRenderBoxYDistanceOutOfScreen(IEnumerable<DrawInfo> list)
-        => maximumValue(list
-            .Select(x => x.RenderBoxYDistanceOutOfScreen)
-            .ToList());
+        => maximumValue([.. list.Select(x => x.RenderBoxYDistanceOutOfScreen)]);
     public bool Validate(LogRegisterSystem logging)
     {
         bool validation = true;
@@ -152,11 +145,11 @@ public sealed class DrawInfo
     }
     public static Dictionary<string, List<DrawInfo>> GroupByContextName(List<DrawInfo> list)
     {
-        Dictionary<string, List<DrawInfo>> groups = new();
+        Dictionary<string, List<DrawInfo>> groups = [];
         foreach(var fi in list)
         {
             if (!groups.ContainsKey(fi.ContextName))
-                groups.Add(fi.ContextName, new());
+                groups.Add(fi.ContextName, []);
             groups[fi.ContextName].Add(fi);
         }
         return groups;
@@ -203,8 +196,8 @@ public sealed class DrawInfo
     }
     private static bool equalArrays(int[] arr1, int[] arr2)
     {
-        if (arr1 == null && arr2 == null)
-            return true;
+        arr1 ??= [];
+        arr2 ??= [];
         if (arr1.Length != arr2.Length)
             return false;
         for (int i = 0; i < arr1.Length; i++)

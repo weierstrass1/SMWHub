@@ -15,7 +15,7 @@ public sealed partial class DynamicInfoReader
     private sealed class DynamicInfoLegacyFormatParsingContext : ParsingContext
     {
         public required DynamicInfo DynamicInfo { get; init; }
-        private FileEnumeratorLineContext _fileEnumeratorLineContext;
+        private readonly FileEnumeratorLineContext _fileEnumeratorLineContext;
         private static readonly Regex _entryRegex = RegexContainer.DynInfoLegacyRegex();
         private static readonly Regex _entryTableRegex = RegexContainer.NumberTableRegex();
         private static readonly MatchStateVariable _matchTitle = new("Match", _entryRegex);

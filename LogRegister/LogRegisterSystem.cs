@@ -45,15 +45,15 @@ public sealed class LogRegisterSystem
     }
     public LogMessageType GetMessageType(string key)
     {
-        if (!_messageTypes.ContainsKey(key))
+        if (!_messageTypes.TryGetValue(key, out LogMessageType? value))
             return _unknownMessageType;
-        return _messageTypes[key];
+        return value;
     }
     public ILogCategory? GetCategory(string name)
     {
-        if (!_possibleCategories.ContainsKey(name))
+        if (!_possibleCategories.TryGetValue(name, out ILogCategory? value))
             return _unknownMessageType.Category;
-        return _possibleCategories[name];
+        return value;
     }
     public void Add(ILoggingEntry logEntry)
     {
@@ -80,7 +80,6 @@ public sealed class LogRegisterSystem
                  && typeof(ILogCategory).IsAssignableFrom(t)
                  && t.GetConstructors().Any(c => c.GetParameters().Length == 0))
         .Select(Activator.CreateInstance)
-        .Cast<ILogCategory>()
-        .ToList();
+        .Cast<ILogCategory>();
     }
 }

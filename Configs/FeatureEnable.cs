@@ -3,6 +3,6 @@
 [Serializable]
 public sealed class FeatureEnable
 {
-    public string Name;
+    public required string Name;
     public bool Enable;
 }
