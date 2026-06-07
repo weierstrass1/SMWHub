@@ -1,9 +1,6 @@
 ﻿using FormatReadLibrary.Infos;
-using FormatReadLibrary.Logging;
-using FormatReadLibrary.Logging.Enumerators;
 using FormatReadLibrary.Readers.ParsingContexts;
 using FormatReadLibrary.Readers.StateVariables;
-using FormatReadLibrary.Readers.Validators;
 using StateMachine;
 using System.Text.RegularExpressions;
 

@@ -1,7 +1,4 @@
-﻿using FormatReadLibrary.Logging;
-using FormatReadLibrary.Logging.Enumerators;
-using FormatReadLibrary.Readers.Validators;
-using StateMachine;
+﻿using StateMachine;
 using System.Text.RegularExpressions;
 
 namespace FormatReadLibrary.Readers.StateVariables;

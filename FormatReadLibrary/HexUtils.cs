@@ -1,4 +1,5 @@
-﻿using System.Globalization;
+﻿using ASMCodeUtils;
+using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -29,7 +30,7 @@ public static partial class HexUtils
     }
     public static int[] GetValues(string input)
     {
-        string cleanInput = FileUtils.CleanString(input);
+        string cleanInput = ASMEditUtils.CleanString(input);
         MatchCollection matches = valueRegex().Matches(cleanInput);
         int[] values = new int[matches.Count];
         string currentValue;

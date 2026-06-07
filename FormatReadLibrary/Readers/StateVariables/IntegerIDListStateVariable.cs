@@ -1,29 +1,46 @@
-﻿using FormatReadLibrary.Readers.Validators;
-using StateMachine;
+﻿using StateMachine;
+using System.Globalization;
 using System.Text.RegularExpressions;
 
 namespace FormatReadLibrary.Readers.StateVariables;
 
-public class IntegerIDListStateVariable<TValue> : IStateVariable<int[]>, ISelfValidatedStateVariable
+public sealed partial class IntegerIDListStateVariable<TValue> : IStateVariable<int[]>, ISelfValidatedStateVariable
 {
-    private readonly static Regex _rangeRegex = RegexContainer.RangeRegex();
+    [GeneratedRegex(RegexContainer.RANGE_PATTERN)]
+    public static partial Regex RangeRegex();
+    [GeneratedRegex(RegexContainer.HEX_RANGE_PATTERN)]
+    public static partial Regex HexRangeRegex();
     public int[]? Value { get; set; }
     public bool CleanOnReset { get; set; }
     object? IStateVariable.Value { get => Value; set => Value = (int[]?)value; }
     private readonly Dictionary<int, TValue> _dictionary;
     private readonly int _maxID;
     private readonly bool _allowMultiID;
-    public IntegerIDListStateVariable(int maxID = 255, bool allowMultiID = false)
+    private readonly Regex _rangeRegex;
+    private readonly NumberStyles _style;
+    public IntegerIDListStateVariable(int maxID = 255, bool allowMultiID = false, bool useHexIDs = true)
     {
         _dictionary = [];
         _maxID = maxID;
         _allowMultiID = allowMultiID;
+        _style = useHexIDs ?
+            NumberStyles.HexNumber :
+            NumberStyles.Integer;
+        _rangeRegex = useHexIDs ?
+            HexRangeRegex() :
+            RangeRegex();
     }
-    public IntegerIDListStateVariable(Dictionary<int, TValue> dictionary, int maxID = 255, bool allowMultiID = false)
+    public IntegerIDListStateVariable(Dictionary<int, TValue> dictionary, int maxID = 255, bool allowMultiID = false, bool useHexIDs = true)
     {
         _dictionary = dictionary;
         _maxID = maxID;
         _allowMultiID = allowMultiID;
+        _style = useHexIDs ?
+            NumberStyles.HexNumber :
+            NumberStyles.Integer;
+        _rangeRegex = useHexIDs ?
+            HexRangeRegex() :
+            RangeRegex();
     }
     public ValidationResult GetFrom(string text)
     {
@@ -53,17 +70,17 @@ public class IntegerIDListStateVariable<TValue> : IStateVariable<int[]>, ISelfVa
 
         return result;
     }
-    private static int[] getSingleValue(Match match)
+    private int[] getSingleValue(Match match)
     {
-        return [int.Parse(match.Groups["single"].Value)];
+        return [int.Parse(match.Groups["single"].Value, _style)];
     }
-    private static int[] getRangeValue(Match match)
+    private int[] getRangeValue(Match match)
     {
-        int start = int.Parse(match.Groups["start"].Value);
-        int end = int.Parse(match.Groups["end"].Value);
+        int start = int.Parse(match.Groups["start"].Value, _style);
+        int end = int.Parse(match.Groups["end"].Value, _style);
         return [.. Enumerable.Range(start, end - start + 1)];
     }
-    private static int[] getMultiValue(Match match)
+    private int[] getMultiValue(Match match)
     {
         string[] split = [..match.Groups["multiple"].Value[1..^1]
             .Split(',')

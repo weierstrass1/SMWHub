@@ -1,0 +1,26 @@
+﻿using System.Text.RegularExpressions;
+
+namespace ASMCodeUtils;
+public static partial class ASMEditUtils
+{
+    [GeneratedRegex(@"\s+")]
+    public static partial Regex SpaceRegex();
+    [GeneratedRegex(@";.*")]
+    public static partial Regex CommentRegex();
+    public static string CleanString(string str)
+    {
+        string content = CommentRegex().Replace(str, "");
+
+        Regex space = SpaceRegex();
+
+        content = string.Join('\n', content
+                                .Split('\n')
+                                .Select(l => space.Replace(l, " ").Trim()));
+        return content;
+    }
+    public static string CleanFileContent(string path)
+    {
+        string content = File.ReadAllText(path).Replace("\r\n", "\n");
+        return CleanString(content);
+    }
+}

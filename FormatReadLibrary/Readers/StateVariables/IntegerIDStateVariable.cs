@@ -1,9 +1,8 @@
-﻿using FormatReadLibrary.Readers.Validators;
-using StateMachine;
+﻿using StateMachine;
 
 namespace FormatReadLibrary.Readers.StateVariables;
 
-public class IntegerIDStateVariable<TValue> : StateValidator, IStateVariable<int>
+public partial class IntegerIDStateVariable<TValue> : StateValidator, IStateVariable<int>
 {
     public int Value { get => State.Get<int>("ID"); set => State.Set("ID", value); }
     public bool CleanOnReset { get; set; }

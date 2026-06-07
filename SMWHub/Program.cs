@@ -1,8 +1,7 @@
 ﻿using FormatReadLibrary.Infos;
-using FormatReadLibrary.Logging.Categories;
-using FormatReadLibrary.Logging.Wrappers;
 using FormatReadLibrary.Readers;
 using LogRegister;
+using SharedCodeLibrary;
 using System.Reflection;
 
 namespace SMWHub;
@@ -18,6 +17,9 @@ public class Program
 
         LogRegisterSystem log = new(loggingFileContent, categoryAssembly);
 
+        SharedCode[] files = SharedCodePathProcessor.FindSharedCodes();
+        string[] bcs = files.Select(x => x.BreadCrumb).ToArray();
+        var macros = SharedMacrosProcessor.GetMacros(files);
         CommonListReader reader = new([
             new("Sprites","Sprites"),
             new("Clusters", "Clusters"),

@@ -1,4 +1,4 @@
-﻿namespace Config;
+﻿namespace Configs;
 
 public sealed class Settings
 {

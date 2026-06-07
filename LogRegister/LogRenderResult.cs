@@ -41,7 +41,8 @@ public class LogRenderResult(ILogCategory category, string text, IEnumerable<Log
             startIndex = 0;
 
         var tmpList = _spans;
-        _spans = _spans[..(startIndex + 1)];
-        _spans.AddRange(tmpList[(startIndex + 1)..].Select(s => s.Displace(offset)));
+
+        _spans = _spans[..startIndex];
+        _spans.AddRange(tmpList[startIndex..].Select(s => s.Displace(offset)));
     }
 }

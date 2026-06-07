@@ -90,7 +90,7 @@ public sealed partial class LogMessageType
             appendTextBeforeSpan(sb, offset, lastIndex, span);
 
             if (span.Type == SpanType.NestedMessage && nestedMessages.TryGetValue(key, out nestedResult))
-                appendNestedResult(sb, spans, nestedResult,ref offset);
+                appendNestedResult(sb, spans, nestedResult);
             else
                 appendRegularSpan(logEntry, sb, spans, key, span);
             lastIndex = span.Start + span.Length;
@@ -122,15 +122,13 @@ public sealed partial class LogMessageType
             sb.Append(Text, lastIndex, span.Start - lastIndex);
         }
     }
-    private static void appendNestedResult(StringBuilder sb, List<LogSpan> spans, LogRenderResult nestedResult, ref int offset)
+    private static void appendNestedResult(StringBuilder sb, List<LogSpan> spans, LogRenderResult nestedResult)
     {
         nestedResult.RemoveOfType(SpanType.Prefix);
-        nestedResult.DisplaceAll(offset);
+        nestedResult.DisplaceAll(sb.Length);
         foreach (var s in nestedResult.Spans)
             spans.Add(s);
-        int start = sb.Length;
         sb.Append(nestedResult.Text);
-        offset += nestedResult.Text.Length;
     }
     private void appendRegularSpan(ILoggingEntry logEntry, StringBuilder sb, List<LogSpan> spans, string key, LogSpan span)
     {

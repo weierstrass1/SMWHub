@@ -1,4 +1,4 @@
-﻿namespace Config;
+﻿namespace Configs;
 
 [Serializable]
 public sealed class FeatureEnable

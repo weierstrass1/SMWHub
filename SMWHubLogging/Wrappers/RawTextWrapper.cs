@@ -1,0 +1,22 @@
+﻿using LogRegister;
+using System.Text;
+
+namespace SMWHubLogging.Wrappers;
+public sealed class RawTextWrapper
+{
+    private readonly StringBuilder builder;
+    public RawTextWrapper() 
+    {
+        builder = new();
+    }
+    public void RenderAction(string text, ILogCategory category, SpanType type, bool mustWrite = false)
+    {
+        if (type == SpanType.Prefix)
+            return;
+        builder.Append(text);
+    }
+    public override string ToString()
+    {
+        return builder.ToString();
+    }
+}

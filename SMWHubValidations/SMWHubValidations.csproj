@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SMWHubEnumerators\SMWHubEnumerators.csproj" />
+    <ProjectReference Include="..\StateMachine\StateMachine.csproj" />
+    <ProjectReference Include="..\Validations\Validations.csproj" />
+  </ItemGroup>
+
+</Project>

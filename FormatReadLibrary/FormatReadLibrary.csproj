@@ -4,21 +4,18 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <AssemblyVersion>1.0.0.179</AssemblyVersion>
-    <FileVersion>1.0.0.179</FileVersion>
+    <AssemblyVersion>1.0.0.190</AssemblyVersion>
+    <FileVersion>1.0.0.190</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\ASMCodeUtils\ASMCodeUtils.csproj" />
     <ProjectReference Include="..\Configs\Configs.csproj" />
     <ProjectReference Include="..\LogRegister\LogRegister.csproj" />
     <ProjectReference Include="..\ResourceManagement\ResourceManagement.csproj" />
+    <ProjectReference Include="..\SMWHubEnumerators\SMWHubEnumerators.csproj" />
     <ProjectReference Include="..\StateMachine\StateMachine.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="Logging\LogMessages.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
+    <ProjectReference Include="..\Validations\Validations.csproj" />
   </ItemGroup>
 
 </Project>

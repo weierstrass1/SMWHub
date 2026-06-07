@@ -1,7 +1,7 @@
 ﻿using FormatReadLibrary.Infos;
-using FormatReadLibrary.Logging.Enumerators;
 using FormatReadLibrary.Readers.ParsingContexts;
 using FormatReadLibrary.Readers.StateVariables;
+using SMWHubEnumerators;
 using System.Text.RegularExpressions;
 
 namespace FormatReadLibrary.Readers;
@@ -17,7 +17,7 @@ public sealed partial class DynamicInfoReader
         public DynamicInfoCurrentFormatParsingContext(FileEnumeratorWithLog fileEnumerator) : base(fileEnumerator)
         {
             State.AddVariable("Match", new MatchStateVariable("Match", _entryRegex));
-            State.AddVariable("IDs", new IntegerIDListStateVariable<string>(_currentNumberOf16x16TilesPerPose, 1000, true));
+            State.AddVariable("IDs", new IntegerIDListStateVariable<string>(_currentNumberOf16x16TilesPerPose, 1000, true, false));
         }
         public override bool ProcessEntry()
         {

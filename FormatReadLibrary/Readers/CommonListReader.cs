@@ -1,7 +1,5 @@
 ﻿using FormatReadLibrary.Entries;
-using FormatReadLibrary.Logging.Enumerators;
 using LogRegister;
-using System.Collections.Generic;
 
 namespace FormatReadLibrary.Readers;
 public sealed partial class CommonListReader

@@ -1,5 +1,4 @@
 ﻿using FormatReadLibrary.Entries;
-using FormatReadLibrary.Logging.Enumerators;
 using FormatReadLibrary.Readers.ParsingContexts;
 using FormatReadLibrary.Readers.StateVariables;
 using System.Text.RegularExpressions;
