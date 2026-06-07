@@ -1,8 +1,10 @@
 ﻿using FormatReadLibrary.Entries;
 using FormatReadLibrary.Readers.ParsingContexts;
 using FormatReadLibrary.Readers.StateVariables;
+using SMWHubValidations;
 using StateMachine;
 using System.Text.RegularExpressions;
+using Validations;
 
 namespace FormatReadLibrary.Readers;
 
@@ -28,25 +30,30 @@ public sealed partial class GPSListReader
 
             _validateGPSBlockLine = new(this);
         }
-        public override bool ProcessEntry()
+        public override ValidationResult ProcessEntry()
         {
-            if (!getSelfValidatedVariables(FileEnumerator.Current))
-                return false;
+            Context = FileEnumerator.Context;
+            ValidationResult result = getSelfValidatedVariables(FileEnumerator.Current);
+            if (!result)
+                return result;
 
             setupEntryRange(_match, out int start, out int end, out bool rectangle);
 
-            if (!rectangle && !validateStartEnd(start, end))
-                return false;
-
+            if (!rectangle)
+            {
+                result = validateStartEnd(start, end);
+                if (!result)
+                    return result;
+            }
             int actlike = _match.Groups["actlike"].Success ?
-                actlike = Convert.ToInt32(_match.Groups["actlike"].Value, 16) :
+                Convert.ToInt32(_match.Groups["actlike"].Value, 16) :
                 -1;
 
             foreach(var filepath in _filepaths)
             {
                 addEntries(filepath.Path, filepath.Values, start, end, actlike);
             }
-            return true;
+            return result;
         }
         private static void setupEntryRange(Match match, out int start, out int end, out bool rectangle)
         {
@@ -59,16 +66,12 @@ public sealed partial class GPSListReader
                 return;
             (start, end) = (end, start);
         }
-        private bool validateStartEnd(int start, int end)
+        private ValidationResult validateStartEnd(int start, int end)
         {
             State.Set("Start", start);
             State.Set("End", end);
 
-            ValidationResult result = _validateGPSBlockLine.Validate(this);
-            if (!result)
-                ValidatorLogAdapter.LogValidatorResult(FileEnumerator, result);
-
-            return result;
+            return _validateGPSBlockLine.Validate(this);
         }
         private void addEntries(string filepath, int[]? values, int start, int end, int actlike)
         {

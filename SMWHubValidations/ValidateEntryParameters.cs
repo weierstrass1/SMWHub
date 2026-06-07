@@ -3,16 +3,16 @@ using Validations;
 
 namespace SMWHubValidations;
 [RequiresStateVariable("Parameters", typeof(int[]))]
-public sealed class ValidateEntryParameters(IHaveState ctx, int minLimit = 0, int maxLimit = 255, bool allowedVariables = false) : Validator(ctx)
+public sealed class ValidateEntryParameters(IValidationState ctx, int minLimit = 0, int maxLimit = 255, bool allowedVariables = false) : Validator(ctx)
 {
     private readonly bool _allowedVariables = allowedVariables;
     private readonly int _minLimit = minLimit;
     private readonly int _maxLimit = maxLimit;
-    public override ValidationResult Validate(IHaveState ctx)
+    public override ValidationResult Validate(IValidationState ctx)
     {
         State state = ctx.State;
         int[]? parameters = state.Get<int[]>("Parameters");
-        ValidationResult validationResult = new();
+        ValidationResult validationResult = new(ctx.Context);
         if (parameters == null || parameters.Length == 0)
             return validationResult;
         foreach(var par in parameters)

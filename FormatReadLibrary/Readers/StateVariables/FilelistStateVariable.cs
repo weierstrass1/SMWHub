@@ -1,5 +1,7 @@
-﻿using StateMachine;
+﻿using SMWHubValidations;
+using StateMachine;
 using System.Text.RegularExpressions;
+using Validations;
 
 namespace FormatReadLibrary.Readers.StateVariables;
 
@@ -38,7 +40,7 @@ public class FilelistStateVariable : StateValidator, IStateVariable<FilePath[]>,
             [];
         List<FilePath?> fpaths = [];
 
-        FilepathStateVariable fpathStateVariable = new(_baseDirectory, _allowedVariables);
+        FilepathStateVariable fpathStateVariable = new(_baseDirectory);
         foreach(var value in values)
         {
             result.Merge(fpathStateVariable.GetFrom(value));

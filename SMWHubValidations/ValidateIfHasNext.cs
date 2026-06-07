@@ -6,9 +6,9 @@ namespace SMWHubValidations;
 public class ValidateIfHasNext(FileEnumerator fileEnumerator) : Validator()
 {
     private readonly FileEnumerator _fileEnumerator = fileEnumerator;
-    public override ValidationResult Validate(IHaveState ctx)
+    public override ValidationResult Validate(IValidationState ctx)
     {
-        ValidationResult validationResult = new();
+        ValidationResult validationResult = new(ctx.Context);
         if (_fileEnumerator.IsLastLine())
             validationResult.AddError(ValidatorMessagetypeKeys.EOF);
         return validationResult;

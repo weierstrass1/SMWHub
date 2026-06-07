@@ -8,7 +8,7 @@ public sealed partial class LogMessageType
     public string Key { get; private set; }
     public string Text { get; private set; }
     public ILogCategory Category { get; private init; }
-    private LogSpan _prefixSpan;
+    private readonly LogSpan _prefixSpan;
     private readonly Dictionary<string, LogSpan> _variables;
     public LogMessageType(string key, string text, ILogCategory category)
     {
@@ -82,17 +82,15 @@ public sealed partial class LogMessageType
         int lastIndex = 0;
 
         List<LogSpan> spans = [_prefixSpan];
-        LogRenderResult? nestedResult;
-        int offset = 0;
 
         foreach ((string key, LogSpan span) in _variables)
         {
-            appendTextBeforeSpan(sb, offset, lastIndex, span);
+            appendTextBeforeSpan(sb, lastIndex, span);
 
-            if (span.Type == SpanType.NestedMessage && nestedMessages.TryGetValue(key, out nestedResult))
+            if (span.Type == SpanType.NestedMessage && nestedMessages.TryGetValue(key, out LogRenderResult? nestedResult))
                 appendNestedResult(sb, spans, nestedResult);
             else
-                appendRegularSpan(logEntry, sb, spans, key, span);
+                appendRegularSpan(logEntry, sb, spans, key);
             lastIndex = span.Start + span.Length;
         }
         appendTextAfterLastSpan(sb, lastIndex);
@@ -102,7 +100,7 @@ public sealed partial class LogMessageType
     {
         return Text;
     }
-    private Dictionary<string, LogRenderResult> getNestedResults(LogRegisterSystem log, ILoggingEntry logEntry)
+    private static Dictionary<string, LogRenderResult> getNestedResults(LogRegisterSystem log, ILoggingEntry logEntry)
     {
         Dictionary<string, LogRenderResult> nestedMessages = [];
         if (logEntry is ILoggingEntryWithNestedMessage loggingEntryWithNestedMessage)
@@ -115,7 +113,7 @@ public sealed partial class LogMessageType
 
         return nestedMessages;
     }
-    private void appendTextBeforeSpan(StringBuilder sb, int offset, int lastIndex, LogSpan span)
+    private void appendTextBeforeSpan(StringBuilder sb, int lastIndex, LogSpan span)
     {
         if (span.Start > lastIndex)
         {
@@ -130,7 +128,7 @@ public sealed partial class LogMessageType
             spans.Add(s);
         sb.Append(nestedResult.Text);
     }
-    private void appendRegularSpan(ILoggingEntry logEntry, StringBuilder sb, List<LogSpan> spans, string key, LogSpan span)
+    private void appendRegularSpan(ILoggingEntry logEntry, StringBuilder sb, List<LogSpan> spans, string key)
     {
         if (!logEntry.Parameters.TryGetValue(key, out string? value))
             value = $"{{{key}}}";

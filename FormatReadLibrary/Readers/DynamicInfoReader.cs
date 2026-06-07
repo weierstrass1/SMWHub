@@ -1,27 +1,33 @@
 ﻿using FormatReadLibrary.Infos;
 using FormatReadLibrary.Readers.ParsingContexts;
 using LogRegister;
+using SMWHubEnumerators;
+using SMWHubValidations;
+using Validations;
 
 namespace FormatReadLibrary.Readers;
 
 public sealed partial class DynamicInfoReader
 {
-    public bool Read(string path, LogRegisterSystem log, out DynamicInfo? dynamicInfo)
+    private static readonly string[] _sections = [
+        "posesgraphics:", 
+        "palettes:", 
+        "resources:", 
+        "poseschunkssizes:", 
+        "numberof16x16tilesperpose:"    
+        ];
+    public static bool Read(string path, out DynamicInfo? dynamicInfo)
     {
         string content = File.ReadAllText(path);
-        return Read(Path.GetFileNameWithoutExtension(path), content, Path.GetDirectoryName(path)!, log, out dynamicInfo);
+        return Read(Path.GetFileNameWithoutExtension(path), content, Path.GetDirectoryName(path)!, out dynamicInfo);
     }
-    public bool Read(string name, string dynamicInfoContent, string baseDirectory, LogRegisterSystem log, out DynamicInfo? dynamicInfo)
+    public static ValidationResult Read(string name, string dynamicInfoContent, string baseDirectory, out DynamicInfo? dynamicInfo)
     {
-        FileReaderWithLog fReader = new(name, dynamicInfoContent, log);
+        FileReader fReader = new(name, dynamicInfoContent);
 
-        dynamicInfo = null;
-        if (!fReader.SplitBySections(out Dictionary<string, FileEnumeratorWithLog> enumerators, true,
-            "posesgraphics:", "palettes:", "resources:", "poseschunkssizes:", "numberof16x16tilesperpose:"))
-            return false;
+        ValidationResult result = fReader.SplitBySections(out Dictionary<string, FileEnumerator> enumerators, true, _sections);
 
-        if (!validateIfUseBothFormats(name, log, fReader, enumerators))
-            return false;
+        result.Merge(validateIfUseBothFormats(fReader, enumerators));
 
         ParsingContext ctx;
         dynamicInfo = new(Path.GetFileNameWithoutExtension(name));
@@ -33,25 +39,26 @@ public sealed partial class DynamicInfoReader
             {
                 if (string.IsNullOrWhiteSpace(section.Value.Current))
                     continue;
-                if (!ctx.ProcessEntry())
-                    return false;
+                result.Merge(ctx.ProcessEntry());
             }
         }
 
-        return true;
+        return result;
     }
-    private static bool validateIfUseBothFormats(string name, LogRegisterSystem log, FileReaderWithLog fReader, Dictionary<string, FileEnumeratorWithLog> enumerators)
+    private static ValidationResult validateIfUseBothFormats(FileReader fReader, Dictionary<string, FileEnumerator> enumerators)
     {
-        if (enumerators.TryGetValue("poseschunkssizes:", out FileEnumeratorWithLog? legacyFormat) &&
-            enumerators.TryGetValue("numberof16x16tilesperpose:", out FileEnumeratorWithLog? currentFormat))
+        ValidationResult result = new();
+        if (enumerators.TryGetValue("poseschunkssizes:", out FileEnumerator? legacyFormat) &&
+            enumerators.TryGetValue("numberof16x16tilesperpose:", out FileEnumerator? currentFormat))
         {
             int i = Math.Max(legacyFormat.LineIndex, currentFormat.LineIndex);
-            log.Add(new SyntaxError(i, name, fReader[i], $"Both 'poseschunkssizes:' and 'numberof16x16tilesperpose:' sections are present. You can't use legacy and current format at the same time."));
-            return false;
+            result.Context = new(fReader.FilePath, i, fReader[i]);
+            result.AddError(ValidatorMessagetypeKeys.BOTH_DYNAMIC_INFO_FORMATS);
+            return result;
         }
-        return true;
+        return result;
     }
-    private ParsingContext createContext(string section, DynamicInfo dynamicInfo, string baseDirectory, FileEnumeratorWithLog fileEnumerator)
+    private static ParsingContext createContext(string section, DynamicInfo dynamicInfo, string baseDirectory, FileEnumerator fileEnumerator)
     {
         return section switch
         {

@@ -1,5 +1,8 @@
-﻿using StateMachine;
+﻿using SMWHubEnumerators;
+using SMWHubValidations;
+using StateMachine;
 using System.Text.RegularExpressions;
+using Validations;
 
 namespace FormatReadLibrary.Readers.StateVariables;
 
@@ -14,7 +17,7 @@ public class FilepathStateVariable : StateValidator, IStateVariable<FilePath>, I
     {
         _baseDirectory = baseDirectory;
         State.AddVariable("Filepath", new StateVariable<string>());
-        State.AddVariable("Parameters", new ParametersStateVariable());
+        State.AddVariable("Parameters", new ParametersStateVariable(allowedVariables: allowedVariables));
         addValidator(new ValidatePathIntegrity(this));
         //addValidator(new ValidateFileExists(this));
     }
@@ -35,12 +38,5 @@ public class FilepathStateVariable : StateValidator, IStateVariable<FilePath>, I
         Value = new(filepath, parVars.Value!);
         return result;
     }
-    public ValidationResult validate(FileEnumeratorWithLog fileEnumerator)
-    {
-        ValidationResult result = base.validate();
-        if (!result)
-            ValidatorLogAdapter.LogValidatorResult(fileEnumerator, result);
-        return result;
-    }
 }
-public record FilePath(string Path, int[] Values);
+

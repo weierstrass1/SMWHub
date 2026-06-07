@@ -1,8 +1,11 @@
 ﻿using FormatReadLibrary.Infos;
 using FormatReadLibrary.Readers.ParsingContexts;
 using FormatReadLibrary.Readers.StateVariables;
+using SMWHubEnumerators;
+using SMWHubValidations;
 using StateMachine;
 using System.Text.RegularExpressions;
+using Validations;
 
 namespace FormatReadLibrary.Readers;
 
@@ -11,13 +14,13 @@ public sealed partial class DynamicInfoReader
     private sealed class DynamicInfoLegacyFormatParsingContext : ParsingContext
     {
         public required DynamicInfo DynamicInfo { get; init; }
-        private static Regex _entryRegex = RegexContainer.DynInfoLegacyRegex();
-        private static Regex _entryTableRegex = RegexContainer.NumberTableRegex();
+        private static readonly Regex _entryRegex = RegexContainer.DynInfoLegacyRegex();
+        private static readonly Regex _entryTableRegex = RegexContainer.NumberTableRegex();
         private static readonly MatchStateVariable _matchTitle = new("Match", _entryRegex);
         private readonly Dictionary<string, (int, int)> _poseChunkSizes = [];
         private readonly ValidateIfHasNext _ifHasNext;
         private readonly ValidateDuplicateID<string, (int, int)> _validateDuplicateID;
-        public DynamicInfoLegacyFormatParsingContext(FileEnumeratorWithLog fileEnumerator) : base(fileEnumerator)
+        public DynamicInfoLegacyFormatParsingContext(FileEnumerator fileEnumerator) : base(fileEnumerator)
         {
             State.AddVariable("MatchTable", new MatchStateVariable("MatchTable", _entryTableRegex));
             State.AddVariable("ID", new StateVariable<string>());
@@ -27,38 +30,42 @@ public sealed partial class DynamicInfoReader
             addValidator(new ValidateTableValueSize(() => fileEnumerator.Current, TableValueSize.db));
             addValidator(new ValidateValuesSize(this, 2, 2));
         }
-        public override bool ProcessEntry()
+        public override ValidationResult ProcessEntry()
         {
-            string id;
-            if (!validatePoseChunksTitle(out id))
-                return false;
+            Context = FileEnumerator.Context;
+            ValidationResult result = validatePoseChunksTitle(out string id);
+            if (!result)
+                return result;
 
-            if (!_ifHasNext.Validate(this))
-                return false;
+            result = _ifHasNext.Validate(this);
+            if (!result)
+                return result;
             _ifHasNext.MoveToTheNextNotEmptyLine();
 
-            if (!getSelfValidatedVariables(FileEnumerator.Current))
-                return false;
+            result = getSelfValidatedVariables(FileEnumerator.Current);
+            if (!result)
+                return result;
 
             int[]? values = setupValues();
-            if (!validate())
-                return false;
+
+            result = validate();
+            if (!result)
+                return result;
 
             _poseChunkSizes.Add(id, (values![0], values[1]));
             if (!FileEnumerator.IsLastLine())
-                return true;
+                return result;
 
             setupDynamicInfoPosesChunksSizes();
-            return true;
+            return result;
         }
-        private bool validatePoseChunksTitle(out string id)
+        private ValidationResult validatePoseChunksTitle(out string id)
         {
             ValidationResult result = _matchTitle.GetFrom(FileEnumerator.Current);
             if (!result.IsValid)
             {
-                ValidatorLogAdapter.LogValidatorResult(FileEnumerator, result);
                 id = "";
-                return false;
+                return result;
             }
 
             Match match = _matchTitle.Value!;
@@ -67,9 +74,6 @@ public sealed partial class DynamicInfoReader
             State.Set("ID", id);
 
             result.Merge(_validateDuplicateID.Validate(this));
-
-            if (!result.IsValid)
-                ValidatorLogAdapter.LogValidatorResult(FileEnumerator, result);
 
             return result;
         }

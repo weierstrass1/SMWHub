@@ -12,9 +12,9 @@ public class ValidateTableValueSize(Func<string> getter, TableValueSize valueSiz
 {
     private readonly Func<string> _getter = getter;
     private readonly TableValueSize _valueSize = valueSize;
-    public override ValidationResult Validate(IHaveState ctx)
+    public override ValidationResult Validate(IValidationState ctx)
     {
-        ValidationResult validationResult = new();
+        ValidationResult validationResult = new(ctx.Context);
         string name = _valueSize.ToString();
         string line = _getter();
         if (string.IsNullOrWhiteSpace(line) ||

@@ -19,4 +19,5 @@ public static class ValidatorMessagetypeKeys
     public const string MORE_THAN_1_FILEPATH = "MORE THAN 1 FILEPATH";
     public const string INVALID_ID = "INVALID ID";
     public const string MULTI_ID_NOT_ALLOWED = "MULTI ID NOT ALLOWED";
+    public const string BOTH_DYNAMIC_INFO_FORMATS = "BOTH DYNAMIC INFO FORMATS";
 }

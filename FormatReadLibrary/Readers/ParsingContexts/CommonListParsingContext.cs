@@ -2,7 +2,9 @@
 using FormatReadLibrary.Readers.ParsingContexts;
 using FormatReadLibrary.Readers.StateVariables;
 using SMWHubEnumerators;
+using SMWHubValidations;
 using System.Text.RegularExpressions;
+using Validations;
 
 namespace FormatReadLibrary.Readers;
 
@@ -19,15 +21,17 @@ public sealed partial class CommonListReader
         {
             _section = section;
             State.AddVariable("Match", new MatchStateVariable("Match", _entryRegex));
-            State.AddVariable("IDs", new IntegerIDListStateVariable<List<CommonListEntry>>(_entriesList));
+            State.AddVariable("IDs", new IntegerIDListStateVariable<List<CommonListEntry>>(_entriesList, maxID, allowMultiIDs));
             State.AddVariable("FileList", new FilelistStateVariable(_section.BaseDirectory, allowVariables, allowMultiIDs));
         }
-        public override bool ProcessEntry()
+        public override ValidationResult ProcessEntry()
         {
-            if (!getSelfValidatedVariables(FileEnumerator.Current))
-                return false;
+            Context = FileEnumerator.Context;
+            ValidationResult result = getSelfValidatedVariables(FileEnumerator.Current);
+            if (!result)
+                return result;
             addEntries();
-            return true;
+            return result;
         }
         private void addEntries()
         {

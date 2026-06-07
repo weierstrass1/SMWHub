@@ -147,5 +147,9 @@
   "SECTION WITHOUT TITLE": {
     "Category": "Error",
     "Message": "Section doesn't contain title"
+  },
+  "BOTH DYNAMIC INFO FORMATS": {
+    "Category": "Error",
+    "Message": "Both 'poseschunkssizes:' and 'numberof16x16tilesperpose:' sections are present. You can't use legacy and current format at the same time."
   }
 }

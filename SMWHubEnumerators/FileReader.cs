@@ -28,7 +28,7 @@ public sealed class FileReader : IEnumerable<string>
     {
         return new FileEnumerator(this);
     }
-    public bool SplitBySections(out Dictionary<string, FileEnumerator> enumerators, Regex regex, bool skipTitle = true)
+    public ValidationResult SplitBySections(out Dictionary<string, FileEnumerator> enumerators, Regex regex, bool skipTitle = true)
     {
         return splitBySections(out enumerators,
             line => line,
@@ -36,7 +36,7 @@ public sealed class FileReader : IEnumerable<string>
             line => regex.Match(line).Groups["id"].Value,
             skipTitle);
     }
-    public bool SplitBySections(out Dictionary<string, FileEnumerator> enumerators, bool skipTitle = true, params string[] sections)
+    public ValidationResult SplitBySections(out Dictionary<string, FileEnumerator> enumerators, bool skipTitle = true, params string[] sections)
     {
         var lowerSections = sections.Select(s => s.ToLower().Trim()).ToHashSet();
         return splitBySections(out enumerators,
@@ -47,7 +47,6 @@ public sealed class FileReader : IEnumerable<string>
     }
     private ValidationResult splitBySections(out Dictionary<string, FileEnumerator> enumerators, Func<string, string> lineProcessing, Func<string, bool> match, Func<string, string> getID, bool skipTitle = true)
     {
-        ValidationResult result = new();
         enumerators = [];
         int sectionStart = 0;
         string? section = null;
@@ -56,6 +55,7 @@ public sealed class FileReader : IEnumerable<string>
         int lastNotEmptyLine = -1;
         string id;
         ValidationResult r;
+        ValidationResult result = new();
         for (i = 0; i < Length; i++)
         {
             if (string.IsNullOrWhiteSpace(_fileContentLines[i]))
@@ -67,8 +67,7 @@ public sealed class FileReader : IEnumerable<string>
                 continue;
             }
             id = getID(currentLine);
-            r = validateSection(enumerators, section, lastNotEmptyLine, id);
-            r.AddLine(i, _fileContentLines[i]);
+            r = validateSection(new(FilePath, i, currentLine), enumerators, section, lastNotEmptyLine, id);
             result.Merge(r);
             if (!r || 
                 !tryAddEnumerator(enumerators, skipTitle, sectionStart, section, lastNotEmptyLine))
@@ -79,18 +78,16 @@ public sealed class FileReader : IEnumerable<string>
         }
         currentLine = _fileContentLines[lastNotEmptyLine];
         id = getID(currentLine);
-        r = validateSection(enumerators, section, lastNotEmptyLine, id);
-        r.AddLine(i, _fileContentLines[i]);
+        r = validateSection(new(FilePath, lastNotEmptyLine, currentLine), enumerators, section, lastNotEmptyLine, id);
         result.Merge(r);
         if (r)
             tryAddEnumerator(enumerators, skipTitle, sectionStart, section, lastNotEmptyLine);
-        result.AddFile(FilePath);
         return result;
     }
-    private ValidationResult validateSection(Dictionary<string, FileEnumerator> enumerators, 
+    private ValidationResult validateSection(ValidationContext context, Dictionary<string, FileEnumerator> enumerators, 
         string? section, int lastNotEmptyLine, string id)
     {
-        ValidationResult result = new();
+        ValidationResult result = new(context);
         if (enumerators.ContainsKey(id))
             result.AddError(SMWHubEnumeratorsMessageTypeKeys.REPEATED_SECTION, new()
             {

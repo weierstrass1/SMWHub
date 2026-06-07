@@ -3,12 +3,12 @@
 namespace SMWHubValidations;
 
 [RequiresStateVariable("Filelist", typeof(FilePath[]))]
-public class ValidateFileListAmount(IHaveState ctx, bool allowedMultiline) : Validator(ctx)
+public class ValidateFileListAmount(IValidationState ctx, bool allowedMultiline) : Validator(ctx)
 {
     private readonly bool _allowedMultiline = allowedMultiline;
-    public override ValidationResult Validate(IHaveState ctx)
+    public override ValidationResult Validate(IValidationState ctx)
     {
-        ValidationResult result = new();
+        ValidationResult result = new(ctx.Context);
         var filepath = ctx.State.Get<FilePath[]>("Filelist");
         if (filepath == null || filepath.Length == 0)
             result.AddError(ValidatorMessagetypeKeys.MISSING_FILEPATH);
@@ -17,3 +17,4 @@ public class ValidateFileListAmount(IHaveState ctx, bool allowedMultiline) : Val
         return result;
     }
 }
+public record FilePath(string Path, int[] Values);

@@ -2,9 +2,10 @@
 
 namespace Validations;
 
-public abstract class StateValidator : IHaveState
+public abstract class StateValidator : IValidationState
 {
     public State State { get; private set; }
+    public ValidationContext? Context { get; protected set; }
     protected List<Validator> _validators { get; private set; }
     public StateValidator() 
     {

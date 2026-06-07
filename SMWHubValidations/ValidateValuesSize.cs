@@ -7,17 +7,17 @@ public class ValidateValuesSize : Validator
 {
     private readonly uint _minSize;
     private readonly uint _maxSize;
-    public ValidateValuesSize(IHaveState context, uint minSize, uint maxSize) : base(context)
+    public ValidateValuesSize(IValidationState context, uint minSize, uint maxSize) : base(context)
     {
         if (minSize > maxSize)
-            throw new ArgumentOutOfRangeException($"{nameof(minSize)} must be less or equal than {nameof(maxSize)}");
-        
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(minSize,maxSize, nameof(minSize));
+
         _minSize = minSize;
         _maxSize = maxSize;
     }
-    public override ValidationResult Validate(IHaveState ctx)
+    public override ValidationResult Validate(IValidationState ctx)
     {
-        ValidationResult validationResult = new();
+        ValidationResult validationResult = new(ctx.Context);
         var values = ctx.State.Get<int[]>("Values");
         if ((values == null && _minSize == 0) ||
             (values != null && values.Length >= _minSize && values.Length <= _maxSize))

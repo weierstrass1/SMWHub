@@ -3,15 +3,15 @@ using Validations;
 namespace SMWHubValidations;
 
 [RequiresStateVariable("Filepath", typeof(string))]
-public sealed class ValidateFileExists(IHaveState ctx) : Validator(ctx)
+public sealed class ValidateFileExists(IValidationState ctx) : Validator(ctx)
 {
-    public override ValidationResult Validate(IHaveState ctx)
+    public override ValidationResult Validate(IValidationState ctx)
     {
         State state = ctx.State;
         var filepath = state.Get<string>("Filepath")!;
-        ValidationResult validationResult = new();
+        ValidationResult validationResult = new(ctx.Context);
         if (!File.Exists(filepath))
-            validationResult.AddError(LogMessageTypeKeys.RESOURCE_NOT_FOUND, new()
+            validationResult.AddError(ValidatorMessagetypeKeys.RESOURCE_NOT_FOUND, new()
             {
                 {"file", filepath }
             });

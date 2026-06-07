@@ -19,7 +19,7 @@ public static partial class SharedMacrosProcessor
         }
         return [.. macroList];
     }
-    private static IEnumerable<Macro> readASMFile(string[] asmFileContent, SharedCode sharedCode)
+    private static List<Macro> readASMFile(string[] asmFileContent, SharedCode sharedCode)
     {
         List<Macro> macroList = [];
         Match m;

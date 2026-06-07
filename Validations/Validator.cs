@@ -2,8 +2,8 @@
 namespace Validations;
 public abstract class Validator
 {
-    public abstract ValidationResult Validate(IHaveState ctx);
-    public Validator(IHaveState context)
+    public abstract ValidationResult Validate(IValidationState ctx);
+    public Validator(IValidationState context)
     {
         var requirements =
             GetType().GetCustomAttributes<RequiresStateVariableAttribute>();

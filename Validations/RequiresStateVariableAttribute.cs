@@ -1,11 +1,7 @@
 ﻿namespace Validations;
 
 [AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = false)]
-public sealed class RequiresStateVariableAttribute : Attribute
+public sealed class RequiresStateVariableAttribute(string variableName, Type? expectedType = null) : Attribute
 {
-    public readonly VariableValidator Validator;
-    public RequiresStateVariableAttribute(string variableName, Type? expectedType = null)
-    {
-        Validator = new(variableName, expectedType);
-    }
+    public readonly VariableValidator Validator = new(variableName, expectedType);
 }

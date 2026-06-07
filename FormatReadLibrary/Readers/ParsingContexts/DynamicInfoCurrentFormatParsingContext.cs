@@ -3,6 +3,7 @@ using FormatReadLibrary.Readers.ParsingContexts;
 using FormatReadLibrary.Readers.StateVariables;
 using SMWHubEnumerators;
 using System.Text.RegularExpressions;
+using Validations;
 
 namespace FormatReadLibrary.Readers;
 
@@ -19,18 +20,20 @@ public sealed partial class DynamicInfoReader
             State.AddVariable("Match", new MatchStateVariable("Match", _entryRegex));
             State.AddVariable("IDs", new IntegerIDListStateVariable<string>(_currentNumberOf16x16TilesPerPose, 1000, true, false));
         }
-        public override bool ProcessEntry()
+        public override ValidationResult ProcessEntry()
         {
-            if (!getSelfValidatedVariables(FileEnumerator.Current))
-                return false;
+            Context = FileEnumerator.Context;
+            ValidationResult result = getSelfValidatedVariables(FileEnumerator.Current);
+            if (!result)
+                return result;
 
             addValues();
 
             if (!FileEnumerator.IsLastLine())
-                return true;
+                return result;
 
             DynamicInfo.FromNumberOf16x16Tiles(_currentNumberOf16x16TilesPerPose);
-            return true;
+            return result;
         }
         private void addValues()
         {

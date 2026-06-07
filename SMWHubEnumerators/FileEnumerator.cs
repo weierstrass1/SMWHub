@@ -1,10 +1,11 @@
 ﻿using System.Collections;
+using Validations;
 
 namespace SMWHubEnumerators;
 public sealed class FileEnumerator : IEnumerator<string>
 {
     private readonly FileReader _reader;
-    public string Path => _reader.FilePath;
+    public string FilePath => _reader.FilePath;
     public int LineIndex { get; private set; }
     public string Current
     {
@@ -15,9 +16,10 @@ public sealed class FileEnumerator : IEnumerator<string>
             return _reader[LineIndex];
         }
     }
+    public ValidationContext Context => new(FilePath, LineIndex, Current);
     object IEnumerator.Current => Current;
-    private int _minLimit;
-    private int _maxLimit;
+    private readonly int _minLimit;
+    private readonly int _maxLimit;
     public FileEnumerator(FileReader reader)
     {
         _reader = reader;

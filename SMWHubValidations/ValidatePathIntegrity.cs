@@ -3,11 +3,11 @@ using Validations;
 
 namespace SMWHubValidations;
 [RequiresStateVariable("Filepath", typeof(string))]
-public class ValidatePathIntegrity(IHaveState ctx) : Validator(ctx)
+public class ValidatePathIntegrity(IValidationState ctx) : Validator(ctx)
 {
-    public override ValidationResult Validate(IHaveState ctx)
+    public override ValidationResult Validate(IValidationState ctx)
     {
-        ValidationResult validationResult = new();
+        ValidationResult validationResult = new(ctx.Context);
         State state = ctx.State;
         var filepath = state.Get<string>("Filepath")!;
         if (filepath.IndexOfAny(Path.GetInvalidPathChars()) >= 0)

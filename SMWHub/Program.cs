@@ -2,6 +2,8 @@
 using FormatReadLibrary.Readers;
 using LogRegister;
 using SharedCodeLibrary;
+using SMWHubLogging.Categories;
+using SMWHubLogging.Wrappers;
 using System.Reflection;
 
 namespace SMWHub;
@@ -18,23 +20,22 @@ public class Program
         LogRegisterSystem log = new(loggingFileContent, categoryAssembly);
 
         SharedCode[] files = SharedCodePathProcessor.FindSharedCodes();
-        string[] bcs = files.Select(x => x.BreadCrumb).ToArray();
+        string[] bcs = [.. files.Select(x => x.BreadCrumb)];
         var macros = SharedMacrosProcessor.GetMacros(files);
         CommonListReader reader = new([
             new("Sprites","Sprites"),
             new("Clusters", "Clusters"),
             new("Extendeds", "Extendeds")
             ]);
-        reader.Read("slist.txt", log);
+        reader.Read("slist.txt");
         var entries = reader.GetEntries();
 
         GPSListReader gpsreader = new("blocks");
         gpsreader.Read("list.txt", log);
         var gpsEntries = gpsreader.GetEntries();
 
-        DynamicInfoReader direader = new();
-        direader.Read("DKCMasterGnawty.dynamicinfo", log, out DynamicInfo? dynamicInfo);
-        direader.Read("SMWVanillaBoo.dynamicinfo", log, out DynamicInfo? dynamicInfo1);
+        DynamicInfoReader.Read("DKCMasterGnawty.dynamicinfo", out DynamicInfo? dynamicInfo);
+        DynamicInfoReader.Read("SMWVanillaBoo.dynamicinfo", out DynamicInfo? dynamicInfo1);
 
         RawTextWrapper rawText = new();
         MultiWrapper mw = new();

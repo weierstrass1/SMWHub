@@ -13,7 +13,7 @@ public record VariableValidator : IVariableValidator
         VariableName = variableName;
         ExpectedType = expectedType;
     }
-    public void Validate(IHaveState ctx)
+    public void Validate(IValidationState ctx)
     {
         if (ExpectedType == null)
         {

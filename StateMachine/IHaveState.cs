@@ -1,6 +1,4 @@
-﻿using StateMachine;
-
-namespace Validations;
+﻿namespace StateMachine;
 
 public interface IHaveState
 {
