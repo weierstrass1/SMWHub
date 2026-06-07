@@ -91,7 +91,9 @@ public sealed partial class DynamicInfo(string contextName)
     }
     public static IReadOnlyList<Resource> GetAllResources(IEnumerable<DynamicInfo> dis)
     {
-        var boolOpts = Options.Instance.BoolOptions.ToDictionary(o => o.Name, o => o.Value);
+        var boolOpts = Options.Instance.BoolOptions
+            .Where(o => o.Name != null)
+            .ToDictionary(o => o.Name!, o => o.Value);
         List<Resource> result = [];
 
         if (boolOpts["DynamicPoses"])

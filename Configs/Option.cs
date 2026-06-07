@@ -14,14 +14,14 @@ public abstract class  Option
 }
 public abstract class Option<T> : Option
 {
-    public required string Name;
-    public required T Value;
-    public required T DefaultValue;
-    public required string Description;
-    public required string Warning;
-    public required string Question;
-    public required string RedoError;
-    public required string Error;
+    public string? Name;
+    public T? Value;
+    public T? DefaultValue;
+    public string? Description;
+    public string? Warning;
+    public string? Question;
+    public string? RedoError;
+    public string? Error;
     public bool ObtainValue()
     {
         Console.WriteLine();
@@ -33,12 +33,12 @@ public abstract class Option<T> : Option
             Console.ResetColor();
         }
         Console.WriteLine(Question);
-        T def = Value != null && string.IsNullOrWhiteSpace(Value.ToString()) ?
+        T? def = Value != null && string.IsNullOrWhiteSpace(Value.ToString()) ?
                 Value :
                 DefaultValue;
         string value = Console.ReadLine()!;
         value = value.Replace("\'", "").Replace("\"", "").Trim();
-        T tValue = !string.IsNullOrWhiteSpace(value) ?
+        T? tValue = !string.IsNullOrWhiteSpace(value) ?
             ParseFromString(value) :
             def;
 

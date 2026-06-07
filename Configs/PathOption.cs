@@ -12,8 +12,10 @@ public sealed class PathOption : Option<string>
     {
         return Path.GetRelativePath(".\\", value);
     }
-    public override bool Validate(string value)
+    public override bool Validate(string? value)
     {
+        if (value == null)
+            return false;
         if (Path.GetExtension(value) != ".smc")
             return false;
         string directory = Path.GetDirectoryName(value)!;

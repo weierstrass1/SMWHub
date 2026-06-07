@@ -60,7 +60,8 @@ public sealed class Options
     {
         InputRomPath.Value = Settings.InputROMPath;
         OutputRomPath.Value = Settings.OutputROMPath;
-        foreach(var feat in Settings.Features)
+        Settings.Features ??= [];
+        foreach (var feat in Settings.Features)
         {
             BoolOptions.First(bo => bo.Name == feat.Name).Value = feat.Enable;
         }
@@ -99,7 +100,10 @@ public sealed class Options
         Settings.InputROMPath = InputRomPath.Value;
         Settings.OutputROMPath = OutputRomPath.Value;
         Dictionary<string, bool> features =
-            BoolOptions.ToDictionary(option => option.Name, option => option.Value);
+            BoolOptions
+                .Where(option => option.Name != null)
+                .ToDictionary(option => option.Name!, option => option.Value);
+        Settings.Features ??= [];
         foreach (var feature in Settings.Features)
         {
             if (features.TryGetValue(feature.Name, out bool value))

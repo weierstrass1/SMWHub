@@ -2,7 +2,7 @@
 
 public sealed class Settings
 {
-    public required string InputROMPath;
-    public required string OutputROMPath;
-    public required FeatureEnable[] Features;
+    public string? InputROMPath;
+    public string? OutputROMPath;
+    public FeatureEnable[]? Features;
 }
