@@ -2,7 +2,7 @@
 using Validations;
 using Validations.Interfaces;
 
-namespace SMWHubValidations;
+namespace SMWHubValidations.StateVariableValidations;
 
 public class ValidateIfHasNext(FileEnumerator fileEnumerator) : Validator()
 {
@@ -11,7 +11,7 @@ public class ValidateIfHasNext(FileEnumerator fileEnumerator) : Validator()
     {
         ValidationResult validationResult = new(ctx.Context);
         if (_fileEnumerator.IsLastLine)
-            validationResult.AddError(ValidatorMessagetypeKeys.EOF);
+            validationResult.AddError(StateVariableMessageTypeKeys.EOF);
         return validationResult;
     }
     public void MoveToTheNextNotEmptyLine()

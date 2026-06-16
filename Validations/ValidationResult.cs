@@ -1,5 +1,6 @@
 ﻿
 namespace Validations;
+
 public sealed class ValidationResult(ValidationContext? context = null)
 {
     public ValidationContext? Context { get; set; } = context;

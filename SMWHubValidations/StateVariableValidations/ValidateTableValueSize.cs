@@ -1,7 +1,8 @@
 ﻿using Validations;
 using Validations.Interfaces;
 
-namespace SMWHubValidations;
+namespace SMWHubValidations.StateVariableValidations;
+
 public enum TableValueSize
 {
     db,
@@ -21,12 +22,12 @@ public class ValidateTableValueSize(Func<string> getter, TableValueSize valueSiz
         if (string.IsNullOrWhiteSpace(line) ||
             line.Length < 2 ||
             string.IsNullOrWhiteSpace(line[0..2]))
-            validationResult.AddError(ValidatorMessagetypeKeys.MISSING_TABLE_INITIATOR, new()
+            validationResult.AddError(StateVariableMessageTypeKeys.MISSING_TABLE_INITIATOR, new()
             {
                 {"initiator", name}
             });
         else if (line.Length > 1 && line[0..2] != name)
-            validationResult.AddError(ValidatorMessagetypeKeys.UNEXPECTED_TABLE_INITIATOR, new()
+            validationResult.AddError(StateVariableMessageTypeKeys.UNEXPECTED_TABLE_INITIATOR, new()
             {
                 {"unexpected",  $"'{line[0..2]}'"},
                 {"initiator", name}

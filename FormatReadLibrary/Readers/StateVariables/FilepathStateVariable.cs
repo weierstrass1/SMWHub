@@ -1,4 +1,5 @@
-﻿using SMWHubValidations;
+﻿using FormatLibrary.Entries;
+using SMWHubValidations;
 using StateMachine;
 using StateMachine.Interfaces;
 using System.Text.RegularExpressions;
@@ -41,4 +42,3 @@ public class FilepathStateVariable : StateValidator, IStateVariable<FilePath>, I
         return result;
     }
 }
-

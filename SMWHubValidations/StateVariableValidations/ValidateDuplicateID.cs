@@ -2,7 +2,7 @@
 using Validations;
 using Validations.Interfaces;
 
-namespace SMWHubValidations;
+namespace SMWHubValidations.StateVariableValidations;
 
 public sealed class ValidateDuplicateID<TKey, TValue> : Validator where TKey : notnull
 {
@@ -31,7 +31,7 @@ public sealed class ValidateDuplicateID<TKey, TValue> : Validator where TKey : n
         var id = state.Get<TKey>("ID")!;
         ValidationResult validationResult = new(ctx.Context);
         if (!_allowMultiIDs && _entries.ContainsKey(id))
-            validationResult.AddError(ValidatorMessagetypeKeys.REPEATED_ID, new() { { "id", _format(id) } });
+            validationResult.AddError(StateVariableMessageTypeKeys.REPEATED_ID, new() { { "id", _format(id) } });
 
         return validationResult;
     }

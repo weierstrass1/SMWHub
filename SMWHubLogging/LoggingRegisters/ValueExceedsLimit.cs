@@ -1,6 +1,7 @@
 ﻿using LogRegister.Interfaces;
 
 namespace SMWHubLogging.LoggingRegisters;
+
 public sealed class ValueExceedsLimit : ILoggingEntry
 {
     public bool AppearWithoutVerbose => true;

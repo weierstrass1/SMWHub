@@ -9,6 +9,7 @@ using System.Reflection;
 using Validations;
 
 namespace SMWHub;
+
 public class Program
 {
     private static void Main(string[] args)

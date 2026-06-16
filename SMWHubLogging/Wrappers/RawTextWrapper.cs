@@ -3,6 +3,7 @@ using LogRegister.Interfaces;
 using System.Text;
 
 namespace SMWHubLogging.Wrappers;
+
 public sealed class RawTextWrapper : ILogWrapper
 {
     private readonly StringBuilder _builder;

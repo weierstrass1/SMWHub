@@ -3,7 +3,8 @@ using Validations;
 using Validations.Attributes;
 using Validations.Interfaces;
 
-namespace SMWHubValidations;
+namespace SMWHubValidations.StateVariableValidations;
+
 [RequiresStateVariable("Parameters", typeof(int[]))]
 public sealed class ValidateEntryParameters(IValidationState ctx, int minLimit = 0, int maxLimit = 255, bool allowedVariables = false) : Validator(ctx)
 {
@@ -20,7 +21,7 @@ public sealed class ValidateEntryParameters(IValidationState ctx, int minLimit =
         foreach (var par in parameters)
         {
             if (par < _minLimit || par > _maxLimit)
-                validationResult.AddError(ValidatorMessagetypeKeys.PARAMETER_OUT_OF_RANGE, new()
+                validationResult.AddError(StateVariableMessageTypeKeys.PARAMETER_OUT_OF_RANGE, new()
                     {
                         {"parameter", "" },
                         {"value", $"'{par}'" },
@@ -32,7 +33,7 @@ public sealed class ValidateEntryParameters(IValidationState ctx, int minLimit =
                     });
         }
         if (_allowedVariables)
-            validationResult.AddError(new(ValidatorMessagetypeKeys.LIST_DOESNT_ALLOW_PARAMETERS));
+            validationResult.AddError(new(StateVariableMessageTypeKeys.LIST_DOESNT_ALLOW_PARAMETERS));
 
         return validationResult;
     }

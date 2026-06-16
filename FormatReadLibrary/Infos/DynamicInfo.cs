@@ -6,6 +6,7 @@ using SMWHubLogging.LoggingRegisters;
 using System.Text.RegularExpressions;
 
 namespace FormatReadLibrary.Infos;
+
 public sealed partial class DynamicInfo(string contextName)
 {
     public string ContextName { get; set; } = contextName;

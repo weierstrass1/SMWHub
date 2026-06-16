@@ -2,7 +2,7 @@
 using Validations.Attributes;
 using Validations.Interfaces;
 
-namespace SMWHubValidations;
+namespace SMWHubValidations.StateVariableValidations;
 
 [RequiresStateVariable("Values", typeof(int[]))]
 public class ValidateValuesSize : Validator
@@ -21,13 +21,13 @@ public class ValidateValuesSize : Validator
     {
         ValidationResult validationResult = new(ctx.Context);
         var values = ctx.State.Get<int[]>("Values");
-        if ((values == null && _minSize == 0) ||
-            (values != null && values.Length >= _minSize && values.Length <= _maxSize))
+        if (values == null && _minSize == 0 ||
+            values != null && values.Length >= _minSize && values.Length <= _maxSize)
             return validationResult;
 
         if (_minSize != _maxSize)
         {
-            validationResult.AddError(ValidatorMessagetypeKeys.VALUES_SET_ALLOW_BETWEEN_N_AND_M_VALUES, new()
+            validationResult.AddError(StateVariableMessageTypeKeys.VALUES_SET_ALLOW_BETWEEN_N_AND_M_VALUES, new()
             {
                 { "minSize", _minSize.ToString()},
                 { "maxSize", _maxSize.ToString() }
@@ -35,9 +35,9 @@ public class ValidateValuesSize : Validator
             return validationResult;
         }
         if (_minSize == 1)
-            validationResult.AddError(ValidatorMessagetypeKeys.VALUES_SET_ALLOW_1_VALUE);
+            validationResult.AddError(StateVariableMessageTypeKeys.VALUES_SET_ALLOW_1_VALUE);
         else
-            validationResult.AddError(ValidatorMessagetypeKeys.VALUES_SET_ALLOW_N_VALUES, new()
+            validationResult.AddError(StateVariableMessageTypeKeys.VALUES_SET_ALLOW_N_VALUES, new()
             {
                 { "size", _minSize.ToString()},
             });

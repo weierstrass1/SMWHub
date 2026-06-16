@@ -1,4 +1,5 @@
 ﻿namespace FormatLibrary.Entries;
+
 public sealed class CommonListEntry
 {
     public string? EntryType { get; init; }

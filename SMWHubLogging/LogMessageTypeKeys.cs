@@ -1,4 +1,5 @@
 ﻿namespace SMWHubLogging;
+
 public static class LogMessageTypeKeys
 {
     public const string TITLE = "TITLE";

@@ -4,8 +4,8 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <AssemblyVersion>1.0.0.197</AssemblyVersion>
-    <FileVersion>1.0.0.197</FileVersion>
+    <AssemblyVersion>1.0.0.200</AssemblyVersion>
+    <FileVersion>1.0.0.200</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -13,7 +13,6 @@
     <ProjectReference Include="..\FormatLibrary\FormatLibrary.csproj" />
     <ProjectReference Include="..\LogRegister\LogRegister.csproj" />
     <ProjectReference Include="..\ResourceManagement\ResourceManagement.csproj" />
-    <ProjectReference Include="..\SMWHubASMCodeLibrary\SMWHubASMCodeLibrary.csproj" />
     <ProjectReference Include="..\SMWHubEnumerators\SMWHubEnumerators.csproj" />
     <ProjectReference Include="..\SMWHubLogging\SMWHubLogging.csproj" />
     <ProjectReference Include="..\SMWHubValidations\SMWHubValidations.csproj" />

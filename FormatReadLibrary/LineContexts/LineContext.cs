@@ -1,6 +1,7 @@
 ﻿using Validations;
 
 namespace FormatReadLibrary.LineContexts;
+
 public abstract class LineContext
 {
     public abstract int LineIndex { get; }

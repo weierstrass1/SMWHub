@@ -2,20 +2,21 @@
 using Validations;
 using Validations.Attributes;
 using Validations.Interfaces;
-namespace SMWHubValidations;
+
+namespace SMWHubValidations.StateVariableValidations;
 
 [RequiresStateVariable("Filepath", typeof(string))]
-public sealed class ValidateFileExists(IValidationState ctx) : Validator(ctx)
+public class ValidatePathIntegrity(IValidationState ctx) : Validator(ctx)
 {
     public override ValidationResult Validate(IValidationState ctx)
     {
+        ValidationResult validationResult = new(ctx.Context);
         State state = ctx.State;
         var filepath = state.Get<string>("Filepath")!;
-        ValidationResult validationResult = new(ctx.Context);
-        if (!File.Exists(filepath))
-            validationResult.AddError(ValidatorMessagetypeKeys.RESOURCE_NOT_FOUND, new()
+        if (filepath.IndexOfAny(Path.GetInvalidPathChars()) >= 0)
+            validationResult.AddError(StateVariableMessageTypeKeys.INVALID_PATH, new()
             {
-                {"file", filepath }
+                { "path", $"'{filepath}'"}
             });
         return validationResult;
     }

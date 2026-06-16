@@ -2,6 +2,7 @@
 using Validations.Attributes;
 using Validations.Interfaces;
 namespace Validations;
+
 public abstract class Validator
 {
     public abstract ValidationResult Validate(IValidationState ctx);

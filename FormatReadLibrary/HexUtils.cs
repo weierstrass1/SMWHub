@@ -1,9 +1,10 @@
-﻿using ASMCodeUtils;
+﻿using FormatLibrary;
 using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
 
 namespace FormatReadLibrary;
+
 public static partial class HexUtils
 {
     public static string ValuesToString(int[]? arr, int valueSize, int linebreak = 16)
@@ -30,7 +31,7 @@ public static partial class HexUtils
     }
     public static int[] GetValues(string input)
     {
-        string cleanInput = ASMUtils.CleanString(input);
+        string cleanInput = FormatCleaner.CleanString(input);
         MatchCollection matches = valueRegex().Matches(cleanInput);
         int[] values = new int[matches.Count];
         string currentValue;

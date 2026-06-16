@@ -4,6 +4,7 @@ using SMWHubEnumerators;
 using Validations;
 
 namespace FormatReadLibrary.Readers;
+
 public sealed partial class CommonListReader
 {
     public sealed record CommonListSectionTuple(string Title, string BaseDirectory);

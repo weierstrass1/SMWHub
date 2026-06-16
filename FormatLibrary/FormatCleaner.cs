@@ -1,7 +1,7 @@
 ﻿using System.Text.RegularExpressions;
 
-namespace ASMCodeUtils;
-public static partial class ASMUtils
+namespace FormatLibrary;
+public static partial class FormatCleaner
 {
     [GeneratedRegex(@"\s+")]
     public static partial Regex SpaceRegex();
@@ -9,7 +9,8 @@ public static partial class ASMUtils
     public static partial Regex CommentRegex();
     public static string CleanString(string str)
     {
-        string content = CommentRegex().Replace(str, "");
+        string content = str.Replace("\r\n", "\n");
+        content = CommentRegex().Replace(content, "");
 
         Regex space = SpaceRegex();
 
@@ -20,7 +21,6 @@ public static partial class ASMUtils
     }
     public static string CleanFileContent(string path)
     {
-        string content = File.ReadAllText(path).Replace("\r\n", "\n");
-        return CleanString(content);
+        return CleanString(File.ReadAllText(path));
     }
 }

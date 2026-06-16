@@ -1,4 +1,4 @@
-﻿using SMWHubValidations;
+﻿using SMWHubValidations.StateVariableValidations;
 using StateMachine.Interfaces;
 using System.Globalization;
 using System.Text.RegularExpressions;
@@ -53,7 +53,7 @@ public sealed partial class IntegerIDListStateVariable<TValue> : IStateVariable<
         {
             Value = [];
             result = new(context);
-            result.AddError(ValidatorMessagetypeKeys.INVALID_ID);
+            result.AddError(StateVariableMessageTypeKeys.INVALID_ID);
             return result;
         }
 
@@ -66,7 +66,7 @@ public sealed partial class IntegerIDListStateVariable<TValue> : IStateVariable<
 
         result = validateValues(context);
         if (!_allowMultiID && Value.Length != 1)
-            result.AddError(ValidatorMessagetypeKeys.MULTI_ID_NOT_ALLOWED);
+            result.AddError(StateVariableMessageTypeKeys.MULTI_ID_NOT_ALLOWED);
 
         if (!result.IsValid)
             Value = [];

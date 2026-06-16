@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using FormatLibrary;
+using System.Collections;
 using System.Text.RegularExpressions;
 using Validations;
 
@@ -16,12 +17,12 @@ public sealed class FileReader : IEnumerable<string>
     public FileReader(string path)
     {
         FilePath = path;
-        _fileContentLines = ASMUtils.CleanFileContent(path).Split('\n');
+        _fileContentLines = FormatCleaner.CleanFileContent(path).Split('\n');
     }
     public FileReader(string name, string content)
     {
         FilePath = Path.Combine("internal", name);
-        _fileContentLines = ASMUtils.CleanString(content).Split('\n');
+        _fileContentLines = FormatCleaner.CleanString(content).Split('\n');
     }
     public IEnumerator<string> GetEnumerator()
     {

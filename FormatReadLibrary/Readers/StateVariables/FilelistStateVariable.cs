@@ -1,4 +1,5 @@
-﻿using SMWHubValidations;
+﻿using FormatLibrary.Entries;
+using SMWHubValidations;
 using StateMachine;
 using StateMachine.Interfaces;
 using System.Text.RegularExpressions;

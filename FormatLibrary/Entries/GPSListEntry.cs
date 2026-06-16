@@ -1,4 +1,5 @@
 ﻿namespace FormatLibrary.Entries;
+
 public sealed class GPSListEntry
 {
     public required int ID { get; init; }

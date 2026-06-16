@@ -1,7 +1,9 @@
-﻿using System.Text.RegularExpressions;
+﻿using FormatLibrary;
+using System.Text.RegularExpressions;
 using Validations;
 
 namespace SMWHubASMCodeLibrary;
+
 public static partial class SharedMacrosProcessor
 {
     public const string REPEATED_MACRO_NAME = "REPEATED MACRO NAME";
@@ -13,7 +15,7 @@ public static partial class SharedMacrosProcessor
         List<Macro> macroList = [];
         foreach (SharedCode sharedCode in sharedCodes)
         {
-            asmFileContent = ASMEditUtils
+            asmFileContent = FormatCleaner
                 .CleanFileContent(sharedCode.FilePath)
                 .Split('\n');
             macroList.AddRange(readASMFile(asmFileContent, sharedCode));

@@ -1,5 +1,6 @@
 ﻿using FormatLibrary.Entries;
 namespace SMWHubASMCodeLibrary;
+
 public enum CodeType
 {
     Global,

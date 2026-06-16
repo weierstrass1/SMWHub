@@ -2,7 +2,7 @@
 using FormatReadLibrary.LineContexts;
 using FormatReadLibrary.Readers.ParsingContexts;
 using SMWHubEnumerators;
-using SMWHubValidations;
+using SMWHubValidations.StateVariableValidations;
 using Validations;
 
 namespace FormatReadLibrary.Readers;
@@ -53,7 +53,7 @@ public sealed partial class DynamicInfoReader
         {
             int i = Math.Max(legacyFormat.LineIndex, currentFormat.LineIndex);
             result.Context = new(fReader.FilePath, i, fReader[i]);
-            result.AddError(ValidatorMessagetypeKeys.BOTH_DYNAMIC_INFO_FORMATS);
+            result.AddError(StateVariableMessageTypeKeys.BOTH_DYNAMIC_INFO_FORMATS);
             return result;
         }
         return result;

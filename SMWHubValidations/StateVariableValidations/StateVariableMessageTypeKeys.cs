@@ -1,5 +1,6 @@
-﻿namespace SMWHubValidations;
-public static class ValidatorMessagetypeKeys
+﻿namespace SMWHubValidations.StateVariableValidations;
+
+public static class StateVariableMessageTypeKeys
 {
     public const string RESOURCE_NOT_FOUND = "RESOURCE NOT FOUND";
     public const string REPEATED_ID = "REPEATED ID";

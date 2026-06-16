@@ -2,7 +2,8 @@
 using Validations;
 using Validations.Interfaces;
 
-namespace SMWHubValidations;
+namespace SMWHubValidations.StateVariableValidations;
+
 public sealed class ValidateEntryFormat : Validator
 {
     private readonly string _variableName;
@@ -17,7 +18,7 @@ public sealed class ValidateEntryFormat : Validator
         Match match = ctx.State.Get<Match>(_variableName)!;
         ValidationResult validationResult = new(ctx.Context);
         if (!match.Success)
-            validationResult.AddError(ValidatorMessagetypeKeys.INVALID_ENTRY_FORMAT);
+            validationResult.AddError(StateVariableMessageTypeKeys.INVALID_ENTRY_FORMAT);
 
         return validationResult;
     }

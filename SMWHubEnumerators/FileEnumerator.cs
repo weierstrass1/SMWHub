@@ -2,6 +2,7 @@
 using Validations;
 
 namespace SMWHubEnumerators;
+
 public sealed class FileEnumerator : IEnumerator<string>
 {
     private readonly FileReader _reader;

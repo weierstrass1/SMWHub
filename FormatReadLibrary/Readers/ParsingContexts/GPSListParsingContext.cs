@@ -1,8 +1,8 @@
-﻿using FormatReadLibrary.Entries;
+﻿using FormatLibrary.Entries;
 using FormatReadLibrary.LineContexts;
 using FormatReadLibrary.Readers.ParsingContexts;
 using FormatReadLibrary.Readers.StateVariables;
-using SMWHubValidations;
+using SMWHubValidations.StateVariableValidations;
 using StateMachine;
 using System.Text.RegularExpressions;
 using Validations;

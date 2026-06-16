@@ -1,4 +1,5 @@
-﻿using FormatReadLibrary.Infos;
+﻿using FormatLibrary.Entries;
+using FormatReadLibrary.Infos;
 using FormatReadLibrary.LineContexts;
 using FormatReadLibrary.Readers.ParsingContexts;
 using FormatReadLibrary.Readers.StateVariables;
