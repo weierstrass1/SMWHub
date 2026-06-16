@@ -1,8 +1,7 @@
-﻿using FormatReadLibrary.Entries;
+﻿using FormatLibrary.Entries;
 using FormatReadLibrary.LineContexts;
 using FormatReadLibrary.Readers.ParsingContexts;
 using FormatReadLibrary.Readers.StateVariables;
-using SMWHubValidations;
 using System.Text.RegularExpressions;
 using Validations;
 
@@ -38,16 +37,12 @@ public sealed partial class CommonListReader
             foreach (int id in _ids)
             {
                 _entriesList[id] = [];
-                foreach (var filepath in _filepaths)
+                _entriesList[id].Add(new()
                 {
-                    _entriesList[id].Add(new()
-                    {
-                        ID = id,
-                        EntryType = _section.Title,
-                        Path = filepath.Path,
-                        Values = filepath.Values,
-                    });
-                }
+                    ID = id,
+                    EntryType = _section.Title,
+                    Paths = _filepaths
+                });
             }
         }
         public Dictionary<int, List<CommonListEntry>> GetEntries()

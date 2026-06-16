@@ -15,9 +15,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Configs", "Configs\Configs.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LogRegister", "LogRegister\LogRegister.csproj", "{C929F844-A184-B1D7-9891-79E39E0F82B6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SMWHubSharedCodeLibrary", "SMWHubSharedCodeLibrary\SMWHubSharedCodeLibrary.csproj", "{8BE91F1F-EBCF-472C-9811-9AA523FB5087}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ASMCodeUtils", "ASMCodeUtils\ASMCodeUtils.csproj", "{1AA3EA10-7BEF-470E-99EF-CC8C93B8ABCD}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SMWHubASMCodeLibrary", "SMWHubASMCodeLibrary\SMWHubASMCodeLibrary.csproj", "{1AA3EA10-7BEF-470E-99EF-CC8C93B8ABCD}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Validations", "Validations\Validations.csproj", "{3C8110A4-F198-431C-9B0A-64835286D758}"
 EndProject
@@ -26,6 +24,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SMWHubLogging", "SMWHubLogging\SMWHubLogging.csproj", "{0E4D7D76-6317-4970-A7F2-77F465EEF5BA}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SMWHubEnumerators", "SMWHubEnumerators\SMWHubEnumerators.csproj", "{1619846B-A9B1-453E-9620-8F70567D4EC1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FormatLibrary", "FormatLibrary\FormatLibrary.csproj", "{6B792120-C8A5-4D7E-AF91-D7969ED1950C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -57,10 +57,6 @@ Global
 		{C929F844-A184-B1D7-9891-79E39E0F82B6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C929F844-A184-B1D7-9891-79E39E0F82B6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C929F844-A184-B1D7-9891-79E39E0F82B6}.Release|Any CPU.Build.0 = Release|Any CPU
-		{8BE91F1F-EBCF-472C-9811-9AA523FB5087}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8BE91F1F-EBCF-472C-9811-9AA523FB5087}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8BE91F1F-EBCF-472C-9811-9AA523FB5087}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8BE91F1F-EBCF-472C-9811-9AA523FB5087}.Release|Any CPU.Build.0 = Release|Any CPU
 		{1AA3EA10-7BEF-470E-99EF-CC8C93B8ABCD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{1AA3EA10-7BEF-470E-99EF-CC8C93B8ABCD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1AA3EA10-7BEF-470E-99EF-CC8C93B8ABCD}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -81,6 +77,10 @@ Global
 		{1619846B-A9B1-453E-9620-8F70567D4EC1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1619846B-A9B1-453E-9620-8F70567D4EC1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1619846B-A9B1-453E-9620-8F70567D4EC1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6B792120-C8A5-4D7E-AF91-D7969ED1950C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6B792120-C8A5-4D7E-AF91-D7969ED1950C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6B792120-C8A5-4D7E-AF91-D7969ED1950C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6B792120-C8A5-4D7E-AF91-D7969ED1950C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

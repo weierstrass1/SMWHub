@@ -1,6 +1,6 @@
 ﻿namespace SMWHubSharedCodeLibrary;
 
-public enum SharedCodeScopeType
+public enum CodeType
 {
     Global,
     Sprite,
@@ -17,12 +17,11 @@ public enum SharedCodeScopeType
     OverworldASM,
     Block,
     Patch,
-    Player,
-
+    Player
 }
-public sealed class SharedCodeScope(string directoryPath, SharedCodeScopeType type)
+public sealed class SharedCodeScope(string directoryPath, CodeType type)
 {
     public readonly string DirectoryPath = directoryPath;
-    public readonly SharedCodeScopeType Type = type;
+    public readonly CodeType Type = type;
 }
 

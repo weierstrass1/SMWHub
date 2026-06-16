@@ -1,7 +1,7 @@
 ﻿using Configs;
-using FormatReadLibrary.ResourceManagement.ResourceTypes;
+using FormatLibrary.ResourceManagement.ResourceTypes;
 using LogRegister;
-using ResourceManagement;
+using ResourceManagement.Interfaces;
 using SMWHubLogging.LoggingRegisters;
 using System.Text.RegularExpressions;
 
@@ -89,12 +89,12 @@ public sealed partial class DynamicInfo(string contextName)
 
         return result;
     }
-    public static IReadOnlyList<Resource> GetAllResources(IEnumerable<DynamicInfo> dis)
+    public static IReadOnlyList<IDataResource> GetAllResources(IEnumerable<DynamicInfo> dis)
     {
         var boolOpts = Options.Instance.BoolOptions
             .Where(o => o.Name != null)
             .ToDictionary(o => o.Name!, o => o.Value);
-        List<Resource> result = [];
+        List<IDataResource> result = [];
 
         if (boolOpts["DynamicPoses"])
             result.AddRange(GetPosesData(dis));
@@ -104,10 +104,10 @@ public sealed partial class DynamicInfo(string contextName)
             result.AddRange(GetResourceData(dis));
         return result.AsReadOnly();
     }
-    public static IReadOnlyList<Resource> GetPosesData(IEnumerable<DynamicInfo> dis)
+    public static IReadOnlyList<IDataResource> GetPosesData(IEnumerable<DynamicInfo> dis)
     {
-        List<Resource> poses = [];
-        IEnumerable<Resource> currentPoses;
+        List<IDataResource> poses = [];
+        IEnumerable<IDataResource> currentPoses;
         int i = 0;
         foreach (var di in dis)
         {
@@ -117,11 +117,11 @@ public sealed partial class DynamicInfo(string contextName)
         }
         return poses;
     }
-    public static IReadOnlyList<Resource> GetPaletteData(IEnumerable<DynamicInfo> dis)
+    public static IReadOnlyList<IDataResource> GetPaletteData(IEnumerable<DynamicInfo> dis)
     {
-        Dictionary<string, Resource> pals = [];
+        Dictionary<string, IDataResource> pals = [];
         int i = 0;
-        IReadOnlyDictionary<string, Resource> currentPalettes;
+        IReadOnlyDictionary<string, IDataResource> currentPalettes;
         foreach (var di in dis)
         {
             currentPalettes = di.GetPaletteData(i, pals.AsReadOnly());
@@ -130,11 +130,11 @@ public sealed partial class DynamicInfo(string contextName)
         }
         return pals.Values.ToList().AsReadOnly();
     }
-    public static IReadOnlyList<Resource> GetResourceData(IEnumerable<DynamicInfo> dis)
+    public static IReadOnlyList<IDataResource> GetResourceData(IEnumerable<DynamicInfo> dis)
     {
-        Dictionary<string, Resource> res = [];
+        Dictionary<string, IDataResource> res = [];
         int i = 0;
-        IReadOnlyDictionary<string, Resource> currentResources;
+        IReadOnlyDictionary<string, IDataResource> currentResources;
         foreach (var di in dis)
         {
             currentResources = di.GetResourceData(i, res.AsReadOnly());
@@ -143,12 +143,12 @@ public sealed partial class DynamicInfo(string contextName)
         }
         return res.Values.ToList().AsReadOnly();
     }
-    public IReadOnlyDictionary<string, Resource> GetPaletteData(int idOffset, IReadOnlyDictionary<string, Resource> currentPalettes)
+    public IReadOnlyDictionary<string, IDataResource> GetPaletteData(int idOffset, IReadOnlyDictionary<string, IDataResource> currentPalettes)
     {
         if (Palettes == null || Palettes.Length == 0)
-            return new Dictionary<string, Resource>().AsReadOnly();
+            return new Dictionary<string, IDataResource>().AsReadOnly();
         byte[] b;
-        Dictionary<string, Resource> result = [];
+        Dictionary<string, IDataResource> result = [];
         int i = idOffset;
         foreach (var path in Palettes)
         {
@@ -161,12 +161,12 @@ public sealed partial class DynamicInfo(string contextName)
         }
         return result;
     }
-    public IReadOnlyDictionary<string, Resource> GetResourceData(int idOffset, IReadOnlyDictionary<string, Resource> currentResources)
+    public IReadOnlyDictionary<string, IDataResource> GetResourceData(int idOffset, IReadOnlyDictionary<string, IDataResource> currentResources)
     {
         if (Resources == null || Resources.Length == 0)
-            return new Dictionary<string, Resource>().AsReadOnly();
+            return new Dictionary<string, IDataResource>().AsReadOnly();
         byte[] b;
-        Dictionary<string, Resource> result = [];
+        Dictionary<string, IDataResource> result = [];
         int i = idOffset;
         foreach (var path in Resources)
         {
@@ -179,14 +179,14 @@ public sealed partial class DynamicInfo(string contextName)
         }
         return result.AsReadOnly();
     }
-    public IReadOnlyList<Resource> GetPosesData(int idOffset)
+    public IReadOnlyList<IDataResource> GetPosesData(int idOffset)
     {
         if (PoseGraphics == null || PoseGraphics.Length == 0)
             return [];
         if (PosesChunksSizes == null)
             return [];
 
-        List<Resource> poses = [];
+        List<IDataResource> poses = [];
 
         int totalLength = 0;
         foreach (var value in PosesChunksSizes)

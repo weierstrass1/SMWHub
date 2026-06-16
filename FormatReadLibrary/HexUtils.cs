@@ -30,7 +30,7 @@ public static partial class HexUtils
     }
     public static int[] GetValues(string input)
     {
-        string cleanInput = ASMEditUtils.CleanString(input);
+        string cleanInput = ASMUtils.CleanString(input);
         MatchCollection matches = valueRegex().Matches(cleanInput);
         int[] values = new int[matches.Count];
         string currentValue;

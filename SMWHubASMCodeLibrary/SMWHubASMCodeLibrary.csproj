@@ -8,4 +8,8 @@
     <FileVersion>1.0.0.3</FileVersion>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\FormatLibrary\FormatLibrary.csproj" />
+  </ItemGroup>
+
 </Project>

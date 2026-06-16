@@ -1,4 +1,4 @@
-﻿using FormatReadLibrary.Entries;
+﻿using FormatLibrary.Entries;
 using FormatReadLibrary.LineContexts;
 using SMWHubEnumerators;
 using Validations;

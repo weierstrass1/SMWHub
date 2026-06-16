@@ -138,18 +138,22 @@
   },
   "MULTI ID NOT ALLOWED": {
     "Category": "Error",
-    "Message": "\\n\\t\\tYou can't use multiple IDs."
+    "Message": "\n\t\tYou can't use multiple IDs."
   },
   "REPEATED SECTION": {
     "Category": "Error",
-    "Message": "\\n\\t\\tRepeated Section {section}."
+    "Message": "\n\t\tRepeated Section {section}."
   },
   "SECTION WITHOUT TITLE": {
     "Category": "Error",
-    "Message": "Section doesn't contain title"
+    "Message": "\n\t\tSection doesn't contain title"
   },
   "BOTH DYNAMIC INFO FORMATS": {
     "Category": "Error",
-    "Message": "Both 'poseschunkssizes:' and 'numberof16x16tilesperpose:' sections are present. You can't use legacy and current format at the same time."
+    "Message": "\n\t\tBoth 'poseschunkssizes:' and 'numberof16x16tilesperpose:' sections are present. You can't use legacy and current format at the same time."
+  },
+  "REPEATED MACRO NAME": {
+    "Category": "Error",
+    "Message": "\n\t\tThe following macros have repeated names:\n\t\t\t{macros}."
   }
 }

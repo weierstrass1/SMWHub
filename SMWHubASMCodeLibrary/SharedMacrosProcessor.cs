@@ -1,8 +1,7 @@
-﻿using SMWHubSharedCodeLibrary;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 using Validations;
 
-namespace SharedCodeLibrary;
+namespace SMWHubASMCodeLibrary;
 public static partial class SharedMacrosProcessor
 {
     public const string REPEATED_MACRO_NAME = "REPEATED MACRO NAME";

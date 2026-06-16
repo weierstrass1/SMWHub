@@ -9,10 +9,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ASMCodeUtils\ASMCodeUtils.csproj" />
     <ProjectReference Include="..\Configs\Configs.csproj" />
+    <ProjectReference Include="..\FormatLibrary\FormatLibrary.csproj" />
     <ProjectReference Include="..\LogRegister\LogRegister.csproj" />
     <ProjectReference Include="..\ResourceManagement\ResourceManagement.csproj" />
+    <ProjectReference Include="..\SMWHubASMCodeLibrary\SMWHubASMCodeLibrary.csproj" />
     <ProjectReference Include="..\SMWHubEnumerators\SMWHubEnumerators.csproj" />
     <ProjectReference Include="..\SMWHubLogging\SMWHubLogging.csproj" />
     <ProjectReference Include="..\SMWHubValidations\SMWHubValidations.csproj" />

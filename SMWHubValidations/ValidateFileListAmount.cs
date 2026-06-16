@@ -19,4 +19,3 @@ public class ValidateFileListAmount(IValidationState ctx, bool allowedMultiline)
         return result;
     }
 }
-public record FilePath(string Path, int[] Values);

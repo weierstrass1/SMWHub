@@ -1,11 +1,10 @@
 ﻿using FormatReadLibrary.Infos;
 using FormatReadLibrary.Readers;
 using LogRegister;
-using SharedCodeLibrary;
+using SMWHubASMCodeLibrary;
 using SMWHubLogging;
 using SMWHubLogging.Categories;
 using SMWHubLogging.Wrappers;
-using SMWHubSharedCodeLibrary;
 using System.Reflection;
 using Validations;
 

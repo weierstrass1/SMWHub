@@ -1,4 +1,4 @@
-﻿namespace SMWHubSharedCodeLibrary;
+﻿namespace SMWHubASMCodeLibrary;
 
 public sealed class Macro(string name, SharedCode sharedCode, int line)
 {

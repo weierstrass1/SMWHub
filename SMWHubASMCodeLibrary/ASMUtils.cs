@@ -1,7 +1,7 @@
 ﻿using System.Text.RegularExpressions;
 
 namespace ASMCodeUtils;
-public static partial class ASMEditUtils
+public static partial class ASMUtils
 {
     [GeneratedRegex(@"\s+")]
     public static partial Regex SpaceRegex();
