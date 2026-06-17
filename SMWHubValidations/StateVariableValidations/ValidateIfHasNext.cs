@@ -4,7 +4,7 @@ using Validations.Interfaces;
 
 namespace SMWHubValidations.StateVariableValidations;
 
-public class ValidateIfHasNext(FileEnumerator fileEnumerator) : Validator()
+public class ValidateIfHasNext(FileEnumerator fileEnumerator) : VariableValidation()
 {
     private readonly FileEnumerator _fileEnumerator = fileEnumerator;
     public override ValidationResult Validate(IValidationState ctx)

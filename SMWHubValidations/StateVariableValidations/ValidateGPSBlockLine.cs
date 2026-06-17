@@ -1,12 +1,12 @@
-﻿using Validations;
-using Validations.Attributes;
+﻿using StateMachine.Attributes;
+using Validations;
 using Validations.Interfaces;
 
 namespace SMWHubValidations.StateVariableValidations;
 
 [RequiresStateVariable("Start", typeof(int))]
 [RequiresStateVariable("End", typeof(int))]
-public sealed class ValidateGPSBlockLine(IValidationState context) : Validator(context)
+public sealed class ValidateGPSBlockLine(IValidationState context) : VariableValidation(context)
 {
     public override ValidationResult Validate(IValidationState ctx)
     {

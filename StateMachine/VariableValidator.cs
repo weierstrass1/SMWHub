@@ -1,8 +1,7 @@
-﻿using StateMachine;
+﻿using StateMachine.Interfaces;
 using System.Reflection;
-using Validations.Interfaces;
 
-namespace Validations;
+namespace StateMachine;
 
 public record VariableValidator : IVariableValidator
 {
@@ -15,7 +14,7 @@ public record VariableValidator : IVariableValidator
         VariableName = variableName;
         ExpectedType = expectedType;
     }
-    public void Validate(IValidationState ctx)
+    public void Validate(IHaveState ctx)
     {
         if (ExpectedType == null)
         {

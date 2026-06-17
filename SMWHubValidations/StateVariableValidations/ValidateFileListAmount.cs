@@ -1,12 +1,12 @@
 ﻿using FormatLibrary.Entries;
+using StateMachine.Attributes;
 using Validations;
-using Validations.Attributes;
 using Validations.Interfaces;
 
 namespace SMWHubValidations.StateVariableValidations;
 
 [RequiresStateVariable("Filelist", typeof(FilePath[]))]
-public class ValidateFileListAmount(IValidationState ctx, bool allowedMultiline) : Validator(ctx)
+public class ValidateFileListAmount(IValidationState ctx, bool allowedMultiline) : VariableValidation(ctx)
 {
     private readonly bool _allowedMultiline = allowedMultiline;
     public override ValidationResult Validate(IValidationState ctx)

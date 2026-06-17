@@ -4,7 +4,7 @@ using Validations.Interfaces;
 
 namespace SMWHubValidations.StateVariableValidations;
 
-public sealed class ValidateDuplicateID<TKey, TValue> : Validator where TKey : notnull
+public sealed class ValidateDuplicateID<TKey, TValue> : VariableValidation where TKey : notnull
 {
     private readonly static VariableValidator _variableValidator = new("ID", typeof(TKey));
     private readonly Dictionary<TKey, TValue> _entries;

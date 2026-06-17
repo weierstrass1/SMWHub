@@ -1,12 +1,12 @@
 ﻿using StateMachine;
+using StateMachine.Attributes;
 using Validations;
-using Validations.Attributes;
 using Validations.Interfaces;
 
 namespace SMWHubValidations.StateVariableValidations;
 
 [RequiresStateVariable("ID", typeof(int))]
-public sealed class ValidateEntryID(IValidationState ctx, int maxID = 255) : Validator(ctx)
+public sealed class ValidateEntryID(IValidationState ctx, int maxID = 255) : VariableValidation(ctx)
 {
     private readonly int _maxID = maxID;
     public override ValidationResult Validate(IValidationState ctx)

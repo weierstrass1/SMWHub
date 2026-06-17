@@ -1,11 +1,12 @@
-﻿using StateMachine;
+﻿using SMWHubValidations.FormatValidations;
+using StateMachine;
+using StateMachine.Attributes;
 using Validations;
-using Validations.Attributes;
 using Validations.Interfaces;
 namespace SMWHubValidations.StateVariableValidations;
 
 [RequiresStateVariable("Filepath", typeof(string))]
-public sealed class ValidateFileExists(IValidationState ctx) : Validator(ctx)
+public sealed class ValidateFileExists(IValidationState ctx) : VariableValidation(ctx)
 {
     public override ValidationResult Validate(IValidationState ctx)
     {
@@ -13,7 +14,7 @@ public sealed class ValidateFileExists(IValidationState ctx) : Validator(ctx)
         var filepath = state.Get<string>("Filepath")!;
         ValidationResult validationResult = new(ctx.Context);
         if (!File.Exists(filepath))
-            validationResult.AddError(StateVariableMessageTypeKeys.RESOURCE_NOT_FOUND, new()
+            validationResult.AddError(FormatErrorsMessageTypeKeys.RESOURCE_NOT_FOUND, new()
             {
                 {"file", filepath }
             });

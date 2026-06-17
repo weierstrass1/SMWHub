@@ -37,4 +37,15 @@ public class Tweak166E
             DontInteractWithLayer2 = (value & 0x80) != 0;
         }
     }
+    public static implicit operator byte(Tweak166E t)
+    {
+        return t.Value;
+    }
+    public static implicit operator Tweak166E(byte b)
+    {
+        return new()
+        {
+            Value = b
+        };
+    }
 }

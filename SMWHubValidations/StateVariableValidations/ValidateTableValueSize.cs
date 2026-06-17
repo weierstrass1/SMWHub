@@ -10,7 +10,7 @@ public enum TableValueSize
     dl,
     dd
 }
-public class ValidateTableValueSize(Func<string> getter, TableValueSize valueSize) : Validator()
+public class ValidateTableValueSize(Func<string> getter, TableValueSize valueSize) : VariableValidation()
 {
     private readonly Func<string> _getter = getter;
     private readonly TableValueSize _valueSize = valueSize;

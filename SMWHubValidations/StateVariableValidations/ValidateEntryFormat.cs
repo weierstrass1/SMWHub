@@ -1,10 +1,11 @@
-﻿using System.Text.RegularExpressions;
+﻿using StateMachine;
+using System.Text.RegularExpressions;
 using Validations;
 using Validations.Interfaces;
 
 namespace SMWHubValidations.StateVariableValidations;
 
-public sealed class ValidateEntryFormat : Validator
+public sealed class ValidateEntryFormat : VariableValidation
 {
     private readonly string _variableName;
     public ValidateEntryFormat(IValidationState context, string variableName = "Match") : base()

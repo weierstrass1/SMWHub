@@ -25,4 +25,15 @@ public class Tweak1662
             FallsStraightDownWhenKilled = (value & 0x80) != 0;
         }
     }
+    public static implicit operator byte(Tweak1662 t)
+    {
+        return t.Value;
+    }
+    public static implicit operator Tweak1662(byte b)
+    {
+        return new()
+        {
+            Value = b
+        };
+    }
 }

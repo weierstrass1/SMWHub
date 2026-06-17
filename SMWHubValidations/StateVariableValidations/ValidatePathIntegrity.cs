@@ -1,12 +1,12 @@
 ﻿using StateMachine;
+using StateMachine.Attributes;
 using Validations;
-using Validations.Attributes;
 using Validations.Interfaces;
 
 namespace SMWHubValidations.StateVariableValidations;
 
 [RequiresStateVariable("Filepath", typeof(string))]
-public class ValidatePathIntegrity(IValidationState ctx) : Validator(ctx)
+public class ValidatePathIntegrity(IValidationState ctx) : VariableValidation(ctx)
 {
     public override ValidationResult Validate(IValidationState ctx)
     {

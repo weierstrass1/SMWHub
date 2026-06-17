@@ -1,5 +1,4 @@
 ﻿using LogRegister.Interfaces;
-using SMWHubValidations.FormatValidations;
 
 namespace SMWHubLogging.LoggingRegisters;
 
@@ -7,7 +6,7 @@ public sealed class InsertedPaletteEffect : ILoggingEntry
 {
     public bool AppearWithoutVerbose => false;
     public bool AppearInErrors => false;
-    public string MessageTypeKey => FormatErrorsMessageTypeKeys.PALETTE_EFFECT_COLLECTION_INSERTED;
+    public string MessageTypeKey => LogMessageTypeKeys.PALETTE_EFFECT_COLLECTION_INSERTED;
     public IReadOnlyDictionary<string, string> Parameters { get; }
     public InsertedPaletteEffect(string name, int length)
     {

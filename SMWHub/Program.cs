@@ -1,4 +1,4 @@
-﻿using FormatReadLibrary.Infos;
+﻿using FormatLibrary;
 using FormatReadLibrary.Readers;
 using LogRegister;
 using SMWHubASMCodeLibrary;
@@ -39,8 +39,8 @@ public class Program
         validation.Merge(gpsreader.Read("list.txt"));
         var gpsEntries = gpsreader.GetEntries();
 
-        validation.Merge(DynamicInfoReader.Read("DKCMasterGnawty.dynamicinfo", out DynamicInfoOld? dynamicInfo));
-        validation.Merge(DynamicInfoReader.Read("SMWVanillaBoo.dynamicinfo", out DynamicInfoOld? dynamicInfo1));
+        validation.Merge(DynamicInfoReader.Read("DKCMasterGnawty.dynamicinfo", out DynamicInfo? dynamicInfo));
+        validation.Merge(DynamicInfoReader.Read("SMWVanillaBoo.dynamicinfo", out DynamicInfo? dynamicInfo1));
 
         ValidatorLogAdapter.LogValidatorResult(log, validation);
 

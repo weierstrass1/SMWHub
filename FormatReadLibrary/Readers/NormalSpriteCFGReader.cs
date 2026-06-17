@@ -6,7 +6,7 @@ using Validations;
 
 namespace FormatReadLibrary.Readers;
 
-public static class NormalSpriteCFGReader
+public static partial class NormalSpriteCFGReader
 {
     public static ValidationResult Reader(string path, out NormalSpriteConfigEntry? config)
     {
@@ -26,7 +26,7 @@ public static class NormalSpriteCFGReader
     {
         ValidationResult result = new();
         string[] lines = content.Split('\n');
-        
+        config = null;
         return result;
     }
     private static ValidationResult readJson(string content, out NormalSpriteConfigEntry? config)

@@ -45,4 +45,15 @@ public class Tweak1686
             DontInteractWithObjects = (value & 0x80) != 0;
         }
     }
+    public static implicit operator byte(Tweak1686 t)
+    {
+        return t.Value;
+    }
+    public static implicit operator Tweak1686(byte b)
+    {
+        return new()
+        {
+            Value = b
+        };
+    }
 }

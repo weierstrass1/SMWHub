@@ -1,11 +1,11 @@
-﻿using Validations;
-using Validations.Attributes;
+﻿using StateMachine.Attributes;
+using Validations;
 using Validations.Interfaces;
 
 namespace SMWHubValidations.StateVariableValidations;
 
 [RequiresStateVariable("Values", typeof(int[]))]
-public class ValidateValuesSize : Validator
+public class ValidateValuesSize : VariableValidation
 {
     private readonly uint _minSize;
     private readonly uint _maxSize;

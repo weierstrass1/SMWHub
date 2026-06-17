@@ -1,12 +1,12 @@
 ﻿using StateMachine;
+using StateMachine.Attributes;
 using Validations;
-using Validations.Attributes;
 using Validations.Interfaces;
 
 namespace SMWHubValidations.StateVariableValidations;
 
 [RequiresStateVariable("Parameters", typeof(int[]))]
-public sealed class ValidateEntryParameters(IValidationState ctx, int minLimit = 0, int maxLimit = 255, bool allowedVariables = false) : Validator(ctx)
+public sealed class ValidateEntryParameters(IValidationState ctx, int minLimit = 0, int maxLimit = 255, bool allowedVariables = false) : VariableValidation(ctx)
 {
     private readonly bool _allowedVariables = allowedVariables;
     private readonly int _minLimit = minLimit;

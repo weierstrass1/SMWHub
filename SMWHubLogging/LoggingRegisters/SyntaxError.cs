@@ -1,6 +1,7 @@
 ﻿using LogRegister;
 using LogRegister.Interfaces;
 using SMWHubValidations.FormatValidations;
+using SMWHubValidations.StateVariableValidations;
 
 namespace SMWHubLogging.LoggingRegisters;
 
@@ -29,7 +30,7 @@ public sealed class SyntaxError : ILoggingEntryWithNestedMessage
     {
         NestedEntries = new Dictionary<string, ILoggingEntry>()
         {
-            { "message", new LogEntry(FormatErrorsMessageTypeKeys.RAW_SYNTAX_ERROR_MESSAGE, new Dictionary<string, string>(){
+            { "message", new LogEntry(StateVariableMessageTypeKeys.RAW_SYNTAX_ERROR_MESSAGE, new Dictionary<string, string>(){
                 {"message",message}
             }) }
         }.AsReadOnly();

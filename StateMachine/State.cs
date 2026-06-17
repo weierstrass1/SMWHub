@@ -19,6 +19,14 @@ public class State
             variable.Value = default;
         }
     }
+    public void AddVariable<T>(string key, bool cleanOnReset = false)
+    {
+        _variables.Add(key, new StateVariable<T>(cleanOnReset));
+    }
+    public void AddVariable<T>(string key, T value, bool cleanOnReset = false)
+    {
+        _variables.Add(key, new StateVariable<T>(value, cleanOnReset));
+    }
     public void AddVariable(string key, IStateVariable variable)
     {
         _variables.Add(key, variable);

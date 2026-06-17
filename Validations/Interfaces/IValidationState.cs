@@ -4,5 +4,5 @@ namespace Validations.Interfaces;
 
 public interface IValidationState : IHaveState
 {
-    public ValidationContext? Context { get; }
+    public ValidationContext? Context { get; set; }
 }

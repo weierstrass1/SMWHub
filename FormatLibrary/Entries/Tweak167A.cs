@@ -45,4 +45,15 @@ public class Tweak167A
             DontUseDefaultInteractionWithMario = (value & 0x80) != 0;
         }
     }
+    public static implicit operator byte(Tweak167A t)
+    {
+        return t.Value;
+    }
+    public static implicit operator Tweak167A(byte b)
+    {
+        return new()
+        {
+            Value = b
+        };
+    }
 }

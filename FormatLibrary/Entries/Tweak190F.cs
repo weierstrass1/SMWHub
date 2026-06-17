@@ -45,4 +45,15 @@ public class Tweak190F
             DontGetStuckInWalls_CarriableSprites = (value & 0x80) != 0;
         }
     }
+    public static implicit operator byte(Tweak190F t)
+    {
+        return t.Value;
+    }
+    public static implicit operator Tweak190F(byte b)
+    {
+        return new()
+        {
+            Value = b
+        };
+    }
 }

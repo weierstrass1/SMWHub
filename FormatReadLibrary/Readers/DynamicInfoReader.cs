@@ -36,10 +36,10 @@ public sealed partial class DynamicInfoReader
             .Where(kvp => kvp.Key != "poseschunkssizes:" && kvp.Key != "numberof16x16tilesperpose:")
             .ToList();
 
-        if (enumerators.ContainsKey("poseschunkssizes:"))
-            enumSortered.Add(new("poseschunkssizes:", enumerators["poseschunkssizes:"]));
-        if (enumerators.ContainsKey("numberof16x16tilesperpose:"))
-            enumSortered.Add(new("numberof16x16tilesperpose:", enumerators["numberof16x16tilesperpose:"]));
+        if (enumerators.TryGetValue("poseschunkssizes:", out FileEnumerator? value))
+            enumSortered.Add(new("poseschunkssizes:", value));
+        if (enumerators.TryGetValue("numberof16x16tilesperpose:", out value))
+            enumSortered.Add(new("numberof16x16tilesperpose:", value));
 
         foreach (var section in enumSortered)
         {

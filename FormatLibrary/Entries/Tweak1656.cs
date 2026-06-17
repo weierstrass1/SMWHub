@@ -33,4 +33,15 @@ public class Tweak1656
             DissappearInACloudOfSmoke = (value & 0x80) != 0;
         }
     }
+    public static implicit operator byte(Tweak1656 t)
+    {
+        return t.Value;
+    }
+    public static implicit operator Tweak1656(byte b)
+    {
+        return new()
+        {
+            Value = b
+        };
+    }
 }
