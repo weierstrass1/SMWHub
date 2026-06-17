@@ -24,6 +24,7 @@ public class StateMachine<T> where T : struct, Enum
     {
         if (transition(out T? idToTransition))
         {
+            CurrentState.Exit(_state);
             setState(idToTransition!.Value);
             CurrentState.Start(_state);
             if (!CurrentState.ExecuteLoopRightAfterTransition)

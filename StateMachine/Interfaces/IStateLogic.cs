@@ -6,4 +6,5 @@ public interface IStateLogic<T> where T : struct, Enum
     public bool ExecuteLoopRightAfterTransition { get; }
     public void Start(State state);
     public void Loop(State state);
+    public void Exit(State state);
 }
