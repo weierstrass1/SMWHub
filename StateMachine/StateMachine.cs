@@ -44,6 +44,11 @@ public class StateMachine<T> : Validator, IHaveState where T : struct, Enum
             _didntStartYet = false;
             return true;
         }
+        if(!_transitions.ContainsKey(CurrentState.ID))
+        {
+            result = null;
+            return false;
+        }
         foreach((T idToTransition, ITransition transition)  in _transitions[CurrentState.ID])
         {
             if (transition.MustTransition(State))

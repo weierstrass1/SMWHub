@@ -1,6 +1,7 @@
 ﻿using FormatLibrary.Entries;
 using FormatReadLibrary.LineContexts;
 using FormatReadLibrary.Readers.ParsingContexts;
+using StateMachine;
 using Validations;
 
 namespace FormatReadLibrary.Readers;
@@ -9,9 +10,11 @@ public static partial class NormalSpriteCFGReader
 {
     private class NormalSpriteCFGParsingContext : ParsingContext
     {
+        private readonly NormalSpriteCFGReaderStateMachine _stateMachine;
         public NormalSpriteCFGParsingContext(FileEnumeratorLineContext context) : base(context)
         {
-            State.AddVariable("context", context);
+            State.AddVariable("Context", context);
+            State.AddVariable<ValidationResult>("Validation");
             State.AddVariable("Type", 0);
             State.AddVariable<byte>("ActLike", 0);
             State.AddVariable<Tweak1656>("$1656", 0);
@@ -25,11 +28,16 @@ public static partial class NormalSpriteCFGReader
             State.AddVariable("FilePath", "");
             State.AddVariable("CleanEBAmount", 0);
             State.AddVariable("SetEBAmount", 0);
-
+            _stateMachine = new(State);
         }
         public override ValidationResult ProcessEntry()
         {
-            throw new NotImplementedException();
+            State.Set("Validation", new ValidationResult()
+            {
+                Context = Context
+            });
+            _stateMachine.Execute();
+            return State.Get<ValidationResult>("Validation")!;
         }
     }
 }
