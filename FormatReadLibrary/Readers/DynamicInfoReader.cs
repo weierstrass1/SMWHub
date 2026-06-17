@@ -1,4 +1,4 @@
-﻿using FormatReadLibrary.Infos;
+﻿using FormatLibrary;
 using FormatReadLibrary.LineContexts;
 using FormatReadLibrary.Readers.ParsingContexts;
 using SMWHubEnumerators;
@@ -30,9 +30,18 @@ public sealed partial class DynamicInfoReader
         result.Merge(validateIfUseBothFormats(fReader, enumerators));
 
         ParsingContext ctx;
-        dynamicInfo = new(Path.GetFileNameWithoutExtension(name));
+        dynamicInfo = new();
 
-        foreach (var section in enumerators)
+        var enumSortered = enumerators
+            .Where(kvp => kvp.Key != "poseschunkssizes:" && kvp.Key != "numberof16x16tilesperpose:")
+            .ToList();
+
+        if (enumerators.ContainsKey("poseschunkssizes:"))
+            enumSortered.Add(new("poseschunkssizes:", enumerators["poseschunkssizes:"]));
+        if (enumerators.ContainsKey("numberof16x16tilesperpose:"))
+            enumSortered.Add(new("numberof16x16tilesperpose:", enumerators["numberof16x16tilesperpose:"]));
+
+        foreach (var section in enumSortered)
         {
             ctx = createContext(section.Key, dynamicInfo, baseDirectory, (FileEnumeratorLineContext)section.Value);
             while (section.Value.MoveNext())

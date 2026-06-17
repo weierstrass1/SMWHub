@@ -1,4 +1,5 @@
 ﻿using FormatLibrary.Entries;
+using FormatReadLibrary.Interfaces;
 using FormatReadLibrary.LineContexts;
 using SMWHubEnumerators;
 using Validations;
@@ -7,7 +8,7 @@ namespace FormatReadLibrary.Readers;
 
 public sealed partial class CommonListReader
 {
-    public sealed record CommonListSectionTuple(string Title, string BaseDirectory);
+    public sealed record CommonListSectionTuple(string Title, ICommonListCategory Category, string BaseDirectory);
     private readonly Dictionary<string, CommonListSectionTuple> _sections;
     private readonly Dictionary<string, Dictionary<int, List<CommonListEntry>>> _entriesList;
     public CommonListReader(CommonListSectionTuple[] sections)

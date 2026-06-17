@@ -11,6 +11,7 @@
   <ItemGroup>
     <ProjectReference Include="..\LogRegister\LogRegister.csproj" />
     <ProjectReference Include="..\SMWHubEnumerators\SMWHubEnumerators.csproj" />
+    <ProjectReference Include="..\SMWHubValidations\SMWHubValidations.csproj" />
     <ProjectReference Include="..\Validations\Validations.csproj" />
   </ItemGroup>
 

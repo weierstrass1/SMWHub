@@ -14,8 +14,4 @@
     <ProjectReference Include="..\Validations\Validations.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="FormatValidations\" />
-  </ItemGroup>
-
 </Project>

@@ -1,9 +1,8 @@
-﻿using FormatLibrary.Entries;
-using FormatReadLibrary.Infos;
+﻿using FormatLibrary;
+using FormatLibrary.Entries;
 using FormatReadLibrary.LineContexts;
 using FormatReadLibrary.Readers.ParsingContexts;
 using FormatReadLibrary.Readers.StateVariables;
-using SMWHubValidations;
 using Validations;
 
 namespace FormatReadLibrary.Readers;
@@ -44,13 +43,13 @@ public sealed partial class DynamicInfoReader
             switch (_section)
             {
                 case DynamicInfoSection.PosesGraphics:
-                    DynamicInfo.PoseGraphics = arr;
+                    DynamicInfo.SetPoseGraphics(Path.GetFileNameWithoutExtension(arr[0]), arr.Select(File.ReadAllBytes));
                     break;
                 case DynamicInfoSection.Palettes:
-                    DynamicInfo.Palettes = arr;
+                    DynamicInfo.SetPalettes(arr.Select(a => (a, File.ReadAllBytes(a))));
                     break;
                 case DynamicInfoSection.Resources:
-                    DynamicInfo.Resources = arr;
+                    DynamicInfo.SetGeneralResources(arr.Select(a => (a, File.ReadAllBytes(a))));
                     break;
             }
         }

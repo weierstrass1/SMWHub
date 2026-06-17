@@ -1,4 +1,5 @@
 ﻿using LogRegister.Interfaces;
+using SMWHubValidations.FormatValidations;
 
 namespace SMWHubLogging.LoggingRegisters;
 
@@ -6,7 +7,7 @@ public sealed class DynamicInfoSizeMismatch : ILoggingEntry
 {
     public bool AppearWithoutVerbose => true;
     public bool AppearInErrors => true;
-    public string MessageTypeKey => LogMessageTypeKeys.DYNAMIC_INFO_SIZE_MISMATCH;
+    public string MessageTypeKey => FormatErrorsMessageTypeKeys.DYNAMIC_INFO_SIZE_MISMATCH;
     public IReadOnlyDictionary<string, string> Parameters { get; }
     public DynamicInfoSizeMismatch(string contextName, long size1, long size2)
     {

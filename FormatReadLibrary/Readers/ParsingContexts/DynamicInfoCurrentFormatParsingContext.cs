@@ -1,4 +1,4 @@
-﻿using FormatReadLibrary.Infos;
+﻿using FormatLibrary;
 using FormatReadLibrary.LineContexts;
 using FormatReadLibrary.Readers.ParsingContexts;
 using FormatReadLibrary.Readers.StateVariables;
@@ -34,7 +34,7 @@ public sealed partial class DynamicInfoReader
             if (!_fileEnumeratorLineContext.IsLastLine)
                 return result;
 
-            DynamicInfo.FromNumberOf16x16Tiles(_currentNumberOf16x16TilesPerPose);
+            DynamicInfo.SetDynamicPoses(_currentNumberOf16x16TilesPerPose);
             return result;
         }
         private void addValues()

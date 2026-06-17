@@ -1,8 +1,7 @@
-﻿using FormatReadLibrary.Infos;
+﻿using FormatLibrary;
 using FormatReadLibrary.LineContexts;
 using FormatReadLibrary.Readers.ParsingContexts;
 using FormatReadLibrary.Readers.StateVariables;
-using SMWHubValidations;
 using SMWHubValidations.StateVariableValidations;
 using StateMachine;
 using System.Text.RegularExpressions;
@@ -88,11 +87,7 @@ public sealed partial class DynamicInfoReader
         }
         private void setupDynamicInfoPosesChunksSizes()
         {
-            List<int> pcs = [];
-            foreach (var tuple in _poseChunkSizes.Values)
-                pcs.AddRange([tuple.Item1, tuple.Item2]);
-            DynamicInfo.PosesChunksSizes = [.. pcs];
-            DynamicInfo.GenerateLastRow();
+            DynamicInfo.SetDynamicPoses(_poseChunkSizes.Values);
         }
     }
 }

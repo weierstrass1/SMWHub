@@ -1,4 +1,5 @@
 ﻿using LogRegister.Interfaces;
+using SMWHubValidations.FormatValidations;
 
 namespace SMWHubLogging.LoggingRegisters;
 
@@ -6,7 +7,7 @@ public sealed class ValueExceedsLimit : ILoggingEntry
 {
     public bool AppearWithoutVerbose => true;
     public bool AppearInErrors => true;
-    public string MessageTypeKey => LogMessageTypeKeys.VALUE_EXCEEDS_LIMIT;
+    public string MessageTypeKey => FormatErrorsMessageTypeKeys.VALUE_EXCEEDS_LIMIT;
     public IReadOnlyDictionary<string, string> Parameters { get; }
     public ValueExceedsLimit(string context, string parameter, int value, int limit)
     {

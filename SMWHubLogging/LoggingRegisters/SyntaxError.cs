@@ -1,5 +1,6 @@
 ﻿using LogRegister;
 using LogRegister.Interfaces;
+using SMWHubValidations.FormatValidations;
 
 namespace SMWHubLogging.LoggingRegisters;
 
@@ -7,7 +8,7 @@ public sealed class SyntaxError : ILoggingEntryWithNestedMessage
 {
     public bool AppearWithoutVerbose => true;
     public bool AppearInErrors => true;
-    public string MessageTypeKey => LogMessageTypeKeys.SYNTAX_ERROR;
+    public string MessageTypeKey => FormatErrorsMessageTypeKeys.SYNTAX_ERROR;
     public IReadOnlyDictionary<string, string> Parameters { get; private set; }
     public IReadOnlyDictionary<string, ILoggingEntry> NestedEntries { get; private set; }
     public SyntaxError(int line, string file, string lineContent, ILoggingEntry entry)
@@ -28,7 +29,7 @@ public sealed class SyntaxError : ILoggingEntryWithNestedMessage
     {
         NestedEntries = new Dictionary<string, ILoggingEntry>()
         {
-            { "message", new LogEntry(LogMessageTypeKeys.RAW_SYNTAX_ERROR_MESSAGE, new Dictionary<string, string>(){
+            { "message", new LogEntry(FormatErrorsMessageTypeKeys.RAW_SYNTAX_ERROR_MESSAGE, new Dictionary<string, string>(){
                 {"message",message}
             }) }
         }.AsReadOnly();
