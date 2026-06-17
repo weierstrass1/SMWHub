@@ -1,4 +1,5 @@
-﻿using StateMachine;
+﻿using SMWHubValidations.StateVariableValidations;
+using StateMachine;
 using StateMachine.Interfaces;
 using System.Text.RegularExpressions;
 using Validations;
@@ -18,7 +19,7 @@ public class ParametersStateVariable : StateValidator, IStateVariable<int[]>, IS
     object? IStateVariable.Value { get => Value; set => Value = (int[]?)value; }
     public ParametersStateVariable(int minLimit = 0, int maxLimit = 255, bool allowedVariables = false)
     {
-        State.AddVariable("Parameters", new StateVariable<int[]>());
+        State.AddVariable<int[]>("Parameters");
         addValidator(new ValidateEntryParameters(this, minLimit, maxLimit, allowedVariables));
     }
     public ValidationResult GetFrom(ValidationContext context, string text)

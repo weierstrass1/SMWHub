@@ -25,8 +25,8 @@ public sealed partial class DynamicInfoReader
         {
             _fileEnumeratorLineContext = context;
             State.AddVariable("MatchTable", new MatchStateVariable("MatchTable", _entryTableRegex));
-            State.AddVariable("ID", new StateVariable<string>());
-            State.AddVariable("Values", new StateVariable<int[]>());
+            State.AddVariable<string>("ID");
+            State.AddVariable<int[]>("Values");
             _ifHasNext = new ValidateIfHasNext(_fileEnumeratorLineContext);
             _validateDuplicateID = new ValidateDuplicateID<string, (int, int)>(this, _poseChunkSizes);
             addValidator(new ValidateTableValueSize(() => LineContext.LineContent, TableValueSize.db));

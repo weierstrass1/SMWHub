@@ -24,7 +24,7 @@ public class FilelistStateVariable : StateValidator, IStateVariable<FilePath[]>,
     {
         _allowedVariables = allowedVariables;
         _baseDirectory = baseDirectory;
-        State.AddVariable("Filelist", new StateVariable<FilePath[]>());
+        State.AddVariable<FilePath[]>("Filelist");
         addValidator(new ValidateFileListAmount(this, allowedMultifiles));
     }
     public ValidationResult GetFrom(ValidationContext context, string entry)

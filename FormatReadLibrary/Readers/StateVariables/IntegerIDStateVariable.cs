@@ -1,4 +1,5 @@
-﻿using StateMachine;
+﻿using SMWHubValidations.StateVariableValidations;
+using StateMachine;
 using StateMachine.Interfaces;
 using Validations;
 
@@ -11,7 +12,7 @@ public partial class IntegerIDStateVariable<TValue> : StateValidator, IStateVari
     object? IStateVariable.Value { get => Value; set => Value = (int)value!; }
     public IntegerIDStateVariable(Dictionary<int, TValue> dictionary, int maxID = 255, bool allowMultiID = false)
     {
-        State.AddVariable("ID", new StateVariable<int>());
+        State.AddVariable<int>("ID");
         addValidator(new ValidateEntryID(this, maxID));
         addValidator(new ValidateDuplicateID<int, TValue>(this, dictionary, allowMultiID));
     }

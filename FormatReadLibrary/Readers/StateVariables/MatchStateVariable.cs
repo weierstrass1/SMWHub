@@ -1,4 +1,5 @@
-﻿using StateMachine;
+﻿using SMWHubValidations.StateVariableValidations;
+using StateMachine;
 using StateMachine.Interfaces;
 using System.Text.RegularExpressions;
 using Validations;
@@ -17,7 +18,7 @@ public class MatchStateVariable : StateValidator, IStateVariable<Match>, ISelfVa
     {
         _regex = regex;
         _name = name;
-        State.AddVariable(name, new StateVariable<Match>());
+        State.AddVariable<Match>(name);
         addValidator(new ValidateEntryFormat(this, name));
     }
     public ValidationResult GetFrom(ValidationContext context, string entry)

@@ -24,8 +24,8 @@ public sealed partial class GPSListReader
             _baseDirectory = options.BaseDirectory;
             _entriesList = options.EntriesList;
 
-            State.AddVariable("Start", new StateVariable<int>());
-            State.AddVariable("End", new StateVariable<int>());
+            State.AddVariable<int>("Start");
+            State.AddVariable<int>("End");
             State.AddVariable("Match", new MatchStateVariable("Match", _entryRegex));
             State.AddVariable("Filelist", new FilelistStateVariable(_baseDirectory, true, true));
 
