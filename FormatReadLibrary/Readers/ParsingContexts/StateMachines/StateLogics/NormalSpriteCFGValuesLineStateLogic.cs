@@ -10,7 +10,7 @@ namespace FormatReadLibrary.Readers;
 
 public partial class NormalSpriteCFGReader
 {
-    private class NormalSpriteCFGValuesLineStateLogic<TValue>(NSCFGStateEnum id, string lineNumber, char separator, TValue minLimit, TValue maxLimit, params (string, string)[] variables) : IStateLogicStart<NSCFGStateEnum> where TValue : INumber<TValue>
+    private class NormalSpriteCFGValuesLineStateLogic<TValue>(NSCFGStateEnum id, string lineName, char separator, TValue minLimit, TValue maxLimit, params (string, string)[] variables) : IStateLogicStart<NSCFGStateEnum> where TValue : INumber<TValue>
     {
         public bool ExecuteLoopRightAfterTransition => false;
         public NSCFGStateEnum ID => id;
@@ -18,17 +18,17 @@ public partial class NormalSpriteCFGReader
         private readonly TValue _minLimit = minLimit;
         private readonly TValue _maxLimit = maxLimit;
         private readonly char _separator = separator;
-        private readonly string _lineNumber = lineNumber;
+        private readonly string _lineName = lineName;
         public void Start(State state)
         {
-            var s = split(state, "Tweaks Line");
+            var s = split(state);
 
             for (int i = 0; i < _variables.Length; i++) 
             {
                 state.Set<TValue>(_variables[i].Item1, fromString(state, _variables[i].Item2, s[i]));
             }
         }
-        private string[] split(State state, string stateName)
+        private string[] split(State state)
         {
             string[] split = [.. state.Get<LineContext>("context")!.LineContent
                     .Split(_separator)
