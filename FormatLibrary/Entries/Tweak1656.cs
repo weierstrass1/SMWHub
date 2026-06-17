@@ -2,7 +2,7 @@
 
 namespace FormatLibrary.Entries;
 
-public class Tweak1656
+public class Tweak1656 : TweakNumber
 {
     [JsonProperty("Object Clipping", Required = Required.Always)]
     public int ObjectClipping;
@@ -14,7 +14,7 @@ public class Tweak1656
     public bool HopInKickShells;
     [JsonProperty("Disappears in cloud of smoke", Required = Required.Always)]
     public bool DissappearInACloudOfSmoke;
-    public byte Value
+    public override byte Value
     {
         get
         {
@@ -32,10 +32,6 @@ public class Tweak1656
             HopInKickShells = (value & 0x40) != 0;
             DissappearInACloudOfSmoke = (value & 0x80) != 0;
         }
-    }
-    public static implicit operator byte(Tweak1656 t)
-    {
-        return t.Value;
     }
     public static implicit operator Tweak1656(byte b)
     {

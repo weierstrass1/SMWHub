@@ -2,7 +2,7 @@
 
 namespace FormatLibrary.Entries;
 
-public class Tweak1662
+public class Tweak1662 : TweakNumber
 {
     [JsonProperty("Sprite Clipping", Required = Required.Always)]
     public int SpriteClipping;
@@ -10,7 +10,7 @@ public class Tweak1662
     public bool UseShellAsADeathFrame;
     [JsonProperty("Fall straight down when killed", Required = Required.Always)]
     public bool FallsStraightDownWhenKilled;
-    public byte Value
+    public override byte Value
     {
         get
         {
@@ -24,10 +24,6 @@ public class Tweak1662
             UseShellAsADeathFrame = (value & 0x40) != 0;
             FallsStraightDownWhenKilled = (value & 0x80) != 0;
         }
-    }
-    public static implicit operator byte(Tweak1662 t)
-    {
-        return t.Value;
     }
     public static implicit operator Tweak1662(byte b)
     {

@@ -2,7 +2,7 @@
 
 namespace FormatLibrary.Entries;
 
-public class Tweak1686
+public class Tweak1686 : TweakNumber
 {
     [JsonProperty("Inedible", Required = Required.Always)]
     public bool Inedible;
@@ -20,7 +20,7 @@ public class Tweak1686
     public bool SpawnsANewSprite;
     [JsonProperty("Don't interact with objects", Required = Required.Always)]
     public bool DontInteractWithObjects;
-    public byte Value
+    public override byte Value
     {
         get
         {
@@ -44,10 +44,6 @@ public class Tweak1686
             SpawnsANewSprite = (value & 0x40) != 0;
             DontInteractWithObjects = (value & 0x80) != 0;
         }
-    }
-    public static implicit operator byte(Tweak1686 t)
-    {
-        return t.Value;
     }
     public static implicit operator Tweak1686(byte b)
     {

@@ -2,7 +2,7 @@
 
 namespace FormatLibrary.Entries;
 
-public class Tweak167A
+public class Tweak167A : TweakNumber
 {
     [JsonProperty("Don't disable cliping when starkilled", Required = Required.Always)]
     public bool DontDisableClippingWhenStartKilled;
@@ -20,7 +20,7 @@ public class Tweak167A
     public bool GivesPowerUpWhenEatenByYoshi;
     [JsonProperty("Don't use default interaction with Mario", Required = Required.Always)]
     public bool DontUseDefaultInteractionWithMario;
-    public byte Value
+    public override byte Value
     {
         get
         {
@@ -44,10 +44,6 @@ public class Tweak167A
             GivesPowerUpWhenEatenByYoshi = (value & 0x40) != 0;
             DontUseDefaultInteractionWithMario = (value & 0x80) != 0;
         }
-    }
-    public static implicit operator byte(Tweak167A t)
-    {
-        return t.Value;
     }
     public static implicit operator Tweak167A(byte b)
     {

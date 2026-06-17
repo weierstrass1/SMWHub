@@ -2,7 +2,7 @@
 
 namespace FormatLibrary.Entries;
 
-public class Tweak166E
+public class Tweak166E : TweakNumber
 {
     [JsonProperty("Use second graphics page", Required = Required.Always)]
     public bool UseSecondPageOfGraphics;
@@ -16,7 +16,7 @@ public class Tweak166E
     public bool DisableWaterSplash;
     [JsonProperty("Don't interact with Layer 2", Required = Required.Always)]
     public bool DontInteractWithLayer2;
-    public byte Value
+    public override byte Value
     {
         get
         {
@@ -36,10 +36,6 @@ public class Tweak166E
             DisableWaterSplash = (value & 0x40) != 0;
             DontInteractWithLayer2 = (value & 0x80) != 0;
         }
-    }
-    public static implicit operator byte(Tweak166E t)
-    {
-        return t.Value;
     }
     public static implicit operator Tweak166E(byte b)
     {
