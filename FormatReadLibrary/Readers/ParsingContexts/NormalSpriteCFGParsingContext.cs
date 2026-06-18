@@ -17,12 +17,12 @@ public static partial class NormalSpriteCFGReader
             State.AddVariable<ValidationResult>("Validation");
             State.AddVariable("Type", 0);
             State.AddVariable<byte>("ActLike", 0);
-            State.AddVariable<Tweak1656>("$1656", 0);
-            State.AddVariable<Tweak1662>("$1662", 0);
-            State.AddVariable<Tweak166E>("$166E", 0);
-            State.AddVariable<Tweak167A>("$167A", 0);
-            State.AddVariable<Tweak1686>("$1686", 0);
-            State.AddVariable<Tweak190F>("$190F", 0);
+            State.AddVariable<byte>("$1656", 0);
+            State.AddVariable<byte>("$1662", 0);
+            State.AddVariable<byte>("$166E", 0);
+            State.AddVariable<byte>("$167A", 0);
+            State.AddVariable<byte>("$1686", 0);
+            State.AddVariable<byte>("$190F", 0);
             State.AddVariable<byte>("Prop1", 0);
             State.AddVariable<byte>("Prop2", 0);
             State.AddVariable("FilePath", "");
@@ -32,6 +32,7 @@ public static partial class NormalSpriteCFGReader
         }
         public override ValidationResult ProcessEntry()
         {
+            Context = LineContext;
             State.Set("Validation", new ValidationResult()
             {
                 Context = Context

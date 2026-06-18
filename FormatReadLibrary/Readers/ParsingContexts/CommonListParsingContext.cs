@@ -1,4 +1,5 @@
 ﻿using FormatLibrary.Entries;
+using FormatReadLibrary.Interfaces;
 using FormatReadLibrary.LineContexts;
 using FormatReadLibrary.Readers.ParsingContexts;
 using FormatReadLibrary.Readers.StateVariables;
@@ -13,15 +14,15 @@ public sealed partial class CommonListReader
     {
         private static readonly Regex _entryRegex = RegexContainer.ListEntryRegex();
         private readonly Dictionary<int, List<CommonListEntry>> _entriesList = [];
-        private readonly CommonListSectionTuple _section;
+        private readonly ICommonListCategory _section;
         private int[] _ids => State.Get<int[]>("IDs")!;
         private FilePath[] _filepaths => State.Get<FilePath[]>("FileList")!;
-        public CommonListParsingContext(LineContext context, CommonListSectionTuple section, int maxID = 255, bool allowVariables = false, bool allowMultiIDs = false) : base(context)
+        public CommonListParsingContext(LineContext context, ICommonListCategory section, int maxID = 255, bool allowVariables = false, bool allowMultiIDs = false) : base(context)
         {
             _section = section;
-            State.AddVariable("Match", new MatchStateVariable("Match", _entryRegex));
-            State.AddVariable("IDs", new IntegerIDListStateVariable<List<CommonListEntry>>(_entriesList, maxID, allowMultiIDs));
-            State.AddVariable("FileList", new FilelistStateVariable(_section.BaseDirectory, allowVariables, allowMultiIDs));
+            State.AddStateVariable("Match", new MatchStateVariable("Match", _entryRegex));
+            State.AddStateVariable("IDs", new IntegerIDListStateVariable<List<CommonListEntry>>(_entriesList, maxID, allowMultiIDs));
+            State.AddStateVariable("FileList", new FilelistStateVariable(_section.BaseDirectory, allowVariables, allowMultiIDs));
         }
         public override ValidationResult ProcessEntry()
         {
@@ -40,7 +41,7 @@ public sealed partial class CommonListReader
                 _entriesList[id].Add(new()
                 {
                     ID = id,
-                    EntryType = _section.Title,
+                    Category = _section,
                     Paths = _filepaths
                 });
             }

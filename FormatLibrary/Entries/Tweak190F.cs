@@ -2,7 +2,7 @@
 
 namespace FormatLibrary.Entries;
 
-public class Tweak190F : TweakNumber
+public class Tweak190F
 {
     [JsonProperty("Make platform passable from below", Required = Required.Always)]
     public bool MakePlatformPassableFromBelow;
@@ -20,7 +20,7 @@ public class Tweak190F : TweakNumber
     public bool DontTurnIntoCoinWithSilverPOW;
     [JsonProperty("Don't get stuck in walls (carryable sprites)", Required = Required.Always)]
     public bool DontGetStuckInWalls_CarriableSprites;
-    public override byte Value
+    public byte Value
     {
         get
         {

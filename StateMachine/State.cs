@@ -27,7 +27,7 @@ public class State
     {
         _variables.Add(key, new StateVariable<T>(value, cleanOnReset));
     }
-    public void AddVariable(string key, IStateVariable variable)
+    public void AddStateVariable(string key, IStateVariable variable)
     {
         _variables.Add(key, variable);
     }

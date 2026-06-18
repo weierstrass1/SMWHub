@@ -1,4 +1,5 @@
 ﻿using FormatLibrary;
+using FormatLibrary.CommonListCategories;
 using FormatReadLibrary.Readers;
 using LogRegister;
 using SMWHubASMCodeLibrary;
@@ -28,12 +29,15 @@ public class Program
         string[] bcs = [.. files.Select(x => x.BreadCrumb)];
         var macros = SharedMacrosProcessor.GetMacros(files);
         CommonListReader reader = new([
-            new("Sprites","Sprites"),
-            new("Clusters", "Clusters"),
-            new("Extendeds", "Extendeds")
+            new NormalSprite(Path.Combine("Sprites","Sprites")),
+            new ClusterSprite(Path.Combine("Sprites","Clusters")),
+            new ExtendedSprite(Path.Combine("Sprites","Extendeds")),
+            new OverworldSprite(Path.Combine("OverworldSprites")),
             ]);
         validation.Merge(reader.Read("slist.txt"));
         var entries = reader.GetEntries();
+
+        NormalSpriteCFGReader.Read(entries, out var cfgs);
 
         GPSListReader gpsreader = new("blocks");
         validation.Merge(gpsreader.Read("list.txt"));

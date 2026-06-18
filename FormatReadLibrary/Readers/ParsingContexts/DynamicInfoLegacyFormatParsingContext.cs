@@ -24,7 +24,7 @@ public sealed partial class DynamicInfoReader
         public DynamicInfoLegacyFormatParsingContext(FileEnumeratorLineContext context) : base(context)
         {
             _fileEnumeratorLineContext = context;
-            State.AddVariable("MatchTable", new MatchStateVariable("MatchTable", _entryTableRegex));
+            State.AddStateVariable("MatchTable", new MatchStateVariable("MatchTable", _entryTableRegex));
             State.AddVariable<string>("ID");
             State.AddVariable<int[]>("Values");
             _ifHasNext = new ValidateIfHasNext(_fileEnumeratorLineContext);

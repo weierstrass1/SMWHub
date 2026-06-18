@@ -26,8 +26,8 @@ public sealed partial class GPSListReader
 
             State.AddVariable<int>("Start");
             State.AddVariable<int>("End");
-            State.AddVariable("Match", new MatchStateVariable("Match", _entryRegex));
-            State.AddVariable("Filelist", new FilelistStateVariable(_baseDirectory, true, true));
+            State.AddStateVariable("Match", new MatchStateVariable("Match", _entryRegex));
+            State.AddStateVariable("Filelist", new FilelistStateVariable(_baseDirectory, true, true));
 
             _validateGPSBlockLine = new(this);
         }

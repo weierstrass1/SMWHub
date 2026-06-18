@@ -19,7 +19,7 @@ public class FilepathStateVariable : StateValidator, IStateVariable<FilePath>, I
     {
         _baseDirectory = baseDirectory;
         State.AddVariable<string>("Filepath");
-        State.AddVariable("Parameters", new ParametersStateVariable(allowedVariables: allowedVariables));
+        State.AddStateVariable("Parameters", new ParametersStateVariable(allowedVariables: allowedVariables));
         addValidator(new ValidatePathIntegrity(this));
         //addValidator(new ValidateFileExists(this));
     }

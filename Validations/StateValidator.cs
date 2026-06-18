@@ -21,8 +21,7 @@ public abstract class StateValidator : IValidationState
     {
         ValidationResult result = new();
         var selfValidatedVariables = State.Variables.Values
-            .Where(v => v is ISelfValidatedStateVariable)
-            .Cast<ISelfValidatedStateVariable>();
+            .OfType<ISelfValidatedStateVariable>();
         foreach (var variable in selfValidatedVariables)
         {
             result.Merge(variable.GetFrom(Context!, entry));

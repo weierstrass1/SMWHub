@@ -9,7 +9,7 @@ public sealed class ValidationResult(ValidationContext? context = null)
     public void AddError(string messageTypeKey)
     {
         if (Context == null)
-            throw new NullReferenceException(nameof(Context));
+            throw new NullReferenceException();
         Errors.Add(new ValidationError(Context, messageTypeKey));
     }
     public void AddError(string messageTypeKey, Dictionary<string, string> parameters)

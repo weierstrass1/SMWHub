@@ -20,7 +20,7 @@ public sealed partial class DynamicInfoReader
         {
             _fileEnumeratorLineContext = context;
             _section = section;
-            State.AddVariable("Filepath", new FilepathStateVariable(baseDirectory, false));
+            State.AddStateVariable("Filepath", new FilepathStateVariable(baseDirectory, false));
         }
         public override ValidationResult ProcessEntry()
         {

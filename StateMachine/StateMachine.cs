@@ -10,7 +10,8 @@ public class StateMachine<T> : Validator, IHaveState where T : struct, Enum
     private readonly Dictionary<T, List<StateEnumTransitionPair<T>>> _transitions;
     private readonly Dictionary<T, IStateLogic<T>> _states;
     private readonly IStateLogic<T>? _defaultState;
-    private bool _didntStartYet = false;
+    private bool _didntStartYet = true;
+    private bool _skipExit = true;
     public StateMachine(State state, T firstState, Dictionary<T, List<StateEnumTransitionPair<T>>> transitions, Dictionary<T, IStateLogic<T>> states, IStateLogic<T>? defaultState = null) : base()
     {
         State = state;
@@ -25,8 +26,9 @@ public class StateMachine<T> : Validator, IHaveState where T : struct, Enum
     {
         if (transition(out T? idToTransition))
         {
-            if (CurrentState is IStateLogicExit<T> stateWithExit)
+            if (!_skipExit && CurrentState is IStateLogicExit<T> stateWithExit)
                 stateWithExit.Exit(State);
+            _skipExit = false;
             setState(idToTransition!.Value);
             if (CurrentState is IStateLogicStart<T> stateWithStart)
                 stateWithStart.Start(State);

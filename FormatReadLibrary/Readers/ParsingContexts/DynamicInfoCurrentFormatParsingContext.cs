@@ -19,8 +19,8 @@ public sealed partial class DynamicInfoReader
         public DynamicInfoCurrentFormatParsingContext(FileEnumeratorLineContext context) : base(context)
         {
             _fileEnumeratorLineContext = context;
-            State.AddVariable("Match", new MatchStateVariable("Match", _entryRegex));
-            State.AddVariable("IDs", new IntegerIDListStateVariable<string>(_currentNumberOf16x16TilesPerPose, 1000, true, false));
+            State.AddStateVariable("Match", new MatchStateVariable("Match", _entryRegex));
+            State.AddStateVariable("IDs", new IntegerIDListStateVariable<string>(_currentNumberOf16x16TilesPerPose, 1000, true, false));
         }
         public override ValidationResult ProcessEntry()
         {

@@ -8,15 +8,14 @@ namespace FormatReadLibrary.Readers;
 
 public sealed partial class CommonListReader
 {
-    public sealed record CommonListSectionTuple(string Title, ICommonListCategory Category, string BaseDirectory);
-    private readonly Dictionary<string, CommonListSectionTuple> _sections;
+    private readonly Dictionary<string, ICommonListCategory> _sections;
     private readonly Dictionary<string, Dictionary<int, List<CommonListEntry>>> _entriesList;
-    public CommonListReader(CommonListSectionTuple[] sections)
+    public CommonListReader(ICommonListCategory[] sections)
     {
         _sections = [];
         _entriesList = [];
         string lowertitle;
-        foreach (CommonListSectionTuple section in sections)
+        foreach (ICommonListCategory section in sections)
         {
             lowertitle = $"{section.Title.ToLower().Trim()}:";
             _sections.TryAdd(lowertitle, section);
