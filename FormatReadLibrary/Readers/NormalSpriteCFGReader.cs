@@ -5,8 +5,8 @@ using FormatReadLibrary.LineContexts;
 using Newtonsoft.Json;
 using SMWHubEnumerators;
 using SMWHubValidations.StateVariableValidations;
-using StateMachine;
 using Validations;
+using ZWXStateMachine;
 
 namespace FormatReadLibrary.Readers;
 
@@ -21,15 +21,15 @@ public static partial class NormalSpriteCFGReader
                     return false;
                 string ext = Path.GetExtension(e.Paths[0].Path);
                 return ext == ".cfg" || ext == ".json";
-            })
-            .Select(e => e.Paths[0].Path);
+            });
 
         ValidationResult result = new();
 
         cfgs = []; 
         foreach (var p in cfgsPaths)
         {
-            result.Merge(Read(p, out NormalSpriteConfigEntry? cfg));
+            result.Merge(Read(p.Paths[0].Path, out NormalSpriteConfigEntry? cfg));
+            cfg.ID = p.ID;
             if(cfg != null)
                 cfgs.Add(cfg);
         }
@@ -63,7 +63,7 @@ public static partial class NormalSpriteCFGReader
             result.Merge(ctx.ProcessEntry());
         }
 
-        State state = ctx.State;
+        StateData state = ctx.StateData;
 
         config = new()
         {

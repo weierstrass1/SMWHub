@@ -1,9 +1,8 @@
 ﻿using SMWHubValidations.StateVariableValidations;
-using StateMachine;
-using StateMachine.Interfaces;
 using System.Text.RegularExpressions;
 using Validations;
 using Validations.Interfaces;
+using ZWXStateMachine.Interfaces;
 
 namespace FormatReadLibrary.Readers.StateVariables;
 
@@ -12,14 +11,14 @@ public class ParametersStateVariable : StateValidator, IStateVariable<int[]>, IS
     private readonly static Regex _valuesRegex = RegexContainer.ValuesRegex();
     public int[]? Value
     {
-        get => State.Get<int[]>("Parameters");
-        set => State.Set("Parameters", value);
+        get => StateData.Get<int[]>("Parameters");
+        set => StateData.Set("Parameters", value);
     }
     public bool CleanOnReset { get; set; }
     object? IStateVariable.Value { get => Value; set => Value = (int[]?)value; }
     public ParametersStateVariable(int minLimit = 0, int maxLimit = 255, bool allowedVariables = false)
     {
-        State.AddVariable<int[]>("Parameters");
+        StateData.AddVariable<int[]>("Parameters");
         addValidator(new ValidateEntryParameters(this, minLimit, maxLimit, allowedVariables));
     }
     public ValidationResult GetFrom(ValidationContext context, string text)

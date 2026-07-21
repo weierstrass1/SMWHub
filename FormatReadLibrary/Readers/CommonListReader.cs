@@ -1,5 +1,5 @@
 ﻿using FormatLibrary.Entries;
-using FormatReadLibrary.Interfaces;
+using FormatLibrary.Interfaces;
 using FormatReadLibrary.LineContexts;
 using SMWHubEnumerators;
 using Validations;

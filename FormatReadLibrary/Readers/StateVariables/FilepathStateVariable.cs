@@ -1,10 +1,9 @@
 ﻿using FormatLibrary.Entries;
 using SMWHubValidations.StateVariableValidations;
-using StateMachine;
-using StateMachine.Interfaces;
 using System.Text.RegularExpressions;
 using Validations;
 using Validations.Interfaces;
+using ZWXStateMachine.Interfaces;
 
 namespace FormatReadLibrary.Readers.StateVariables;
 
@@ -18,8 +17,8 @@ public class FilepathStateVariable : StateValidator, IStateVariable<FilePath>, I
     public FilepathStateVariable(string baseDirectory, bool allowedVariables)
     {
         _baseDirectory = baseDirectory;
-        State.AddVariable<string>("Filepath");
-        State.AddStateVariable("Parameters", new ParametersStateVariable(allowedVariables: allowedVariables));
+        StateData.AddVariable<string>("Filepath");
+        StateData.AddStateVariable("Parameters", new ParametersStateVariable(allowedVariables: allowedVariables));
         addValidator(new ValidatePathIntegrity(this));
         //addValidator(new ValidateFileExists(this));
     }
@@ -33,10 +32,10 @@ public class FilepathStateVariable : StateValidator, IStateVariable<FilePath>, I
             return new(Context);
         }
         string filepath = Path.Combine(_baseDirectory, match.Groups["file"].Value)!;
-        State.Set("Filepath", filepath);
+        StateData.Set("Filepath", filepath);
 
         ValidationResult result = validate();
-        var parVars = State.GetVariable<ParametersStateVariable>("Parameters");
+        var parVars = StateData.GetVariable<ParametersStateVariable>("Parameters");
         result.Merge(parVars.GetFrom(Context, fileEntry));
         Value = new(filepath, parVars.Value!);
         return result;

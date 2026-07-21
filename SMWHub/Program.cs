@@ -1,11 +1,12 @@
-﻿using FormatLibrary;
-using FormatLibrary.CommonListCategories;
+﻿using FormatLibrary.CommonListCategories;
 using FormatReadLibrary.Readers;
 using LogRegister;
 using SMWHubASMCodeLibrary;
 using SMWHubLogging;
 using SMWHubLogging.Categories;
 using SMWHubLogging.Wrappers;
+using SMWHubPatchBuilder;
+using SMWHubSprites;
 using System.Reflection;
 using Validations;
 
@@ -25,7 +26,12 @@ public class Program
 
         ValidationResult validation = new();
 
-        SharedCode[] files = SharedCodePathProcessor.FindSharedCodes();
+        Code c = new("root.asm", CodeType.ASM, new("", ScopeType.LevelASM));
+
+        SingleCodePatchGenerator.GenerateSingleCode(0, c);
+        
+        SharedCodePathProcessor scpp = new(Path.Combine("Settings", "FoldersConfig.json"));
+        Code[] files = scpp.FindSharedCodes();
         string[] bcs = [.. files.Select(x => x.BreadCrumb)];
         var macros = SharedMacrosProcessor.GetMacros(files);
         CommonListReader reader = new([
@@ -34,17 +40,14 @@ public class Program
             new ExtendedSprite(Path.Combine("Sprites","Extendeds")),
             new OverworldSprite(Path.Combine("OverworldSprites")),
             ]);
-        validation.Merge(reader.Read("slist.txt"));
+        validation.Merge(reader.Read("spritelist.txt"));
         var entries = reader.GetEntries();
 
         NormalSpriteCFGReader.Read(entries, out var cfgs);
 
-        GPSListReader gpsreader = new("blocks");
-        validation.Merge(gpsreader.Read("list.txt"));
-        var gpsEntries = gpsreader.GetEntries();
+        SpriteProcessor.GenerateExtraByteTable(cfgs);
 
-        validation.Merge(DynamicInfoReader.Read("DKCMasterGnawty.dynamicinfo", out DynamicInfo? dynamicInfo));
-        validation.Merge(DynamicInfoReader.Read("SMWVanillaBoo.dynamicinfo", out DynamicInfo? dynamicInfo1));
+        SingleCodePatchGenerator.GenerateMacrosAndDefinesIncludes(Path.Combine("..", ".."), files);
 
         ValidatorLogAdapter.LogValidatorResult(log, validation);
 

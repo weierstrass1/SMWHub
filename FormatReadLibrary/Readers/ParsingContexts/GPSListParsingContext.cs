@@ -3,7 +3,6 @@ using FormatReadLibrary.LineContexts;
 using FormatReadLibrary.Readers.ParsingContexts;
 using FormatReadLibrary.Readers.StateVariables;
 using SMWHubValidations.StateVariableValidations;
-using StateMachine;
 using System.Text.RegularExpressions;
 using Validations;
 
@@ -17,17 +16,17 @@ public sealed partial class GPSListReader
         private readonly ValidateGPSBlockLine _validateGPSBlockLine;
         private readonly string _baseDirectory;
         private readonly Dictionary<int, GPSListEntry> _entriesList;
-        private Match _match => State.Get<Match>("Match")!;
-        private FilePath[] _filepaths => State.Get<FilePath[]>("Filelist")!;
+        private Match _match => StateData.Get<Match>("Match")!;
+        private FilePath[] _filepaths => StateData.Get<FilePath[]>("Filelist")!;
         public GPSListParsingContext(GPSListParserOptions options) : base(options.Context)
         {
             _baseDirectory = options.BaseDirectory;
             _entriesList = options.EntriesList;
 
-            State.AddVariable<int>("Start");
-            State.AddVariable<int>("End");
-            State.AddStateVariable("Match", new MatchStateVariable("Match", _entryRegex));
-            State.AddStateVariable("Filelist", new FilelistStateVariable(_baseDirectory, true, true));
+            StateData.AddVariable<int>("Start");
+            StateData.AddVariable<int>("End");
+            StateData.AddStateVariable("Match", new MatchStateVariable("Match", _entryRegex));
+            StateData.AddStateVariable("Filelist", new FilelistStateVariable(_baseDirectory, true, true));
 
             _validateGPSBlockLine = new(this);
         }
@@ -69,8 +68,8 @@ public sealed partial class GPSListReader
         }
         private ValidationResult validateStartEnd(int start, int end)
         {
-            State.Set("Start", start);
-            State.Set("End", end);
+            StateData.Set("Start", start);
+            StateData.Set("End", end);
 
             return _validateGPSBlockLine.Validate(this);
         }

@@ -1,6 +1,6 @@
-﻿using StateMachine;
-using Validations;
+﻿using Validations;
 using Validations.Interfaces;
+using ZWXStateMachine;
 
 namespace SMWHubValidations.StateVariableValidations;
 
@@ -27,7 +27,7 @@ public sealed class ValidateDuplicateID<TKey, TValue> : VariableValidation where
     public override ValidationResult Validate(IValidationState ctx)
     {
         _variableValidator.Validate(ctx);
-        State state = ctx.State;
+        StateData state = ctx.StateData;
         var id = state.Get<TKey>("ID")!;
         ValidationResult validationResult = new(ctx.Context);
         if (!_allowMultiIDs && _entries.ContainsKey(id))

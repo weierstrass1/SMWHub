@@ -1,26 +1,23 @@
 ﻿using FormatReadLibrary.LineContexts;
-using StateMachine;
-using StateMachine.Interfaces;
 using System.Globalization;
 using System.Numerics;
-using System.Reflection;
 using Validations;
+using ZWXStateMachine;
+using ZWXStateMachine.Interfaces;
 
 namespace FormatReadLibrary.Readers;
 
 public partial class NormalSpriteCFGReader
 {
-    private class NormalSpriteCFGValuesLineStateLogic<TValue>(NSCFGStateEnum id, string lineName, char separator, TValue minLimit, TValue maxLimit, params (string, string)[] variables) : IStateLogicStart<NSCFGStateEnum> where TValue : INumber<TValue>
+    private class NormalSpriteCFGValuesLineStateLogic<TValue>(string lineName, char separator, TValue minLimit, TValue maxLimit, params (string, string)[] variables) : IStateBehaviourEnter where TValue : INumber<TValue>
     {
-        public bool ExecuteLoopRightAfterTransition => false;
-        public NSCFGStateEnum ID => _id;
+        public bool ExecuteUpdateRightAfterTransition => false;
         private readonly (string, string)[] _variables = variables;
         private readonly TValue _minLimit = minLimit;
         private readonly TValue _maxLimit = maxLimit;
         private readonly char _separator = separator;
         private readonly string _lineName = lineName;
-        private readonly NSCFGStateEnum _id = id;
-        public void Start(State state)
+        public void Enter(StateData state)
         {
             var s = split(state);
 
@@ -29,7 +26,7 @@ public partial class NormalSpriteCFGReader
                 state.Set(_variables[i].Item1, fromString(state, _variables[i].Item2, s[i]));
             }
         }
-        private string[] split(State state)
+        private string[] split(StateData state)
         {
             string[] split = [.. state.Get<LineContext>("Context")!.LineContent
                     .Split(_separator)
@@ -41,7 +38,7 @@ public partial class NormalSpriteCFGReader
             }
             return split;
         }
-        private TValue fromString(State state, string description, string value)
+        private TValue fromString(StateData state, string description, string value)
         {
             if (!TValue.TryParse(value, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out TValue? result))
                 state.Get<ValidationResult>("Validation")!.AddError("");

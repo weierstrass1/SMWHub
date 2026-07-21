@@ -1,16 +1,16 @@
-﻿using StateMachine;
-using Validations.Interfaces;
+﻿using Validations.Interfaces;
+using ZWXStateMachine;
 
 namespace Validations;
 
 public abstract class StateValidator : IValidationState
 {
-    public State State { get; private set; }
+    public StateData StateData { get; private set; }
     public ValidationContext? Context { get; set; }
     protected List<VariableValidation> _validators { get; private set; }
     public StateValidator()
     {
-        State = new();
+        StateData = new();
         _validators = [];
     }
     protected void addValidator(VariableValidation validator)
@@ -20,7 +20,7 @@ public abstract class StateValidator : IValidationState
     protected virtual ValidationResult getSelfValidatedVariables(string entry)
     {
         ValidationResult result = new();
-        var selfValidatedVariables = State.Variables.Values
+        var selfValidatedVariables = StateData.Variables.Values
             .OfType<ISelfValidatedStateVariable>();
         foreach (var variable in selfValidatedVariables)
         {

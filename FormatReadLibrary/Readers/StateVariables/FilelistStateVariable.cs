@@ -1,10 +1,9 @@
 ﻿using FormatLibrary.Entries;
 using SMWHubValidations.StateVariableValidations;
-using StateMachine;
-using StateMachine.Interfaces;
 using System.Text.RegularExpressions;
 using Validations;
 using Validations.Interfaces;
+using ZWXStateMachine.Interfaces;
 
 namespace FormatReadLibrary.Readers.StateVariables;
 
@@ -14,8 +13,8 @@ public class FilelistStateVariable : StateValidator, IStateVariable<FilePath[]>,
     public bool CleanOnReset { get; set; } = false;
     public FilePath[]? Value
     {
-        get => State.Get<FilePath[]>("Filelist");
-        set => State.Set("Filelist", value);
+        get => StateData.Get<FilePath[]>("Filelist");
+        set => StateData.Set("Filelist", value);
     }
     object? IStateVariable.Value { get => Value; set => Value = (FilePath[]?)value!; }
     private readonly bool _allowedVariables;
@@ -24,7 +23,7 @@ public class FilelistStateVariable : StateValidator, IStateVariable<FilePath[]>,
     {
         _allowedVariables = allowedVariables;
         _baseDirectory = baseDirectory;
-        State.AddVariable<FilePath[]>("Filelist");
+        StateData.AddVariable<FilePath[]>("Filelist");
         addValidator(new ValidateFileListAmount(this, allowedMultifiles));
     }
     public ValidationResult GetFrom(ValidationContext context, string entry)

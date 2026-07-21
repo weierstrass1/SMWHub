@@ -1,4 +1,4 @@
-﻿using FormatReadLibrary.Interfaces;
+﻿using FormatLibrary.Interfaces;
 
 namespace FormatLibrary.Entries;
 

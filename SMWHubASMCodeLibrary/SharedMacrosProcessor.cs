@@ -9,11 +9,11 @@ public static partial class SharedMacrosProcessor
     public const string REPEATED_MACRO_NAME = "REPEATED MACRO NAME";
     [GeneratedRegex(@"macro\s+(?<name>[a-zA-Z][a-zA-Z0-9]*)\(\s*([a-zA-Z][a-zA-Z0-9]*(\s*,\s*[a-zA-Z][a-zA-Z0-9]*)*)?\s*\)")]
     private static partial Regex macroSignatureRegex();
-    public static Macro[] GetMacros(IEnumerable<SharedCode> sharedCodes)
+    public static Macro[] GetMacros(IEnumerable<Code> sharedCodes)
     {
         string[] asmFileContent;
         List<Macro> macroList = [];
-        foreach (SharedCode sharedCode in sharedCodes)
+        foreach (Code sharedCode in sharedCodes)
         {
             asmFileContent = FormatCleaner
                 .CleanFileContent(sharedCode.FilePath)
@@ -22,7 +22,7 @@ public static partial class SharedMacrosProcessor
         }
         return [.. macroList];
     }
-    private static List<Macro> readASMFile(string[] asmFileContent, SharedCode sharedCode)
+    private static List<Macro> readASMFile(string[] asmFileContent, Code sharedCode)
     {
         List<Macro> macroList = [];
         Match m;

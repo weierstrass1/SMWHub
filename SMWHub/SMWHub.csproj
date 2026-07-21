@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <AssemblyVersion>1.0.0.238</AssemblyVersion>
@@ -13,6 +13,20 @@
     <ProjectReference Include="..\FormatReadLibrary\FormatReadLibrary.csproj" />
     <ProjectReference Include="..\SMWHubASMCodeLibrary\SMWHubASMCodeLibrary.csproj" />
     <ProjectReference Include="..\SMWHubLogging\SMWHubLogging.csproj" />
+    <ProjectReference Include="..\SMWHubPatchBuilder\SMWHubPatchBuilder.csproj" />
+    <ProjectReference Include="..\SMWHubSprites\SMWHubSprites.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Patch\Sprites\ClusterSupport\" />
+    <Folder Include="Patch\Sprites\ExtendedSupport\" />
+    <Folder Include="Patch\Sprites\NormalSpriteSupport\Sprites\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Patch\Sprites\NormalSpriteSupport\main.asm">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

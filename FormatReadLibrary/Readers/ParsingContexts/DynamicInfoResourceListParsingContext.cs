@@ -15,12 +15,12 @@ public sealed partial class DynamicInfoReader
         private readonly FileEnumeratorLineContext _fileEnumeratorLineContext;
         private readonly List<string> _list = [];
         private readonly DynamicInfoSection _section;
-        private string _filepath => State.Get<FilePath>("Filepath")!.Path;
+        private string _filepath => StateData.Get<FilePath>("Filepath")!.Path;
         public DynamicInfoResourceListParsingContext(FileEnumeratorLineContext context, string baseDirectory, DynamicInfoSection section) : base(context)
         {
             _fileEnumeratorLineContext = context;
             _section = section;
-            State.AddStateVariable("Filepath", new FilepathStateVariable(baseDirectory, false));
+            StateData.AddStateVariable("Filepath", new FilepathStateVariable(baseDirectory, false));
         }
         public override ValidationResult ProcessEntry()
         {

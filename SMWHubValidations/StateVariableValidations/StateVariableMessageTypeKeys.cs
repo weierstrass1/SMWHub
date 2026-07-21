@@ -2,6 +2,7 @@
 
 public static class StateVariableMessageTypeKeys
 {
+    public const string FILE_NOT_FOUND = "FILE NOT FOUND";
     public const string RAW_SYNTAX_ERROR_MESSAGE = "RAW SYNTAX ERROR MESSAGE";
     public const string REPEATED_ID = "REPEATED ID";
     public const string INVALID_ENTRY_FORMAT = "INVALID ENTRY FORMAT";

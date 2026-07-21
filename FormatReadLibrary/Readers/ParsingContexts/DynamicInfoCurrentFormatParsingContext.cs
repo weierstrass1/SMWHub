@@ -15,12 +15,12 @@ public sealed partial class DynamicInfoReader
         private readonly FileEnumeratorLineContext _fileEnumeratorLineContext;
         private readonly static Regex _entryRegex = RegexContainer.DynInfoCurrentRegex();
         private readonly Dictionary<int, string> _currentNumberOf16x16TilesPerPose = [];
-        private Match _match => State.Get<Match>("Match")!;
+        private Match _match => StateData.Get<Match>("Match")!;
         public DynamicInfoCurrentFormatParsingContext(FileEnumeratorLineContext context) : base(context)
         {
             _fileEnumeratorLineContext = context;
-            State.AddStateVariable("Match", new MatchStateVariable("Match", _entryRegex));
-            State.AddStateVariable("IDs", new IntegerIDListStateVariable<string>(_currentNumberOf16x16TilesPerPose, 1000, true, false));
+            StateData.AddStateVariable("Match", new MatchStateVariable("Match", _entryRegex));
+            StateData.AddStateVariable("IDs", new IntegerIDListStateVariable<string>(_currentNumberOf16x16TilesPerPose, 1000, true, false));
         }
         public override ValidationResult ProcessEntry()
         {
@@ -39,7 +39,7 @@ public sealed partial class DynamicInfoReader
         }
         private void addValues()
         {
-            var idsVar = State.GetVariable<IntegerIDListStateVariable<string>>("IDs");
+            var idsVar = StateData.GetVariable<IntegerIDListStateVariable<string>>("IDs");
             int[] ids = idsVar.Value!;
 
             string value = $"{_match.Groups["tiles"]}{_match.Groups["modifier"]}";

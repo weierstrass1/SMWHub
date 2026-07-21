@@ -3,9 +3,9 @@ using FormatReadLibrary.LineContexts;
 using FormatReadLibrary.Readers.ParsingContexts;
 using FormatReadLibrary.Readers.StateVariables;
 using SMWHubValidations.StateVariableValidations;
-using StateMachine;
 using System.Text.RegularExpressions;
 using Validations;
+using ZWXStateMachine;
 
 namespace FormatReadLibrary.Readers;
 
@@ -24,9 +24,9 @@ public sealed partial class DynamicInfoReader
         public DynamicInfoLegacyFormatParsingContext(FileEnumeratorLineContext context) : base(context)
         {
             _fileEnumeratorLineContext = context;
-            State.AddStateVariable("MatchTable", new MatchStateVariable("MatchTable", _entryTableRegex));
-            State.AddVariable<string>("ID");
-            State.AddVariable<int[]>("Values");
+            StateData.AddStateVariable("MatchTable", new MatchStateVariable("MatchTable", _entryTableRegex));
+            StateData.AddVariable<string>("ID");
+            StateData.AddVariable<int[]>("Values");
             _ifHasNext = new ValidateIfHasNext(_fileEnumeratorLineContext);
             _validateDuplicateID = new ValidateDuplicateID<string, (int, int)>(this, _poseChunkSizes);
             addValidator(new ValidateTableValueSize(() => LineContext.LineContent, TableValueSize.db));
@@ -73,7 +73,7 @@ public sealed partial class DynamicInfoReader
             Match match = _matchTitle.Value!;
 
             id = match.Groups["id"].Value;
-            State.Set("ID", id);
+            StateData.Set("ID", id);
 
             result.Merge(_validateDuplicateID.Validate(this));
 
@@ -81,7 +81,7 @@ public sealed partial class DynamicInfoReader
         }
         private int[] setupValues()
         {
-            var valuesVar = State.GetVariable<StateVariable<int[]>>("Values");
+            var valuesVar = StateData.GetVariable<StateVariable<int[]>>("Values");
             valuesVar.Value = HexUtils.GetValues(LineContext.LineContent);
             return valuesVar.Value;
         }

@@ -1,7 +1,7 @@
-﻿using StateMachine;
-using StateMachine.Attributes;
-using Validations;
+﻿using Validations;
 using Validations.Interfaces;
+using ZWXStateMachine;
+using ZWXStateMachine.Attributes;
 
 namespace SMWHubValidations.StateVariableValidations;
 
@@ -13,7 +13,7 @@ public sealed class ValidateEntryParameters(IValidationState ctx, int minLimit =
     private readonly int _maxLimit = maxLimit;
     public override ValidationResult Validate(IValidationState ctx)
     {
-        State state = ctx.State;
+        StateData state = ctx.StateData;
         int[]? parameters = state.Get<int[]>("Parameters");
         ValidationResult validationResult = new(ctx.Context);
         if (parameters == null || parameters.Length == 0)

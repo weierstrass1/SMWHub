@@ -1,7 +1,7 @@
 ﻿using FormatLibrary.Entries;
 namespace SMWHubASMCodeLibrary;
 
-public enum CodeType
+public enum ScopeType
 {
     Global,
     Sprite,
@@ -22,8 +22,8 @@ public enum CodeType
 }
 public static class ASMCodePathProcessor
 {
-    public static ASMCode[] GetNormalSprites(IEnumerable<NormalSpriteConfigEntry> list)
+    public static Code[] GetNormalSprites(CodeScopeContainer scopes, IEnumerable<NormalSpriteConfigEntry> list)
     {
-        return [.. list.Select(sce => new ASMCode(sce.Filepath, CodeType.NormalSprite))];
+        return [.. list.Select(sce => new Code(sce.Filepath, CodeType.ASM, scopes[ScopeType.NormalSprite]))];
     }
 }

@@ -1,7 +1,7 @@
-﻿using StateMachine;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 using Validations;
 using Validations.Interfaces;
+using ZWXStateMachine;
 
 namespace SMWHubValidations.StateVariableValidations;
 
@@ -16,7 +16,7 @@ public sealed class ValidateEntryFormat : VariableValidation
     }
     public override ValidationResult Validate(IValidationState ctx)
     {
-        Match match = ctx.State.Get<Match>(_variableName)!;
+        Match match = ctx.StateData.Get<Match>(_variableName)!;
         ValidationResult validationResult = new(ctx.Context);
         if (!match.Success)
             validationResult.AddError(StateVariableMessageTypeKeys.INVALID_ENTRY_FORMAT);

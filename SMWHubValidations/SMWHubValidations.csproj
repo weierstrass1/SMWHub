@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <AssemblyVersion>1.0.0.21</AssemblyVersion>
@@ -10,8 +10,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\SMWHubEnumerators\SMWHubEnumerators.csproj" />
-    <ProjectReference Include="..\StateMachine\StateMachine.csproj" />
     <ProjectReference Include="..\Validations\Validations.csproj" />
+    <ProjectReference Include="..\ZWXStateMachine\ZWXStateMachine.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,4 +1,4 @@
-﻿namespace FormatReadLibrary.Interfaces;
+﻿namespace FormatLibrary.Interfaces;
 public interface ICommonListCategory
 { 
     public string Title { get; }

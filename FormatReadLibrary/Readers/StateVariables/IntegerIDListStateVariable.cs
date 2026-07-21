@@ -1,9 +1,9 @@
 ﻿using SMWHubValidations.StateVariableValidations;
-using StateMachine.Interfaces;
 using System.Globalization;
 using System.Text.RegularExpressions;
 using Validations;
 using Validations.Interfaces;
+using ZWXStateMachine.Interfaces;
 
 namespace FormatReadLibrary.Readers.StateVariables;
 

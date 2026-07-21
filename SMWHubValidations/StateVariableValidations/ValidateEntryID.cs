@@ -1,7 +1,7 @@
-﻿using StateMachine;
-using StateMachine.Attributes;
-using Validations;
+﻿using Validations;
 using Validations.Interfaces;
+using ZWXStateMachine;
+using ZWXStateMachine.Attributes;
 
 namespace SMWHubValidations.StateVariableValidations;
 
@@ -11,7 +11,7 @@ public sealed class ValidateEntryID(IValidationState ctx, int maxID = 255) : Var
     private readonly int _maxID = maxID;
     public override ValidationResult Validate(IValidationState ctx)
     {
-        State state = ctx.State;
+        StateData state = ctx.StateData;
         var id = state.Get<int>("ID")!;
         ValidationResult validationResult = new(ctx.Context);
         if (id > _maxID)

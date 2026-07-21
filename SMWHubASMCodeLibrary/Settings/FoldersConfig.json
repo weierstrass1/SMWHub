@@ -1,0 +1,18 @@
+{
+  "Main": "",
+  "SpritesFolders": {
+    "Main": "Sprites",
+    "NormalSpritesFolder": "Sprites",
+    "ClusterSpritesFolder": "Clusters",
+    "ExtendedSpritesFolder": "Extendeds"
+  },
+  "OverworldSpritesFolder": "OverworldSprites",
+  "UberasmFolder": {
+    "Main": "UberASM",
+    "LevelFolder": "Level",
+    "GameModeFolder": "Gamemode",
+    "OverworldFolder": "Overworld"
+  },
+  "BlocksFolder": "Blocks",
+  "PatchesFolder": "Patches"
+}

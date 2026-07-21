@@ -1,6 +1,6 @@
-﻿using StateMachine.Attributes;
-using Validations;
+﻿using Validations;
 using Validations.Interfaces;
+using ZWXStateMachine.Attributes;
 
 namespace SMWHubValidations.StateVariableValidations;
 
@@ -20,7 +20,7 @@ public class ValidateValuesSize : VariableValidation
     public override ValidationResult Validate(IValidationState ctx)
     {
         ValidationResult validationResult = new(ctx.Context);
-        var values = ctx.State.Get<int[]>("Values");
+        var values = ctx.StateData.Get<int[]>("Values");
         if (values == null && _minSize == 0 ||
             values != null && values.Length >= _minSize && values.Length <= _maxSize)
             return validationResult;

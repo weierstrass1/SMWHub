@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <AssemblyVersion>1.0.0.18</AssemblyVersion>
@@ -10,7 +10,15 @@
 
   <ItemGroup>
     <ProjectReference Include="..\FormatLibrary\FormatLibrary.csproj" />
+    <ProjectReference Include="..\FormatReadLibrary\FormatReadLibrary.csproj" />
+    <ProjectReference Include="..\SMWHubValidations\SMWHubValidations.csproj" />
     <ProjectReference Include="..\Validations\Validations.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Settings\FoldersConfig.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

@@ -1,5 +1,5 @@
 ﻿using FormatLibrary.Entries;
-using FormatReadLibrary.Interfaces;
+using FormatLibrary.Interfaces;
 using FormatReadLibrary.LineContexts;
 using FormatReadLibrary.Readers.ParsingContexts;
 using FormatReadLibrary.Readers.StateVariables;
@@ -15,14 +15,14 @@ public sealed partial class CommonListReader
         private static readonly Regex _entryRegex = RegexContainer.ListEntryRegex();
         private readonly Dictionary<int, List<CommonListEntry>> _entriesList = [];
         private readonly ICommonListCategory _section;
-        private int[] _ids => State.Get<int[]>("IDs")!;
-        private FilePath[] _filepaths => State.Get<FilePath[]>("FileList")!;
+        private int[] _ids => StateData.Get<int[]>("IDs")!;
+        private FilePath[] _filepaths => StateData.Get<FilePath[]>("FileList")!;
         public CommonListParsingContext(LineContext context, ICommonListCategory section, int maxID = 255, bool allowVariables = false, bool allowMultiIDs = false) : base(context)
         {
             _section = section;
-            State.AddStateVariable("Match", new MatchStateVariable("Match", _entryRegex));
-            State.AddStateVariable("IDs", new IntegerIDListStateVariable<List<CommonListEntry>>(_entriesList, maxID, allowMultiIDs));
-            State.AddStateVariable("FileList", new FilelistStateVariable(_section.BaseDirectory, allowVariables, allowMultiIDs));
+            StateData.AddStateVariable("Match", new MatchStateVariable("Match", _entryRegex));
+            StateData.AddStateVariable("IDs", new IntegerIDListStateVariable<List<CommonListEntry>>(_entriesList, maxID, allowMultiIDs));
+            StateData.AddStateVariable("FileList", new FilelistStateVariable(_section.BaseDirectory, allowVariables, allowMultiIDs));
         }
         public override ValidationResult ProcessEntry()
         {

@@ -1,11 +1,12 @@
-﻿using FormatLibrary.Entries;
-using FormatReadLibrary.LineContexts;
-using StateMachine;
-using StateMachine.Attributes;
-using StateMachine.Interfaces;
-using StateMachine.StateLogics;
+﻿using FormatReadLibrary.LineContexts;
 using System.Text.RegularExpressions;
 using Validations;
+using ZWXStateMachine;
+using ZWXStateMachine.Attributes;
+using ZWXStateMachine.Interfaces;
+using ZWXStateMachine.StateBehaviours;
+using ZWXStateMachine.StateLogics;
+using ZWXStateMachine.Transitions;
 
 namespace FormatReadLibrary.Readers;
 
@@ -38,43 +39,43 @@ public static partial class NormalSpriteCFGReader
     [RequiresStateVariable("SetEBAmount", typeof(int))]
     private partial class NormalSpriteCFGReaderStateMachine : StateMachine<NSCFGStateEnum>
     {
-        public NormalSpriteCFGReaderStateMachine(State state) : base(state, NSCFGStateEnum.Type, configTransitions(), configStates(), new StateLogic<NSCFGStateEnum>(NSCFGStateEnum.Done, false))
+        public NormalSpriteCFGReaderStateMachine(StateData stateData) : base(stateData, NSCFGStateEnum.Type, configTransitions(), configStates(), new EmptyStateBehaviour())
         {
-            state.AddVariable("PropsDone", false);
+            stateData.AddVariable("PropsDone", false);
         }
-        private static Dictionary<NSCFGStateEnum, IStateLogic<NSCFGStateEnum>> configStates()
+        private static Dictionary<NSCFGStateEnum, StateIDBehaviourPair<NSCFGStateEnum>> configStates()
         {
-            Dictionary<NSCFGStateEnum, IStateLogic<NSCFGStateEnum>> states = [];
-            states.Add(NSCFGStateEnum.Type, new NormalSpriteCFGValuesLineStateLogic<int>(NSCFGStateEnum.Type,
-                "Sprite Type Line", ' ', 0, 2, ("Type", "Sprite Type")));
-            states.Add(NSCFGStateEnum.ActLike, new NormalSpriteCFGValuesLineStateLogic<byte>(NSCFGStateEnum.ActLike,
-                "Act Like Line", ' ', 0, 255, ("ActLike", "Act Like")));
-            states.Add(NSCFGStateEnum.Tweaks, new NormalSpriteCFGValuesLineStateLogic<byte>(NSCFGStateEnum.Tweaks,
+            Dictionary<NSCFGStateEnum, StateIDBehaviourPair<NSCFGStateEnum>> states = [];
+            states.Add(NSCFGStateEnum.Type, (NSCFGStateEnum.Type, new NormalSpriteCFGValuesLineStateLogic<int>(
+                "Sprite Type Line", ' ', 0, 2, ("Type", "Sprite Type"))));
+            states.Add(NSCFGStateEnum.ActLike, (NSCFGStateEnum.ActLike, new NormalSpriteCFGValuesLineStateLogic<byte>(
+                "Act Like Line", ' ', 0, 255, ("ActLike", "Act Like"))));
+            states.Add(NSCFGStateEnum.Tweaks, (NSCFGStateEnum.Tweaks, new NormalSpriteCFGValuesLineStateLogic<byte>(
                 "Tweakers Line", ' ', 0, 255,
                 ("$1656", "Tweak 1656"),
                 ("$1662", "Tweak 1662"),
                 ("$166E", "Tweak 166E"),
                 ("$167A", "Tweak 167A"),
                 ("$1686", "Tweak 1686"),
-                ("$190F", "Tweak 190F")));
-            states.Add(NSCFGStateEnum.Props, new NormalSpriteCFGValuesLineStateLogic<byte>(NSCFGStateEnum.Props,
+                ("$190F", "Tweak 190F"))));
+            states.Add(NSCFGStateEnum.Props, (NSCFGStateEnum.Props, new NormalSpriteCFGValuesLineStateLogic<byte>(
                 "Properties Line", ' ', 0, 255,
                 ("Prop1", "Extra Property 1"),
-                ("Prop2", "Extra Property 2")));
+                ("Prop2", "Extra Property 2"))));
             states.Add(NSCFGStateEnum.File,
-                new DelegateStateLogicStart<NSCFGStateEnum>(NSCFGStateEnum.File, state =>
+                (NSCFGStateEnum.File, new DelegateStateBehaviourEnter(state =>
             {
-                if(state.Get<int>("Type") == 0)
+                if (state.Get<int>("Type") == 0)
                     state.Get<ValidationResult>("Validation")!.AddError("");
                 state.Set("FilePath", state.Get<LineContext>("Context")!.LineContent);
-            }));
-            states.Add(NSCFGStateEnum.ExBytes, new NormalSpriteCFGValuesLineStateLogic<int>(NSCFGStateEnum.ExBytes,
+            })));
+            states.Add(NSCFGStateEnum.ExBytes, (NSCFGStateEnum.ExBytes, new NormalSpriteCFGValuesLineStateLogic<int>(
                 "Extra Byte Line", ' ', 0, 12,
                 ("CleanEBAmount", "Extra Byte Amount when Extra Bit is Clear"),
-                ("SetEBAmount", "Extra Byte Amount when Extra Bit is Set")));
+                ("SetEBAmount", "Extra Byte Amount when Extra Bit is Set"))));
             return states;
         }
-        private static Dictionary<NSCFGStateEnum, List<StateEnumTransitionPair<NSCFGStateEnum>>> configTransitions()
+        private static Dictionary<NSCFGStateEnum, List<StateIDTransitionPair<NSCFGStateEnum>>> configTransitions()
         {
             ITransition alwaysTransition = new DelegateTransition(state => true);
             ITransition filenameTransition = new DelegateTransition(state =>
@@ -90,7 +91,7 @@ public static partial class NormalSpriteCFGReader
             {
                 return state.Get<bool>("PropsDone");
             });
-            Dictionary<NSCFGStateEnum, List<StateEnumTransitionPair<NSCFGStateEnum>>> transitions = [];
+            Dictionary<NSCFGStateEnum, List<StateIDTransitionPair<NSCFGStateEnum>>> transitions = [];
             transitions.Add(NSCFGStateEnum.Type, [new(NSCFGStateEnum.ActLike, alwaysTransition)]);
             transitions.Add(NSCFGStateEnum.ActLike, [new(NSCFGStateEnum.Tweaks, alwaysTransition)]);
             transitions.Add(NSCFGStateEnum.Tweaks, [

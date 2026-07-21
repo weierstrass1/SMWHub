@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Text;
+using System.Text.RegularExpressions;
 
 namespace FormatLibrary;
 public static partial class FormatCleaner
@@ -16,11 +17,31 @@ public static partial class FormatCleaner
 
         content = string.Join('\n', content
                                 .Split('\n')
-                                .Select(l => space.Replace(l, " ").Trim()));
+                                .Select(CleanLine));
         return content;
     }
     public static string CleanFileContent(string path)
     {
         return CleanString(File.ReadAllText(path));
+    }
+    public static string CleanLine(string line)
+    {
+        line = SpaceRegex().Replace(line, " ").Trim();
+        if (!line.Any(c => c == ';'))
+            return line;
+
+        int colonCount = line.Count(c => c == ';');
+
+        bool isString = false;
+        StringBuilder sb = new();
+        foreach(char c in line)
+        {
+            if(!isString && c == ';')
+                return sb.ToString();
+            if(c == '"')
+                isString = !isString;
+            sb.Append(c);
+        }
+        return sb.ToString();
     }
 }

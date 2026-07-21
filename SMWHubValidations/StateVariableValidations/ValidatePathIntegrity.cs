@@ -1,7 +1,7 @@
-﻿using StateMachine;
-using StateMachine.Attributes;
-using Validations;
+﻿using Validations;
 using Validations.Interfaces;
+using ZWXStateMachine;
+using ZWXStateMachine.Attributes;
 
 namespace SMWHubValidations.StateVariableValidations;
 
@@ -11,7 +11,7 @@ public class ValidatePathIntegrity(IValidationState ctx) : VariableValidation(ct
     public override ValidationResult Validate(IValidationState ctx)
     {
         ValidationResult validationResult = new(ctx.Context);
-        State state = ctx.State;
+        StateData state = ctx.StateData;
         var filepath = state.Get<string>("Filepath")!;
         if (filepath.IndexOfAny(Path.GetInvalidPathChars()) >= 0)
             validationResult.AddError(StateVariableMessageTypeKeys.INVALID_PATH, new()
