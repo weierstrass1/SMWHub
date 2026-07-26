@@ -1,4 +1,4 @@
-﻿using SMWHubInstallation.Packages;
+﻿using SMWHubInstallation.PackagesTypes;
 using System.Collections;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;

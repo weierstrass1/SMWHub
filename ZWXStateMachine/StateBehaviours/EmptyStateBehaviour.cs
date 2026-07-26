@@ -1,6 +1,6 @@
 ﻿using ZWXStateMachine.Interfaces;
 
-namespace ZWXStateMachine.StateLogics;
+namespace ZWXStateMachine.StateBehaviours;
 
 public class EmptyStateBehaviour : IStateBahaviour
 {
