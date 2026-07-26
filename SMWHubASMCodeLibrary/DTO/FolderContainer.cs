@@ -6,17 +6,23 @@ namespace SMWHubASMCodeLibrary.DTO;
 public class FolderContainer
 {
     [JsonRequired]
-    public required string Main { get; set; }
+    [JsonInclude]
+    public required string Main { get; init; }
     [JsonRequired]
-    public required SpriteFolderContainer SpritesFolders { get; set; }
+    [JsonInclude]
+    public required SpriteFolderContainer SpritesFolders { get; init; }
     [JsonRequired]
-    public required string OverworldSpritesFolder { get; set; }
+    [JsonInclude]
+    public required string OverworldSpritesFolder { get; init; }
     [JsonRequired]
-    public required UberasmFolderContainer UberasmFolder { get; set; }
+    [JsonInclude]
+    public required UberasmFolderContainer UberasmFolder { get; init; }
     [JsonRequired]
-    public required string BlocksFolder { get; set; }
+    [JsonInclude]
+    public required string BlocksFolder { get; init; }
     [JsonRequired]
-    public required string PatchesFolder { get; set; }
+    [JsonInclude]
+    public required string PatchesFolder { get; init; }
     public static FolderContainer GetFromJson(string path)
     {
         if(!File.Exists(path))

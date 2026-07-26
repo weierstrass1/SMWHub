@@ -31,6 +31,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SMWHubSprites", "SMWHubSpri
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SMWHubPatchBuilder", "SMWHubPatchBuilder\SMWHubPatchBuilder.csproj", "{1329B288-283C-489B-B1C8-D20E87837F41}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SMWHubInstallation", "SMWHubInstallation\SMWHubInstallation.csproj", "{3357663D-4CB6-4040-AFF7-F6A9A609C827}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -93,6 +95,10 @@ Global
 		{1329B288-283C-489B-B1C8-D20E87837F41}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1329B288-283C-489B-B1C8-D20E87837F41}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1329B288-283C-489B-B1C8-D20E87837F41}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3357663D-4CB6-4040-AFF7-F6A9A609C827}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3357663D-4CB6-4040-AFF7-F6A9A609C827}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3357663D-4CB6-4040-AFF7-F6A9A609C827}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3357663D-4CB6-4040-AFF7-F6A9A609C827}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

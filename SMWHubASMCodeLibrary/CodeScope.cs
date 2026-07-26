@@ -2,11 +2,33 @@
 
 namespace SMWHubASMCodeLibrary;
 
-public sealed class CodeScope(string directoryPath, ScopeType type, CodeScope? parent = null)
+public sealed class CodeScope
 {
-    public readonly CodeScope? Parent = parent;
-    public readonly string DirectoryPath = directoryPath;
-    public readonly ScopeType Type = type;
+    public CodeScope? Parent { get; }
+    public string SourceDirectoryPath { get; }
+    public string ScopeDirectoryPath { get; }
+    public ScopeType Type { get; }
+    public CodeScope(string sourceDirectoryPath, string scopeDirectoryPath, ScopeType type)
+    {
+        SourceDirectoryPath = sourceDirectoryPath;
+        ScopeDirectoryPath = scopeDirectoryPath;
+        Type = type;
+        Parent = null;
+    }
+    public CodeScope(string sourceDirectoryPath, ScopeType type, CodeScope? parent = null)
+    {
+        Parent = parent;
+        SourceDirectoryPath = sourceDirectoryPath;
+        Type = type;
+        string path = "";
+        CodeScope? current = this;
+        while (current != null && current.Type != ScopeType.Global)
+        {
+            path = Path.Combine(current.Type.GetDescription(), path);
+            current = current.Parent;
+        }
+        ScopeDirectoryPath = path;
+    }
     public IEnumerable<CodeScope> GoToRoot()
     {
         CodeScope? currentScope = this;
@@ -27,6 +49,6 @@ public sealed class CodeScope(string directoryPath, ScopeType type, CodeScope? p
         }
         scope.Remove(0, 1);
         
-        return $"{scope}: {DirectoryPath}";
+        return $"{scope}: {SourceDirectoryPath}";
     }
 }

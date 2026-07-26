@@ -2,6 +2,7 @@
 using FormatReadLibrary.Readers;
 using LogRegister;
 using SMWHubASMCodeLibrary;
+using SMWHubInstallation;
 using SMWHubLogging;
 using SMWHubLogging.Categories;
 using SMWHubLogging.Wrappers;
@@ -25,14 +26,21 @@ public class Program
         LogRegisterSystem log = new(loggingFileContent, categoryAssembly);
 
         ValidationResult validation = new();
-
-        Code c = new("root.asm", CodeType.ASM, new("", ScopeType.LevelASM));
-
-        SingleCodePatchGenerator.GenerateSingleCode(0, c);
         
         SharedCodePathProcessor scpp = new(Path.Combine("Settings", "FoldersConfig.json"));
         Code[] files = scpp.FindSharedCodes();
-        string[] bcs = [.. files.Select(x => x.BreadCrumb)];
+
+        Code c = new("root.asm", CodeType.ASM, scpp.GetScope(ScopeType.LevelASM));
+        SingleCodePatchGenerator.GenerateSingleCode(0, c);
+
+        
+        PackageHashes codeHash = [];
+        codeHash.Add(new PackageHash(0, c));
+        codeHash.Save("hola.json");
+
+        codeHash = PackageHashes.FromJson(File.ReadAllText("hola.json"));
+        Console.WriteLine(codeHash.WasModified(c));
+
         var macros = SharedMacrosProcessor.GetMacros(files);
         CommonListReader reader = new([
             new NormalSprite(Path.Combine("Sprites","Sprites")),

@@ -12,6 +12,7 @@
   <ItemGroup>
     <ProjectReference Include="..\FormatReadLibrary\FormatReadLibrary.csproj" />
     <ProjectReference Include="..\SMWHubASMCodeLibrary\SMWHubASMCodeLibrary.csproj" />
+    <ProjectReference Include="..\SMWHubInstallation\SMWHubInstallation.csproj" />
     <ProjectReference Include="..\SMWHubLogging\SMWHubLogging.csproj" />
     <ProjectReference Include="..\SMWHubPatchBuilder\SMWHubPatchBuilder.csproj" />
     <ProjectReference Include="..\SMWHubSprites\SMWHubSprites.csproj" />

@@ -1,11 +1,10 @@
-﻿namespace SMWHubPatchBuilder.SingleCodePatchReferences
+﻿namespace SMWHubPatchBuilder.SingleCodePatchReferences;
+
+public class StandardPatchReference : ISingleCodePatchReference
 {
-    public class StandardPatchReference : ISingleCodePatchReference
+    public string[] DetectedLabels => [];
+    public void ProcessSinglePatchOutput(string output)
     {
-        public string[] DetectedLabels => [];
-        public void ProcessSinglePatchOutput(string output)
-        {
-            throw new NotImplementedException();
-        }
+        throw new NotImplementedException();
     }
 }

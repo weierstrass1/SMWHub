@@ -1,7 +1,6 @@
-﻿namespace SMWHubPatchBuilder.SingleCodePatchReferences
+﻿namespace SMWHubPatchBuilder.SingleCodePatchReferences;
+
+public class LevelAsmPatchReference : UberasmPatchReference
 {
-    public class LevelAsmPatchReference : UberasmPatchReference
-    {
-        public override string[] DetectedLabels => [ .. base.DetectedLabels , "load"];
-    }
+    public override string[] DetectedLabels => [ .. base.DetectedLabels , "load"];
 }

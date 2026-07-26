@@ -1,8 +1,7 @@
-﻿namespace SMWHubPatchBuilder.SingleCodePatchReferences
+﻿namespace SMWHubPatchBuilder.SingleCodePatchReferences;
+
+public interface ISingleCodePatchReference
 {
-    public interface ISingleCodePatchReference
-    {
-        public string[] DetectedLabels { get; }
-        public void ProcessSinglePatchOutput(string output);
-    }
+    public string[] DetectedLabels { get; }
+    public void ProcessSinglePatchOutput(string output);
 }

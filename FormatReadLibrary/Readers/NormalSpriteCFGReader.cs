@@ -29,9 +29,11 @@ public static partial class NormalSpriteCFGReader
         foreach (var p in cfgsPaths)
         {
             result.Merge(Read(p.Paths[0].Path, out NormalSpriteConfigEntry? cfg));
+            if (cfg == null)
+                continue;
             cfg.ID = p.ID;
-            if(cfg != null)
-                cfgs.Add(cfg);
+            cfg.CFGPath = p.Paths[0].Path;
+            cfgs.Add(cfg);
         }
         return result;
     }

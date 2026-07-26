@@ -5,6 +5,8 @@ namespace FormatLibrary.Entries;
 public class NormalSpriteConfigEntry
 {
     [JsonIgnore]
+    public string? CFGPath;
+    [JsonIgnore]
     public int ID;
     [JsonProperty("AsmFile", Required = Required.Always)]
     public required string Filepath;
