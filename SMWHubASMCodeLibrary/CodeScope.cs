@@ -4,30 +4,33 @@ namespace SMWHubASMCodeLibrary;
 
 public sealed class CodeScope
 {
+    public bool IsLeaf { get; private set; }
     public CodeScope? Parent { get; }
     public string SourceDirectoryPath { get; }
     public string ScopeDirectoryPath { get; }
-    public ScopeType Type { get; }
-    public CodeScope(string sourceDirectoryPath, string scopeDirectoryPath, ScopeType type)
+    public IScopeType Type { get; }
+    public CodeScope(string sourceDirectoryPath, string scopeDirectoryPath, IScopeType type)
     {
+        IsLeaf = true;
         SourceDirectoryPath = sourceDirectoryPath;
         ScopeDirectoryPath = scopeDirectoryPath;
         Type = type;
         Parent = null;
     }
-    public CodeScope(string sourceDirectoryPath, ScopeType type, CodeScope? parent = null)
+    public CodeScope(string sourceDirectoryPath, IScopeType type, CodeScope? parent = null)
     {
+        IsLeaf = true;
         Parent = parent;
-        SourceDirectoryPath = sourceDirectoryPath;
         Type = type;
         string path = "";
-        CodeScope? current = this;
-        while (current != null && current.Type != ScopeType.Global)
+        foreach (var current in GoToRoot().Where(g => g.Type.GetType() != typeof(GlobalScopeType)))
         {
-            path = Path.Combine(current.Type.GetDescription(), path);
-            current = current.Parent;
+            path = Path.Combine(current.Type.Name, path);
+            if (current != null)
+                current.IsLeaf = false;
         }
         ScopeDirectoryPath = path;
+        SourceDirectoryPath = Path.Combine(sourceDirectoryPath, ScopeDirectoryPath);
     }
     public IEnumerable<CodeScope> GoToRoot()
     {

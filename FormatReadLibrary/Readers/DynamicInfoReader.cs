@@ -23,9 +23,9 @@ public sealed partial class DynamicInfoReader
     }
     public static ValidationResult Read(string name, string dynamicInfoContent, string baseDirectory, out DynamicInfo? dynamicInfo)
     {
-        FileReader fReader = new(name, dynamicInfoContent);
+        FileLineReader fReader = new(name, dynamicInfoContent);
 
-        ValidationResult result = fReader.SplitBySections(out Dictionary<string, FileEnumerator> enumerators, true, _sections);
+        ValidationResult result = fReader.SplitBySections(out Dictionary<string, FileLineEnumerator> enumerators, true, _sections);
 
         result.Merge(validateIfUseBothFormats(fReader, enumerators));
 
@@ -36,7 +36,7 @@ public sealed partial class DynamicInfoReader
             .Where(kvp => kvp.Key != "poseschunkssizes:" && kvp.Key != "numberof16x16tilesperpose:")
             .ToList();
 
-        if (enumerators.TryGetValue("poseschunkssizes:", out FileEnumerator? value))
+        if (enumerators.TryGetValue("poseschunkssizes:", out FileLineEnumerator? value))
             enumSortered.Add(new("poseschunkssizes:", value));
         if (enumerators.TryGetValue("numberof16x16tilesperpose:", out value))
             enumSortered.Add(new("numberof16x16tilesperpose:", value));
@@ -54,11 +54,11 @@ public sealed partial class DynamicInfoReader
 
         return result;
     }
-    private static ValidationResult validateIfUseBothFormats(FileReader fReader, Dictionary<string, FileEnumerator> enumerators)
+    private static ValidationResult validateIfUseBothFormats(FileLineReader fReader, Dictionary<string, FileLineEnumerator> enumerators)
     {
         ValidationResult result = new();
-        if (enumerators.TryGetValue("poseschunkssizes:", out FileEnumerator? legacyFormat) &&
-            enumerators.TryGetValue("numberof16x16tilesperpose:", out FileEnumerator? currentFormat))
+        if (enumerators.TryGetValue("poseschunkssizes:", out FileLineEnumerator? legacyFormat) &&
+            enumerators.TryGetValue("numberof16x16tilesperpose:", out FileLineEnumerator? currentFormat))
         {
             int i = Math.Max(legacyFormat.LineIndex, currentFormat.LineIndex);
             result.Context = new(fReader.FilePath, i, fReader[i]);

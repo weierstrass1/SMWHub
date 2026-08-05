@@ -37,7 +37,7 @@ public sealed partial class CommonListReader
         {
             foreach (int id in _ids)
             {
-                _entriesList[id] = [];
+                _entriesList.Add(id, []);
                 _entriesList[id].Add(new()
                 {
                     ID = id,
@@ -46,9 +46,9 @@ public sealed partial class CommonListReader
                 });
             }
         }
-        public Dictionary<int, List<CommonListEntry>> GetEntries()
+        public IEnumerable<CommonListEntry> GetEntries()
         {
-            return _entriesList.ToDictionary();
+            return _entriesList.SelectMany(cle => cle.Value);
         }
     }
 }

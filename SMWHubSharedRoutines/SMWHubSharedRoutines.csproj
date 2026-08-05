@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SMWHubPluginAPI\SMWHubPluginAPI.csproj" />
+  </ItemGroup>
+
+  <Target Name="CopyPlugin" AfterTargets="Build">
+    <Copy
+        SourceFiles="$(TargetPath)"
+        DestinationFolder="$(SolutionDir)SMWHub\bin\$(Configuration)\$(TargetFramework)\_Internal\Plugins\$(MSBuildProjectName)"
+        SkipUnchangedFiles="true" />
+  </Target>
+
+</Project>

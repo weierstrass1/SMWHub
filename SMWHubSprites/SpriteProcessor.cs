@@ -1,13 +1,13 @@
-﻿using FormatLibrary.Entries;
+﻿using SMWHubSprites.Formats;
 using System.Text;
 
 namespace SMWHubSprites;
 
 public static class SpriteProcessor
 {
-    public static string GenerateExtraByteTable(IEnumerable<NormalSpriteConfigEntry> sprites)
+    public static string GenerateExtraByteTable(IEnumerable<SpriteConfigEntry> sprites)
     {
-        Dictionary<int, NormalSpriteConfigEntry> sps = sprites.ToDictionary(s => s.ID, s => s);
+        Dictionary<int, SpriteConfigEntry> sps = sprites.ToDictionary(s => s.ID, s => s);
         StringBuilder exByteClear = new("ExtraBytesWithClearExtraBit:\n");
         StringBuilder exByteSet = new("ExtraBytesWithSetExtraBit:\n");
         int i = 0;
@@ -15,7 +15,7 @@ public static class SpriteProcessor
         for (; i < 0x100; i += 16)
         {
             exbytes = Enumerable.Range(i, 16)
-                .Select(s => sps.TryGetValue(s, out NormalSpriteConfigEntry? sp) ?
+                .Select(s => sps.TryGetValue(s, out SpriteConfigEntry? sp) ?
                     ($"${3 + sp.ExtraBytesWithClearExtraBit:X2}", $"${3 + sp.ExtraBytesWithSetExtraBit:X2}") :
                     ("$03", "$03"));
             exByteClear.AppendLine($"db {string.Join(',', [.. exbytes.Select(eb => eb.Item1)])}");

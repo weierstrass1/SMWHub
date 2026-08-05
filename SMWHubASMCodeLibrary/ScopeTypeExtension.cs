@@ -5,6 +5,20 @@ namespace SMWHubASMCodeLibrary;
 
 public static class ScopeTypeExtension
 {
+    private static Dictionary<string, ScopeType> _types = [];
+    public static ScopeType? GetFromDescription(string description)
+    {
+        if(_types.Count == 0)
+            foreach (var type in Enum.GetValues<ScopeType>())
+            {
+                _types.Add(type.GetDescription().ToLower(), type);
+            }
+        return _types.TryGetValue(description
+            .ToLower()
+            .Replace(":",""), out ScopeType val) ? 
+                val : 
+                null;
+    }
     public static string GetDescription(this ScopeType value)
     {
         Type tipo = value.GetType();

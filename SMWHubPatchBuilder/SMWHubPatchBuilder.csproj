@@ -11,10 +11,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Templates\CodePointersPatchTemplate.asm">
+    <None Update="_Internal\Templates\CodePointersPatchTemplate.asm">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Templates\SingleCodePatchTemplate.asm">
+    <None Update="_Internal\Templates\SingleCodePatchTemplate.asm">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

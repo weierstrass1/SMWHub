@@ -11,8 +11,8 @@ public sealed partial class GPSListReader(string baseDirectory)
 
     public ValidationResult Read(string path)
     {
-        FileReader fReader = new(path);
-        FileEnumerator fileEnumerator = (FileEnumerator)fReader.GetEnumerator()!;
+        FileLineReader fReader = new(path);
+        FileLineEnumerator fileEnumerator = (FileLineEnumerator)fReader.GetEnumerator()!;
 
         GPSListParserOptions opts = new()
         {

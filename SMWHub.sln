@@ -33,6 +33,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SMWHubPatchBuilder", "SMWHu
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SMWHubInstallation", "SMWHubInstallation\SMWHubInstallation.csproj", "{3357663D-4CB6-4040-AFF7-F6A9A609C827}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SMWHubPluginAPI", "SMWHubPluginAPI\SMWHubPluginAPI.csproj", "{D603E547-3EFD-4363-B579-F9DFC007564C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SMWHubSharedRoutines", "SMWHubSharedRoutines\SMWHubSharedRoutines.csproj", "{743EF22C-FEED-45AE-9807-1CE4276D2182}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -99,6 +103,14 @@ Global
 		{3357663D-4CB6-4040-AFF7-F6A9A609C827}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3357663D-4CB6-4040-AFF7-F6A9A609C827}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3357663D-4CB6-4040-AFF7-F6A9A609C827}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D603E547-3EFD-4363-B579-F9DFC007564C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D603E547-3EFD-4363-B579-F9DFC007564C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D603E547-3EFD-4363-B579-F9DFC007564C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D603E547-3EFD-4363-B579-F9DFC007564C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{743EF22C-FEED-45AE-9807-1CE4276D2182}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{743EF22C-FEED-45AE-9807-1CE4276D2182}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{743EF22C-FEED-45AE-9807-1CE4276D2182}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{743EF22C-FEED-45AE-9807-1CE4276D2182}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

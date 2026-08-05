@@ -31,7 +31,15 @@ public abstract class Validator
     /// </param>
     protected void validateAttributes(IHaveStateData context)
     {
-        var requirements = GetType()
+        Validate(GetType(), context);
+    }
+    public static void Validate<T>(IHaveStateData context)
+    {
+        Validate(typeof(T), context);
+    }
+    public static void Validate(Type type, IHaveStateData context)
+    {
+        var requirements = type
             .GetCustomAttributes<RequiresStateVariableAttribute>();
 
         foreach (var require in requirements)

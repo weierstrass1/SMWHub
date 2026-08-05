@@ -1,70 +1,43 @@
-﻿using SMWHubASMCodeLibrary.DTO;
-
-namespace SMWHubASMCodeLibrary;
+﻿namespace SMWHubASMCodeLibrary;
 
 public enum CodeType
 {
     Macros,
     Defines,
     Routines,
-    ASM
+    Code
 };
 public class SharedCodePathProcessor
 {
     public const string SHARED_CODE_DIRECTORY = "_SharedCode";
-    private readonly IReadOnlyDictionary<ScopeType, CodeScope> _sharedCodeRoots;
-    public SharedCodePathProcessor(string path)
+    private readonly CodeContext _context;
+    public SharedCodePathProcessor(CodeContext ctx)
     {
-        FolderContainer folders = FolderContainer.GetFromJson(path);
-        SpriteFolderContainer sprDir = folders.SpritesFolders;
-        UberasmFolderContainer uasmDir = folders.UberasmFolder;
-        CodeScope main = new(folders.Main, ScopeType.Global);
-        CodeScope sprite = new(sprDir.Main, ScopeType.Sprite, main);
-        CodeScope uberasm = new(uasmDir.Main, ScopeType.UberASM, main);
-        _sharedCodeRoots = new Dictionary<ScopeType, CodeScope>()
-        {
-            { ScopeType.Global, main},
-            { ScopeType.Sprite, sprite },
-            { ScopeType.NormalSprite, new(Path.Combine(sprDir.Main, sprDir.NormalSpritesFolder), ScopeType.NormalSprite, sprite) },
-            { ScopeType.ClusterSprite,new(Path.Combine(sprDir.Main, sprDir.ClusterSpritesFolder), ScopeType.ClusterSprite, sprite) },
-            { ScopeType.ExtendedSprite, new(Path.Combine(sprDir.Main, sprDir.ExtendedSpritesFolder), ScopeType.ExtendedSprite, sprite) },
-            { ScopeType.UberASM, uberasm },
-            { ScopeType.LevelASM, new(Path.Combine(uasmDir.Main, uasmDir.LevelFolder), ScopeType.LevelASM, uberasm) },
-            { ScopeType.OverworldASM, new(Path.Combine(uasmDir.Main, uasmDir.OverworldFolder), ScopeType.OverworldASM, uberasm) },
-            { ScopeType.GamemodeASM, new(Path.Combine(uasmDir.Main, uasmDir.GameModeFolder), ScopeType.GamemodeASM, uberasm) },
-            { ScopeType.OverworldSprite, new(folders.OverworldSpritesFolder, ScopeType.OverworldSprite, main) },
-            { ScopeType.Block, new(folders.BlocksFolder, ScopeType.Block, main) },
-            { ScopeType.Patch, new(folders.PatchesFolder, ScopeType.Patch, main) }
-        }.AsReadOnly();
+        _context = ctx;
     }
-    public CodeScope GetScope(ScopeType type)
+    public List<Code> FindSharedCodes()
     {
-        return _sharedCodeRoots[type];
+        return [.. _context.Scopes
+            .SelectMany(getSharedCodeTypesFiles)];
     }
-    public Code[] FindSharedCodes()
+    private IEnumerable<Code> getSharedCodeTypesFiles(CodeScope scope)
     {
-        List<Code> files = [];
-        foreach (var scope in _sharedCodeRoots.Values)
-            files.AddRange(getSharedCodeTypesFiles(scope));
-        return [.. files];
-    }
-    private Code[] getSharedCodeTypesFiles(CodeScope scope)
-    {
-        List<Code> files = [];
-        foreach (var type in Enum.GetValues<CodeType>().Where(t => t != CodeType.ASM))
-            files.AddRange(getFiles(scope, type));
-        return [.. files];
+        return Enum.GetValues<CodeType>()
+            .Where(t => t != CodeType.Code)
+            .SelectMany(t => getFiles(scope, t));
     }
     private IEnumerable<Code> getFiles(CodeScope scope, CodeType type)
     {
         string tDirectory = Path.Combine(scope.SourceDirectoryPath, SHARED_CODE_DIRECTORY, type.ToString());
-        var files = ensureDirectoryAndGetFiles(tDirectory);
-        return files.Select(f => new Code(f, type, scope));
+        return ensureDirectoryAndGetFiles(scope, tDirectory)
+            .Select(f => new Code(f, type, scope));
     }
-    private IEnumerable<string> ensureDirectoryAndGetFiles(string tDirectory)
+    private IEnumerable<string> ensureDirectoryAndGetFiles(CodeScope scope, string tDirectory)
     {
         Directory.CreateDirectory(tDirectory);
-        string[] files = Directory.GetFiles(tDirectory, "*.asm", SearchOption.AllDirectories);
-        return files.Select(fp => Path.GetRelativePath("./", fp));
+        return Directory.EnumerateFiles(tDirectory, "*.asm", SearchOption.AllDirectories)
+            .Select(fp => string.IsNullOrWhiteSpace(scope.SourceDirectoryPath) ?
+                fp :
+                Path.GetRelativePath(scope.SourceDirectoryPath, fp));
     }
 }

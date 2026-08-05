@@ -1,6 +1,7 @@
 ﻿using FormatLibrary.Entries;
 using FormatLibrary.Interfaces;
 using FormatReadLibrary.LineContexts;
+using OneOf;
 using SMWHubEnumerators;
 using Validations;
 
@@ -22,13 +23,14 @@ public sealed partial class CommonListReader
             _entriesList.TryAdd(lowertitle, []);
         }
     }
-    public ValidationResult Read(string path, int maxID = 255, bool allowVariables = false, bool allowMultiIDs = false)
+    public IEnumerable<OneOf<ValidationResult, (string, CommonListEntry)>> Read(string path, int maxID = 255, bool allowVariables = false, bool allowMultiIDs = false)
     {
-        FileReader fReader = new(path);
+        FileLineReader fReader = new(path);
 
-        ValidationResult result = fReader.SplitBySections(out Dictionary<string, FileEnumerator> enumerators, true, [.. _entriesList.Keys]);
+        yield return fReader.SplitBySections(out Dictionary<string, FileLineEnumerator> enumerators, true, [.. _entriesList.Keys]);
 
         CommonListParsingContext ctx;
+        ValidationResult result;
 
         foreach (var section in enumerators)
         {
@@ -37,24 +39,14 @@ public sealed partial class CommonListReader
             {
                 if (string.IsNullOrWhiteSpace(section.Value.Current))
                     continue;
-                result.Merge(ctx.ProcessEntry());
+                result = ctx.ProcessEntry();
+                if (!result.IsValid)
+                    yield return result;
             }
-            _entriesList[section.Key] = ctx.GetEntries();
+            foreach (var entry in ctx
+                .GetEntries()
+                .Select(e => (section.Key, e)))
+                yield return entry;
         }
-        return result;
-    }
-    public IEnumerable<CommonListEntry> GetEntries()
-    {
-        List<CommonListEntry> entries = [];
-        IEnumerable<List<CommonListEntry>> entriesListOfLists;
-        foreach (var entry in _entriesList)
-        {
-            entriesListOfLists = entry.Value
-                .OrderBy(kvp => kvp.Key)
-                .Select(kvp => kvp.Value);
-            foreach (var entriesList in entriesListOfLists)
-                entries.AddRange(entriesList);
-        }
-        return entries;
     }
 }

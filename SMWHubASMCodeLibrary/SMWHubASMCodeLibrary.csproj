@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <AssemblyVersion>1.0.0.18</AssemblyVersion>
@@ -16,8 +17,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Settings\FoldersConfig.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    <None Update="_Internal\Settings\FoldersConfig.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 

@@ -7,11 +7,17 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="SharpCompress" Version="0.50.0" />
+    <ProjectReference Include="..\SMWHubASMCodeLibrary\SMWHubASMCodeLibrary.csproj" />
+    <ProjectReference Include="..\SMWHubPluginAPI\SMWHubPluginAPI.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SMWHubASMCodeLibrary\SMWHubASMCodeLibrary.csproj" />
+    <None Update="_Internal\Settings\PathConfig.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="_Internal\Settings\Plugins.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

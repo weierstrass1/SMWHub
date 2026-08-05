@@ -1,4 +1,4 @@
-﻿using SMWHubInstallation.PackagesTypes;
+﻿using SMWHubPluginAPI;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Serialization;
 
