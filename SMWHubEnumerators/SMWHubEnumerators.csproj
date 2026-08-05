@@ -9,6 +9,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="OneOf" Version="3.0.271" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\FormatLibrary\FormatLibrary.csproj" />
     <ProjectReference Include="..\Validations\Validations.csproj" />
   </ItemGroup>

@@ -1,14 +1,13 @@
 ﻿using System.Collections;
-using System.Runtime.InteropServices;
+using System.Diagnostics.CodeAnalysis;
 using System.Text;
 
 namespace SMWHubEnumerators;
 
-public sealed class FileLineReader : IFormattedEnumerable, IDisposable
+public sealed class FileLineReader : IFormattedEnumerable
 {
-    private const int BUFFER_SIZE = 4096;
     public string FilePath { get; }
-    public string? Format { get; } = null;
+    public string? Format => throw new NotImplementedException();
     public string? Extension { get; }
     public int Length { get; private set; }
     public string this[int index]
@@ -16,91 +15,67 @@ public sealed class FileLineReader : IFormattedEnumerable, IDisposable
         get
         {
             if (index < 0 || index >= Length)
-                throw new IndexOutOfRangeException($"Index {index} is out of range. Valid range is 0 to {Length - 1}.");
-            seek(_linePositions[index]);
-            return ReadLine()!;
+                throw new ArgumentOutOfRangeException(nameof(index));
+            if (_foundLines.TryGetValue(index, out var line))
+                return line;
+            using FileStreamReader reader = new(FilePath);
+            reader.Seek(_linePositions[index]);
+            line = Encoding.UTF8.GetString([.. reader.ReadLine()]);
+            _foundLines[index] = line;
+            return line;
         }
     }
-    public bool EndOfFile { get; private set; } = false;
-    private long _currentPosition = 0;
-    private int _readBytes = BUFFER_SIZE;
-    private int _readBufferLimit = BUFFER_SIZE;
-    private readonly byte[] _readBuffer = new byte[BUFFER_SIZE];
-    private readonly List<long> _linePositions;
-    private readonly List<byte> _lineBuffer = [];
-    private readonly FileStream _fileStream;
-    public FileLineReader(string filePath)
+    private readonly Dictionary<int, string> _foundLines = [];
+    private readonly List<long> _linePositions = [];
+    public FileLineReader(string filepath)
     {
-        if (!File.Exists(filePath))
-            throw new FileNotFoundException($"The file '{filePath}' does not exist.");
-        FilePath = filePath;
-        Extension = Path.GetExtension(filePath);
-        _fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
-        _linePositions = [];
-        Length = 0;
-        string? line;
-        long pos;
-        while (true)
-        {
-            pos = _currentPosition;
-            line = ReadLine();
-            if(line == null) 
-                break;
-            _linePositions.Add(pos);
-            Length++;
-        }
-        seek(0);
+        FilePath = filepath;
+        Extension = Path.GetExtension(filepath);
+        getLinePositions();
     }
-    public string? ReadLine()
+    public IEnumerable<string> Read()
     {
-        if(EndOfFile)
-            return null;
-
-        _lineBuffer.Clear();
-        byte b;
-        while (true)
-        {
-            if(_readBytes >= _readBufferLimit)
-            {
-                if(_currentPosition >= _fileStream.Length)
-                {
-                    EndOfFile = true;
-                    return _lineBuffer.Count > 0 ?
-                        Encoding.UTF8.GetString(CollectionsMarshal.AsSpan(_lineBuffer)) :
-                        null;
-                }
-                _readBufferLimit = _fileStream.Read(_readBuffer, 0, BUFFER_SIZE);
-                _readBytes = 0;
-            }
-            b = _readBuffer[_readBytes];
-            _readBytes++;
-            _currentPosition++;
-            if (b == '\n')
-                break;
-
-            if (b != '\r')
-                _lineBuffer.Add(b);
-        }
-        return Encoding.UTF8.GetString(CollectionsMarshal.AsSpan(_lineBuffer));
+        foreach(var line in this)
+            yield return line;
+    }
+    public IEnumerable<string> ReadSection(int start, int end)
+    {
+        using var en = GetLimitedEnumerator(start, end);
+        while(en.MoveNext())
+            yield return en.Current;
+    }
+    public FileLineEnumerator GetLimitedEnumerator(int start, int end)
+    {
+        start = Math.Clamp(start, 0, Length - 1);
+        end = Math.Clamp(end, 0, Length - 1);
+        if (start > end)
+            start = end;
+        return new(this, start, end);
     }
     public IEnumerator<string> GetEnumerator()
     {
-        return new FileLineEnumerator(this);
+        return new FileLineEnumerator(this, 0, Length - 1);
     }
     IEnumerator IEnumerable.GetEnumerator()
     {
         return GetEnumerator();
     }
-    public void Dispose()
+    internal long getPosition(int index)
     {
-        _fileStream.Dispose();
+        if (index < 0 || index >= Length)
+            throw new ArgumentOutOfRangeException(nameof(index));
+        return _linePositions[index];
     }
-    private void seek(long position)
+    [MemberNotNull(nameof(_linePositions))]
+    private void getLinePositions()
     {
-        _fileStream.Position = position;
-        _currentPosition = position;
-        _readBytes = BUFFER_SIZE;
-        _readBufferLimit = BUFFER_SIZE;
-        EndOfFile = false;
+        using FileStreamReader reader = new(FilePath);
+        Length = 0;
+        while (!reader.EndOfFile)
+        {
+            _linePositions.Add(reader.CurrentPosition);
+            reader.ReadLine();
+            Length++;
+        }
     }
 }

@@ -23,21 +23,26 @@ public sealed partial class CommonListReader
             _entriesList.TryAdd(lowertitle, []);
         }
     }
-    public IEnumerable<OneOf<ValidationResult, (string, CommonListEntry)>> Read(string path, int maxID = 255, bool allowVariables = false, bool allowMultiIDs = false)
-    {
-        FileLineReader fReader = new(path);
-
-        yield return fReader.SplitBySections(out Dictionary<string, FileLineEnumerator> enumerators, true, [.. _entriesList.Keys]);
-
+    public IEnumerable<OneOf<ValidationResult, (string, CommonListEntry)>> Read(string path, string? defaultSection = null, int maxID = 255, bool allowVariables = false, bool allowMultiIDs = false)
+    {  
         CommonListParsingContext ctx;
         ValidationResult result;
+        FileLineEnumerator fle;
+        FileSection section;
 
-        foreach (var section in enumerators)
+        foreach (var sec in FileSection.GetSectionsFromFile(path, _sections.Keys.ToHashSet(), defaultSection))
         {
-            ctx = new((FileEnumeratorLineContext)section.Value, _sections[section.Key], maxID, allowVariables, allowMultiIDs);
-            while (section.Value.MoveNext())
+            if (sec.IsT0)
             {
-                if (string.IsNullOrWhiteSpace(section.Value.Current))
+                yield return sec.AsT0;
+                yield break;
+            }
+            section = sec.AsT1;
+            fle = section.GetEnumerator();
+            ctx = new((FileEnumeratorLineContext)fle, _sections[section.Name], maxID, allowVariables, allowMultiIDs);
+            while (fle.MoveNext())
+            {
+                if (string.IsNullOrWhiteSpace(fle.Current))
                     continue;
                 result = ctx.ProcessEntry();
                 if (!result.IsValid)
@@ -45,7 +50,7 @@ public sealed partial class CommonListReader
             }
             foreach (var entry in ctx
                 .GetEntries()
-                .Select(e => (section.Key, e)))
+                .Select(e => (section.Name, e)))
                 yield return entry;
         }
     }
