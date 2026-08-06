@@ -12,6 +12,6 @@ public class IncludedDynamicInfo(string filename, int line, Code parent) : IIncl
     public string Filename { get; private init; } = filename;
     public ValidationResult ConvertIntoFile(out DynamicInfo? di)
     {
-        return DynamicInfoReader.Read(Filename, out di);
+        return DynamicInfoReader.Read(Filename, "", out di);
     }
 }

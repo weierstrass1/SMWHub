@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using System.Diagnostics.CodeAnalysis;
 using System.Text;
 
 namespace SMWHubEnumerators;
@@ -66,7 +65,6 @@ public sealed class FileLineReader : IFormattedEnumerable
             throw new ArgumentOutOfRangeException(nameof(index));
         return _linePositions[index];
     }
-    [MemberNotNull(nameof(_linePositions))]
     private void getLinePositions()
     {
         using FileStreamReader reader = new(FilePath);

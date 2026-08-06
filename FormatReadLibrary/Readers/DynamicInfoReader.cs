@@ -16,37 +16,41 @@ public sealed partial class DynamicInfoReader
         "poseschunkssizes:",
         "numberof16x16tilesperpose:"
         ];
-    public static ValidationResult Read(string path, out DynamicInfo? dynamicInfo)
+    public static ValidationResult Read(string path, string baseDirectory, out DynamicInfo? dynamicInfo)
     {
-        string content = File.ReadAllText(path);
-        return Read(Path.GetFileNameWithoutExtension(path), content, Path.GetDirectoryName(path)!, out dynamicInfo);
-    }
-    public static ValidationResult Read(string name, string dynamicInfoContent, string baseDirectory, out DynamicInfo? dynamicInfo)
-    {
-        FileLineReader fReader = new(name, dynamicInfoContent);
+        var oneOfs = FileSection.GetSectionsFromFile(path, _sections).ToList();
 
-        ValidationResult result = fReader.SplitBySections(out Dictionary<string, FileLineEnumerator> enumerators, true, _sections);
-
-        result.Merge(validateIfUseBothFormats(fReader, enumerators));
+        var val = oneOfs.FirstOrDefault(s => s.IsT0);
+        if(val.IsT0)
+        {
+            dynamicInfo = null;
+            return val.AsT0;
+        }
 
         ParsingContext ctx;
         dynamicInfo = new();
 
-        var enumSortered = enumerators
-            .Where(kvp => kvp.Key != "poseschunkssizes:" && kvp.Key != "numberof16x16tilesperpose:")
+        var sections = oneOfs
+            .Select(s => s.AsT1);
+
+        var sortedSections = sections
+            .Where(s => s.Name != "poseschunkssizes:" && s.Name != "numberof16x16tilesperpose:")
             .ToList();
 
-        if (enumerators.TryGetValue("poseschunkssizes:", out FileLineEnumerator? value))
-            enumSortered.Add(new("poseschunkssizes:", value));
-        if (enumerators.TryGetValue("numberof16x16tilesperpose:", out value))
-            enumSortered.Add(new("numberof16x16tilesperpose:", value));
+        sortedSections.AddRange(sections
+            .Where(s => s.Name == "poseschunkssizes:" || s.Name == "numberof16x16tilesperpose:"));
 
-        foreach (var section in enumSortered)
+        FileLineEnumerator fle;
+
+        ValidationResult result = new();
+
+        foreach (var section in sortedSections)
         {
-            ctx = createContext(section.Key, dynamicInfo, baseDirectory, (FileEnumeratorLineContext)section.Value);
-            while (section.Value.MoveNext())
+            fle = section.GetEnumerator();
+            ctx = createContext(section.Name, dynamicInfo, baseDirectory, (FileEnumeratorLineContext) fle);
+            while (fle.MoveNext())
             {
-                if (string.IsNullOrWhiteSpace(section.Value.Current))
+                if (string.IsNullOrWhiteSpace(fle.Current))
                     continue;
                 result.Merge(ctx.ProcessEntry());
             }

@@ -8,8 +8,9 @@ public class FileSection(string name, string filepath, int startLine, int endLin
     public string Name { get; } = name;
     public int StartLine { get; } = startLine > endLine ? endLine : startLine;
     public int EndLine { get; } = endLine;
-    public static IEnumerable<OneOf<ValidationResult, FileSection>> GetSectionsFromFile(string filepath, ISet<string> sections, string? defaultSection = null, bool skipTitle = false, bool uniqueSections = true)
+    public static IEnumerable<OneOf<ValidationResult, FileSection>> GetSectionsFromFile(string filepath, IEnumerable<string> sections, string? defaultSection = null, bool skipTitle = false, bool uniqueSections = true)
     {
+        HashSet<string> sectionSet = [.. sections.Select(s => s.ToLowerInvariant())];
         FileLineReader reader = new(filepath);
         HashSet<string> detectedSections = [];
         int commentIndex;
@@ -24,8 +25,8 @@ public class FileSection(string name, string filepath, int startLine, int endLin
             commentIndex = line.IndexOf(';');
             if (commentIndex < 0)
                 commentIndex = line.Length;
-            cleanLine = line[..commentIndex].Trim();
-            if(!sections.Contains(cleanLine))
+            cleanLine = line[..commentIndex].Trim().ToLowerInvariant();
+            if(!sectionSet.Contains(cleanLine))
             {
                 if (currentSection == null)
                     validation.AddError(new(filepath, currentLine + 1, cleanLine), SMWHubEnumeratorsMessageTypeKeys.SECTION_WITHOUT_TITLE);
