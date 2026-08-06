@@ -36,7 +36,9 @@ public class Installer(string configPath)
                     .Select(p => p!);
             });
         InstallationContext context = new(plugins);
-        foreach((var resourcePlugin, var plugin) in context.Resources.OrderByDescending(r => r.Item1.GetPackagePriority))
+        Code.GenerateIncludeRegex(context.FormatDefinitions.Select(fd => (fd.IncludeDirectiveName, fd.Extension)));
+        Code.GenerateEmbeddedRegex(context.FormatDefinitions.Select(fd => fd.EmbeddedName));
+        foreach ((var resourcePlugin, var plugin) in context.Resources.OrderByDescending(r => r.Item1.GetPackagePriority))
         {
             context.Packages.AddRange(resourcePlugin.GetPackages(plugin.Context, context));
         }

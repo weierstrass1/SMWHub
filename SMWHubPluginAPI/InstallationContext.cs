@@ -10,10 +10,12 @@ public class InstallationContext
     public static readonly string SCOPE_DIRECTORIES_CONFIG = Path.Combine("_Internal", "Settings", "FoldersConfig.json");
     public CodeContext CodeContext { get; }
     public List<IPackage> Packages { get; }
+    public ReadOnlyCollection<FormatDefinition> FormatDefinitions { get; }
     public ReadOnlyCollection<ISMWHubPlugin> Plugins { get; }
     public ReadOnlyCollection<IScopeType> Scopes { get; }
-    public ReadOnlyCollection<(IResourcePlugin, ISMWHubPlugin)> Resources { get; }
-    public ReadOnlyCollection<(IFormatPlugin, ISMWHubPlugin)> Formats { get; }
+    public ReadOnlyCollection<(IResourcePlugin resourcePlugin, ISMWHubPlugin plugin)> Resources { get; }
+    public ReadOnlyCollection<(IFormatPlugin formatPlugin, ISMWHubPlugin plugin)> Formats { get; }
+    public ReadOnlyDictionary<string, (IFormatPlugin formatPlugin, ISMWHubPlugin plugin)> FormatDictionary { get; }
     private static readonly JsonSerializerOptions _jsonSerializerOptions = new()
     {
         WriteIndented = true
@@ -24,6 +26,19 @@ public class InstallationContext
         Scopes = [.. plugins.SelectMany(ISMWHubPlugin.GetScopes), GlobalScopeType.GetInstance()];
         Resources = [.. plugins.SelectMany(p => p.GetResourcePlugins().Select(r => (r, p)))];
         Formats = [.. plugins.SelectMany(p => p.GetFormatPlugins().Select(f => (f, p)))];
+        FormatDefinitions = [.. Formats.SelectMany(f => f.formatPlugin.FormatDefinitions)];
+        Dictionary<string, (IFormatPlugin, ISMWHubPlugin)> formats = [];
+        foreach (var format in Formats)
+        {
+            foreach(var inc in format.formatPlugin.FormatDefinitions)
+            {
+                if (inc.EmbeddedName != null)
+                    formats.TryAdd(inc.EmbeddedName, format);
+                if (inc.IncludeDirectiveName != null)
+                    formats.TryAdd(inc.IncludeDirectiveName, format);
+            }
+        }
+        FormatDictionary = formats.AsReadOnly();
         CodeContext = new(SCOPE_DIRECTORIES_CONFIG, Scopes);
         Packages = [];
         if(!File.Exists(PLUGINS_CONFIG))
@@ -37,13 +52,13 @@ public class InstallationContext
             {
                 value = new PluginConfig
                 {
-                    GetPackagePriority = res.Item1.GetPackageDefaultPriority,
-                    ProcessPriority = res.Item1.ProcessDefaultPriority
+                    GetPackagePriority = res.resourcePlugin.GetPackageDefaultPriority,
+                    ProcessPriority = res.resourcePlugin.ProcessDefaultPriority
                 };
                 resources[assemblyName] = value;
             }
-            res.Item1.GetPackagePriority = value.GetPackagePriority;
-            res.Item1.ProcessPriority = value.ProcessPriority;
+            res.resourcePlugin.GetPackagePriority = value.GetPackagePriority;
+            res.resourcePlugin.ProcessPriority = value.ProcessPriority;
         }
        string pluginConfig = JsonSerializer.Serialize(resources, _jsonSerializerOptions);
        File.WriteAllText(PLUGINS_CONFIG, pluginConfig);

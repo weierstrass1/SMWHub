@@ -1,9 +1,11 @@
 ﻿using FormatReadLibrary.Readers;
+using OneOf.Types;
 using SMWHubASMCodeLibrary;
 using SMWHubPluginAPI;
 using SMWHubSprites.CommonListCategories;
 using SMWHubSprites.ScopeTypes;
 using System.Reflection;
+using System.Text;
 using Validations;
 
 namespace SMWHubSprites;
@@ -23,6 +25,15 @@ public class SpriteResourcePlugin : IResourcePlugin
     public int ProcessPriority { get; set; } = 0;
     public int GetPackageDefaultPriority { get; } = 0;
     public int ProcessDefaultPriority { get; } = 0;
+    public Func<Code, string>? CustomRoutineDefinition { get; } = (code) => {
+        StringBuilder sb = new();
+        sb.Append('%');
+        if (!string.IsNullOrWhiteSpace(code.BreadCrumb))
+            sb.Append($"{code.BreadCrumb.Replace("_", "")}");
+        sb.Append(Path.GetFileNameWithoutExtension(code.FilePath));
+        sb.Append("()");
+        return sb.ToString();
+    };
     public SpriteResourcePlugin()
     {
         var method = typeof(IScopeType)

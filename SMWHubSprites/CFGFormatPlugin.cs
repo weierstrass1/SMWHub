@@ -9,11 +9,19 @@ namespace SMWHubSprites;
 
 public class CFGFormatPlugin : IFormatPlugin<SpriteConfigEntry>
 {
-    private static readonly string[] _embeddedNames = ["CFG", "JsonCFG"];
-    private static readonly string[] _fileExtensions = [".cfg", ".json"];
-    public IEnumerable<string> EmbeddedNames => _embeddedNames.AsReadOnly();
-    public IEnumerable<string> IncludeDirectiveNames { get; } = [];
-    public IEnumerable<string> FileExtensions => _fileExtensions.AsReadOnly();
+    private readonly FormatDefinition[] _formatDefinitions = 
+        [
+            new("CFG", "cfg", ".cfg"), 
+            new("JsonCFG", "jsoncfg", ".json")
+        ];
+    public IEnumerable<FormatDefinition> FormatDefinitions
+    {
+        get
+        {
+            foreach (var f in _formatDefinitions)
+                yield return f;
+        }
+    }
     public bool CanBeEmbeddedFrom(Type t)
     {
         return t == typeof(NormalSpriteType);

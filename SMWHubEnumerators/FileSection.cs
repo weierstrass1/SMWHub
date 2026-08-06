@@ -1,9 +1,12 @@
 ﻿using OneOf;
+using System.Collections;
 using Validations;
 
 namespace SMWHubEnumerators;
-public class FileSection(string name, string filepath, int startLine, int endLine)
+public class FileSection(string name, string filepath, int startLine, int endLine) : IFormattedEnumerable
 {
+    public string? Format { get; init; }
+    public string? Extension { get; init; } = Path.GetExtension(filepath);
     public string FilePath { get; } = filepath;
     public string Name { get; } = name;
     public int StartLine { get; } = startLine > endLine ? endLine : startLine;
@@ -73,5 +76,13 @@ public class FileSection(string name, string filepath, int startLine, int endLin
         {
             yield return line;
         }
+    }
+    IEnumerator<string> IEnumerable<string>.GetEnumerator()
+    {
+        return GetEnumerator();
+    }
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return GetEnumerator();
     }
 }

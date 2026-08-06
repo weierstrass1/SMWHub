@@ -67,6 +67,14 @@ public class FileStreamReader : IDisposable
             }
             _readBufferLimit = _fileStream.Read(_readAheadBuffer, 0, BUFFER_SIZE);
             _readBytes = 0;
+            if (CurrentPosition == 0 && _fileStream.Length > 2 &&
+                _readAheadBuffer[0] == 0xEF &&
+                _readAheadBuffer[1] == 0xBB &&
+                _readAheadBuffer[2] == 0xBF)
+            {
+                _readBytes = 3;
+                CurrentPosition = 3;
+            }
         }
         byte b = _readAheadBuffer[_readBytes];
         _readBytes++;

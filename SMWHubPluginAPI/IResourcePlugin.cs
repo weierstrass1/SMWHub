@@ -23,6 +23,7 @@ public interface IResourcePlugin
     /// Gets the default priority of the Process method.
     /// </summary>
     public int ProcessDefaultPriority { get; }
+    public Func<Code, string>? CustomRoutineDefinition { get; }
     /// <summary>
     /// Gets the Custom Scope Types used by the plugin. These scopes types are used as a context for the resources installed by the plugin.
     /// </summary>
@@ -34,5 +35,11 @@ public interface IResourcePlugin
     /// <param name="packages"></param>
     /// <returns></returns>
     public ValidationResult Process(PluginContext pluginContext, InstallationContext context);
+    /// <summary>
+    /// Get all the packages related to this plugin.
+    /// </summary>
+    /// <param name="pluginContext"></param>
+    /// <param name="context"></param>
+    /// <returns></returns>
     public IEnumerable<IPackage> GetPackages(PluginContext pluginContext, InstallationContext context);
 }

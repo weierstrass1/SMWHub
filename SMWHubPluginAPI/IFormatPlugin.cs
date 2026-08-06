@@ -8,18 +8,7 @@ namespace SMWHubPluginAPI;
 /// </summary>
 public interface IFormatPlugin
 {
-    /// <summary>
-    /// The names used when the format is embedded in a file.
-    /// </summary>
-    public IEnumerable<string> EmbeddedNames { get; }
-    /// <summary>
-    /// The names used by include directives to include the format in a file.
-    /// </summary>
-    public IEnumerable<string> IncludeDirectiveNames { get; }
-    /// <summary>
-    /// The file extensions used by the format.
-    /// </summary>
-    public IEnumerable<string> FileExtensions { get; }
+    public IEnumerable<FormatDefinition> FormatDefinitions { get; }
     /// <summary>
     /// Indicates whether the format can be embedded from the specified IScopeType.
     /// </summary>

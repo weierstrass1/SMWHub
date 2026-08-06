@@ -11,6 +11,7 @@ namespace SMWHubSharedRoutines
         public int ProcessPriority { get; set; } = int.MaxValue;
         public int GetPackageDefaultPriority { get; } = int.MinValue;
         public int ProcessDefaultPriority {  get; } = int.MaxValue;
+        public Func<Code, string>? CustomRoutineDefinition { get; } = null;
         public IEnumerable<IPackage> GetPackages(PluginContext pluginContext, InstallationContext context)
         {
             return [];
