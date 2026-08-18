@@ -8,8 +8,9 @@ using Validations;
 
 namespace SMWHubSprites;
 
-public class CFGFormatPlugin : IFormatPlugin<SpriteConfigEntry>
+public class CFGFormatPlugin(PluginContext context) : IFormatPlugin<SpriteConfigEntry>
 {
+    public PluginContext Context { get; } = context;
     private readonly FormatDefinition[] _formatDefinitions = 
         [
             new("CFG", null, ".cfg"), 
@@ -31,11 +32,11 @@ public class CFGFormatPlugin : IFormatPlugin<SpriteConfigEntry>
     {
         return false;
     }
-    public IEnumerable<OneOf<ValidationResult, SpriteConfigEntry>> Read(PluginContext context, CodeScope scope, IFormattedEnumerable readerEnum)
+    public IEnumerable<OneOf<ValidationResult, SpriteConfigEntry>> Read(CodeScope scope, IFormattedEnumerable readerEnum)
     {
         throw new NotImplementedException();
     }
-    public ValidationResult Process(PluginContext context, CodeScope scope, IEnumerable<SpriteConfigEntry> obj)
+    public ValidationResult Process(CodeScope scope, IEnumerable<SpriteConfigEntry> obj)
     {
         throw new NotImplementedException();
     }

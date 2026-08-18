@@ -6,8 +6,9 @@ using Validations;
 
 namespace SMWHubSharedRoutines
 {
-    public class SharedResource : IResourcePlugin
+    public class SharedResource(PluginContext context) : IResourcePlugin
     {
+        public PluginContext Context { get; } = context;
         public Priority GetPackagePriority { get; } = int.MinValue;
         public Priority InstallationPriority { get; } = int.MaxValue;
         public Priority ProcessPriority { get; } = int.MaxValue;
@@ -19,20 +20,20 @@ namespace SMWHubSharedRoutines
         {
             return IScopeType.GetInstance<T>().AllowsSharedResources;
         }
-        public IEnumerable<IPackage> GetPackages(PluginContext pluginContext, InstallationContext context)
+        public IEnumerable<IPackage> GetPackages(InstallationContext context)
         {
             var sharedCodes = getSharedCodes(context.CodeContext);
             return getRoutinePackages(sharedCodes, context.CodeContext, context.Packages);
         }
-        public ValidationResult Process(PluginContext pluginContext, InstallationContext context)
+        public ValidationResult Process(InstallationContext context)
         {
             return new ValidationResult();
         }
-        public void EditInstallationPatch(StringBuilder patch, CodeScope scope, PluginContext pluginContext, InstallationContext context)
+        public void EditInstallationPatch(StringBuilder patch, CodeScope scope, InstallationContext context)
         {
             throw new NotImplementedException();
         }
-        public void ProcessInstallationOutput(string output, CodeScope scope, PluginContext pluginContext, InstallationContext context)
+        public void ProcessInstallationOutput(string output, CodeScope scope, InstallationContext context)
         {
             throw new NotImplementedException();
         }

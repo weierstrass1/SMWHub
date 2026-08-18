@@ -8,7 +8,7 @@ public class SharedResourcesPlugin : ISMWHubPlugin
     private readonly SharedResource _sharedResource;
     public SharedResourcesPlugin()
     {
-        _sharedResource = new();
+        _sharedResource = new(Context);
     }
     public IEnumerable<IFormatPlugin> GetFormatPlugins()
     {

@@ -1,6 +1,7 @@
 using SMWHubASMCodeLibrary;
 using SMWHubPluginAPI;
 using System.Reflection;
+using System.Text;
 using Validations;
 
 namespace SMWHubInstallation;
@@ -14,70 +15,62 @@ public class Installer(string configPath)
 
         InstallationContext context = buildContext();
 
+        processPackages(context);
+        processResourcePlugins(validation, context);
+
+        return validation;
+    }
+    private static void processPackages(InstallationContext context)
+    {
         var packagesPerPlugin = getPackages(context);
 
         PriorityQueue<IPackage, int> packageQueue;
         PriorityQueue<(IResourcePlugin, PriorityQueue<IPackage, int>), int> packagePerPluginCopy =
             new(Comparer<int>.Create((a, b) => b.CompareTo(a)));
         packagePerPluginCopy.EnqueueRange(packagesPerPlugin.UnorderedItems);
+        IPatchPlugin patchPlugin;
+        StringBuilder patchContent;
+        string patchOutput;
 
         while (packagePerPluginCopy.Count > 0)
         {
             (var resourcePlugin, var packageQ) = packagePerPluginCopy.Dequeue();
             packageQueue = new(Comparer<int>.Create((a, b) => b.CompareTo(a)));
             packageQueue.EnqueueRange(packageQ.UnorderedItems);
-            while (packagePerPluginCopy.Count > 0)
+            while (packageQueue.Count > 0)
             {
-                var pkg = packagePerPluginCopy.Dequeue().Item1;
+                var pkg = packageQueue.Dequeue();
+                patchPlugin = pkg.PatchPlugin ?? context.DefaultPatchPlugin;
+                patchContent = patchPlugin.BuildPatch(context, pkg);
+                resourcePlugin.EditInstallationPatch(patchContent, pkg.Scope, context);
+                patchOutput = patchPlugin.Insert(context, patchContent);
+                resourcePlugin.ProcessInstallationOutput(patchOutput, pkg.Scope, context);
             }
         }
-        foreach ((var resourcePlugin, var plugin) in context.Resources.OrderByDescending(r => r.resourcePlugin.ProcessPriority))
-        {
-            validation.Merge(resourcePlugin.Process(plugin.Context, context));
-        }
-        /*
-        CodeContext codeContext = new(_paths.FolderConfigPath, []);
-
-        SharedCodePathProcessor scpp = new(codeContext);
-
-        List<Code> sharedCodes = scpp.FindSharedCodes();
-
-
-        List<IPackage> packages = [];
-
-        foreach (var nullableOneOf in getNonRoutinePackages(sharedCodes, scpp))
-        {
-            if (nullableOneOf == null)
-                continue;
-            if (nullableOneOf.Value.TryPickT0(out ValidationResult val, out IPackage pkg))
-            {
-                validation.Merge(val);
-                continue;
-            }
-            packages.Add(pkg);
-        }
-        var routinePkgs = getRoutinePackages(sharedCodes, scpp, packages);
-        */
-        return validation;
     }
-
     private static PriorityQueue<(IResourcePlugin, PriorityQueue<IPackage, int>), int> getPackages(InstallationContext context)
     {
-        PriorityQueue<(IResourcePlugin, PriorityQueue<IPackage, int>), int>  packagesPerPlugin = new(Comparer<int>.Create((a, b) => b.CompareTo(a)));
+        PriorityQueue<(IResourcePlugin, PriorityQueue<IPackage, int>), int> packagesPerPlugin = new(Comparer<int>.Create((a, b) => b.CompareTo(a)));
         PriorityQueue<IPackage, int> packageQueue;
 
-        IEnumerable <IPackage> packages;
+        IEnumerable<IPackage> packages;
         foreach ((var resourcePlugin, var plugin) in context.Resources.OrderByDescending(r => r.resourcePlugin.GetPackagePriority))
         {
             packageQueue = new(Comparer<int>.Create((a, b) => b.CompareTo(a)));
             packagesPerPlugin.Enqueue((resourcePlugin, packageQueue), resourcePlugin.InstallationPriority);
-            packages = [.. resourcePlugin.GetPackages(plugin.Context, context)];
+            packages = [.. resourcePlugin.GetPackages(context)];
             packageQueue.EnqueueRange(packages.Select(p => (p, p.Priority.CurrentPriority)));
             context.Packages.AddRange(packages);
         }
         return packagesPerPlugin;
     }
-
+    private static void processResourcePlugins(ValidationResult validation, InstallationContext context)
+    {
+        foreach ((var resourcePlugin, var plugin) in context.Resources.OrderByDescending(r => r.resourcePlugin.ProcessPriority))
+        {
+            validation.Merge(resourcePlugin.Process(context));
+        }
+    }
     private static InstallationContext buildContext()
     {
         IEnumerable<string> pluginPaths = Directory.GetDirectories(PLUGIN_DIRECTORY)

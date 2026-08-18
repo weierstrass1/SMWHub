@@ -76,8 +76,7 @@ public interface IPackage
 
             hashes.AddRange(sha5121.ComputeHash(stream));
         }
-        using SHA512 sha5122 = SHA512.Create();
-        byte[] hash = sha5122.ComputeHash([.. hashes]);
+        byte[] hash = SHA512.HashData([.. hashes]);
         return Convert.ToBase64String(hash);
     }
     /// <summary>

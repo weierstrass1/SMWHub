@@ -11,6 +11,7 @@ namespace SMWHubSprites;
 
 public class SpriteResourcePlugin : IResourcePlugin
 {
+    public PluginContext Context { get; }
     public Priority GetPackagePriority { get; } = 0;
     public Priority ProcessPriority { get; } = 0;
     public Priority InstallationPriority { get; } = 0;
@@ -23,8 +24,9 @@ public class SpriteResourcePlugin : IResourcePlugin
         }
     }
     private readonly List<IScopeType> _scopes;
-    public SpriteResourcePlugin()
+    public SpriteResourcePlugin(PluginContext context)
     {
+        Context = context;
         var method = typeof(IScopeType)
             .GetMethod(nameof(IScopeType.GetInstance))!;
 
@@ -37,7 +39,7 @@ public class SpriteResourcePlugin : IResourcePlugin
     {
         return ScopeTypes.Any(s => s is T);
     }
-    public IEnumerable<IPackage> GetPackages(PluginContext pluginContext, InstallationContext context)
+    public IEnumerable<IPackage> GetPackages(InstallationContext context)
     {
         CodeContext codeContext = context.CodeContext;
         CommonListReader clr = new([
@@ -47,15 +49,15 @@ public class SpriteResourcePlugin : IResourcePlugin
             ]);
         return [];
     }
-    public ValidationResult Process(PluginContext pluginContext, InstallationContext context)
+    public ValidationResult Process(InstallationContext context)
     {
         return new ValidationResult();
     }
-    public void EditInstallationPatch(StringBuilder patch, CodeScope scope, PluginContext pluginContext, InstallationContext context)
+    public void EditInstallationPatch(StringBuilder patch, CodeScope scope, InstallationContext context)
     {
         throw new NotImplementedException();
     }
-    public void ProcessInstallationOutput(string output, CodeScope scope, PluginContext pluginContext, InstallationContext context)
+    public void ProcessInstallationOutput(string output, CodeScope scope, InstallationContext context)
     {
         throw new NotImplementedException();
     }

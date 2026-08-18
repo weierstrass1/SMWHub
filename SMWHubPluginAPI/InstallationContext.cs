@@ -8,6 +8,7 @@ public class InstallationContext
 {
     public static readonly string PLUGINS_CONFIG = Path.Combine("_Internal", "Settings", "Plugins.json");
     public static readonly string SCOPE_DIRECTORIES_CONFIG = Path.Combine("_Internal", "Settings", "FoldersConfig.json");
+    public IPatchPlugin DefaultPatchPlugin { get; }
     public CodeContext CodeContext { get; }
     public List<IPackage> Packages { get; }
     public ReadOnlyCollection<FormatDefinition> FormatDefinitions { get; }
@@ -23,6 +24,7 @@ public class InstallationContext
     public InstallationContext(IEnumerable<ISMWHubPlugin> plugins)
     {
         Plugins = [.. plugins];
+        DefaultPatchPlugin = plugins.Select(p => p.GetDefaultPatchPlugin()).First(p => p != null)!;
         Scopes = [.. plugins.SelectMany(ISMWHubPlugin.GetScopes), GlobalScopeType.GetInstance()];
         Resources = [.. plugins.SelectMany(p => p.GetResourcePlugins().Select(r => (r, p)))];
         Formats = [.. plugins.SelectMany(p => p.GetFormatPlugins().Select(f => (f, p)))];

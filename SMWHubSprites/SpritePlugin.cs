@@ -21,8 +21,8 @@ public class SpritePlugin : ISMWHubPlugin
             .Select(t => (IScopeType)method.MakeGenericMethod(t).Invoke(null, null)!);
         Context = new(typeof(SpritePlugin).Assembly.GetName().Name!);
         Context.StateData.AddVariable("CFGs", new Dictionary<string, SpriteConfigEntry>());
-        _spriteResourcePlugin = new();
-        _cfgFormatPlugin = new();
+        _spriteResourcePlugin = new(Context);
+        _cfgFormatPlugin = new(Context);
     }
     public IEnumerable<IScopeType> GetScopes()
     {
