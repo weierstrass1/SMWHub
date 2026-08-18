@@ -1,5 +1,4 @@
 ﻿using FormatReadLibrary.Readers;
-using OneOf.Types;
 using SMWHubASMCodeLibrary;
 using SMWHubPluginAPI;
 using SMWHubSprites.CommonListCategories;
@@ -12,7 +11,9 @@ namespace SMWHubSprites;
 
 public class SpriteResourcePlugin : IResourcePlugin
 {
-    private readonly List<IScopeType> _scopes;
+    public Priority GetPackagePriority { get; } = 0;
+    public Priority ProcessPriority { get; } = 0;
+    public Priority InstallationPriority { get; } = 0;
     public IEnumerable<IScopeType> ScopeTypes
     {
         get
@@ -21,19 +22,7 @@ public class SpriteResourcePlugin : IResourcePlugin
                 yield return scope;
         }
     }
-    public int GetPackagePriority { get; set; } = 0;
-    public int ProcessPriority { get; set; } = 0;
-    public int GetPackageDefaultPriority { get; } = 0;
-    public int ProcessDefaultPriority { get; } = 0;
-    public Func<Code, string>? CustomRoutineDefinition { get; } = (code) => {
-        StringBuilder sb = new();
-        sb.Append('%');
-        if (!string.IsNullOrWhiteSpace(code.BreadCrumb))
-            sb.Append($"{code.BreadCrumb.Replace("_", "")}");
-        sb.Append(Path.GetFileNameWithoutExtension(code.FilePath));
-        sb.Append("()");
-        return sb.ToString();
-    };
+    private readonly List<IScopeType> _scopes;
     public SpriteResourcePlugin()
     {
         var method = typeof(IScopeType)
@@ -43,6 +32,10 @@ public class SpriteResourcePlugin : IResourcePlugin
             .GetTypes()
             .Where(t => typeof(IScopeType).IsAssignableFrom(t) && !t.IsInterface && !t.IsAbstract)
             .Select(t => (IScopeType)method.MakeGenericMethod(t).Invoke(null, null)!)];
+    }
+    public bool MustEditScope<T>() where T : IScopeType<T>
+    {
+        return ScopeTypes.Any(s => s is T);
     }
     public IEnumerable<IPackage> GetPackages(PluginContext pluginContext, InstallationContext context)
     {
@@ -57,5 +50,23 @@ public class SpriteResourcePlugin : IResourcePlugin
     public ValidationResult Process(PluginContext pluginContext, InstallationContext context)
     {
         return new ValidationResult();
+    }
+    public void EditInstallationPatch(StringBuilder patch, CodeScope scope, PluginContext pluginContext, InstallationContext context)
+    {
+        throw new NotImplementedException();
+    }
+    public void ProcessInstallationOutput(string output, CodeScope scope, PluginContext pluginContext, InstallationContext context)
+    {
+        throw new NotImplementedException();
+    }
+    public static string CustomRoutineDefinition(Code code)
+    {
+        StringBuilder sb = new();
+        sb.Append('%');
+        if (!string.IsNullOrWhiteSpace(code.BreadCrumb))
+            sb.Append($"{code.BreadCrumb.Replace("_", "")}");
+        sb.Append(Path.GetFileNameWithoutExtension(code.FilePath));
+        sb.Append("()");
+        return sb.ToString();
     }
 }

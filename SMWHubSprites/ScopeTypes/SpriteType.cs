@@ -2,7 +2,7 @@
 
 namespace SMWHubSprites.ScopeTypes;
 
-public class SpriteType : IScopeType<SpriteType>
+public class SpriteType : IScopeType<SpriteType>, ICustomRoutineDefinition
 {
     public bool AllowsSharedResources { get; } = true;
     public string Name { get; } = "Sprites";
@@ -11,5 +11,9 @@ public class SpriteType : IScopeType<SpriteType>
     public static IScopeType GetInstance()
     {
         return _instance;
+    }
+    public string Define(Code code)
+    {
+        return SpriteResourcePlugin.CustomRoutineDefinition(code);
     }
 }

@@ -52,13 +52,16 @@ public class InstallationContext
             {
                 value = new PluginConfig
                 {
-                    GetPackagePriority = res.resourcePlugin.GetPackageDefaultPriority,
-                    ProcessPriority = res.resourcePlugin.ProcessDefaultPriority
+                    Version = ISMWHubPlugin.GetVersion(res.plugin),
+                    GetPackagePriority = res.resourcePlugin.GetPackagePriority.DefaultPriority,
+                    ProcessPriority = res.resourcePlugin.ProcessPriority.DefaultPriority,
+                    InstallationPriority = res.resourcePlugin.InstallationPriority.DefaultPriority
                 };
                 resources[assemblyName] = value;
             }
-            res.resourcePlugin.GetPackagePriority = value.GetPackagePriority;
-            res.resourcePlugin.ProcessPriority = value.ProcessPriority;
+            res.resourcePlugin.GetPackagePriority.CurrentPriority = value.GetPackagePriority;
+            res.resourcePlugin.ProcessPriority.CurrentPriority = value.ProcessPriority;
+            res.resourcePlugin.InstallationPriority.CurrentPriority = value.InstallationPriority;
         }
        string pluginConfig = JsonSerializer.Serialize(resources, _jsonSerializerOptions);
        File.WriteAllText(PLUGINS_CONFIG, pluginConfig);

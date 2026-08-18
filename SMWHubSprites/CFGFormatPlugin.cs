@@ -1,4 +1,5 @@
 ﻿using OneOf;
+using SMWHubASMCodeLibrary;
 using SMWHubEnumerators;
 using SMWHubPluginAPI;
 using SMWHubSprites.Formats;
@@ -11,8 +12,8 @@ public class CFGFormatPlugin : IFormatPlugin<SpriteConfigEntry>
 {
     private readonly FormatDefinition[] _formatDefinitions = 
         [
-            new("CFG", "cfg", ".cfg"), 
-            new("JsonCFG", "jsoncfg", ".json")
+            new("CFG", null, ".cfg"), 
+            new("JsonCFG", null, ".json")
         ];
     public IEnumerable<FormatDefinition> FormatDefinitions
     {
@@ -30,11 +31,11 @@ public class CFGFormatPlugin : IFormatPlugin<SpriteConfigEntry>
     {
         return false;
     }
-    public IEnumerable<OneOf<ValidationResult, SpriteConfigEntry>> Read(PluginContext context, IFormattedEnumerable readerEnum)
+    public IEnumerable<OneOf<ValidationResult, SpriteConfigEntry>> Read(PluginContext context, CodeScope scope, IFormattedEnumerable readerEnum)
     {
         throw new NotImplementedException();
     }
-    public ValidationResult Process(PluginContext context, IEnumerable<SpriteConfigEntry> obj)
+    public ValidationResult Process(PluginContext context, CodeScope scope, IEnumerable<SpriteConfigEntry> obj)
     {
         throw new NotImplementedException();
     }

@@ -2,7 +2,7 @@
 
 namespace SMWHubSprites.ScopeTypes;
 
-public class NormalSpriteType : IScopeType<NormalSpriteType>
+public class NormalSpriteType : IScopeType<NormalSpriteType>, ICustomRoutineDefinition
 {
     public bool AllowsSharedResources { get; } = true;
     public string Name { get; } = "NormalSprites";
@@ -11,5 +11,9 @@ public class NormalSpriteType : IScopeType<NormalSpriteType>
     public static IScopeType GetInstance()
     {
         return _instance;
+    }
+    public string Define(Code code)
+    {
+        return SpriteResourcePlugin.CustomRoutineDefinition(code);
     }
 }

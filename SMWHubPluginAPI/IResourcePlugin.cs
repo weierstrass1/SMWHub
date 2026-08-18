@@ -1,4 +1,5 @@
 ﻿using SMWHubASMCodeLibrary;
+using System.Text;
 using Validations;
 
 namespace SMWHubPluginAPI;
@@ -7,27 +8,22 @@ namespace SMWHubPluginAPI;
 /// </summary>
 public interface IResourcePlugin
 {
+    public bool MustEditScope<T>() where T : IScopeType<T>;
     /// <summary>
     /// Gets the priority of the GetPackage method. This is used to determine the execution order of the GetPackage method when multiple Resource Plugins are used. A higher value indicates a higher priority.
     /// </summary>
-    public int GetPackagePriority { get; set; }
+    public Priority GetPackagePriority { get; }
     /// <summary>
     /// Gets the priority of the Process method. This is used to determine the execution order of the Process method when multiple Resource Plugins are used. A higher value indicates a higher priority.
     /// </summary>
-    public int ProcessPriority { get; set; }
-    /// <summary>
-    /// Gets the default priority of the GetPackage method.
-    /// </summary>
-    public int GetPackageDefaultPriority { get; }
-    /// <summary>
-    /// Gets the default priority of the Process method.
-    /// </summary>
-    public int ProcessDefaultPriority { get; }
-    public Func<Code, string>? CustomRoutineDefinition { get; }
+    public Priority ProcessPriority { get; }
+    public Priority InstallationPriority { get; }
     /// <summary>
     /// Gets the Custom Scope Types used by the plugin. These scopes types are used as a context for the resources installed by the plugin.
     /// </summary>
     public IEnumerable<IScopeType> ScopeTypes { get; }
+    public void EditInstallationPatch(StringBuilder patch, CodeScope scope, PluginContext pluginContext, InstallationContext context);
+    public void ProcessInstallationOutput(string output, CodeScope scope, PluginContext pluginContext, InstallationContext context);
     /// <summary>
     /// Processes the given packages and returns a ValidationResult indicating whether the processing was successful or not. The ValidationResult contains any errors that occurred during processing.
     /// </summary>

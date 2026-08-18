@@ -5,7 +5,11 @@ namespace SMWHubPluginAPI.DTO;
 public class PluginConfig
 {
     [JsonRequired]
-    public required int GetPackagePriority {  get; init; }
+    public required string Version { get; init; }
     [JsonRequired]
-    public required int ProcessPriority {  get; init; }
+    public required int GetPackagePriority { get; init; }
+    [JsonRequired]
+    public required int ProcessPriority { get; init; }
+    [JsonRequired]
+    public required int InstallationPriority { get; init; }
 }

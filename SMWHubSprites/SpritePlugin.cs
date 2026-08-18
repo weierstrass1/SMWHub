@@ -37,4 +37,5 @@ public class SpritePlugin : ISMWHubPlugin
     {
         yield return _spriteResourcePlugin;
     }
+    public IPatchPlugin? GetDefaultPatchPlugin() => null;
 }

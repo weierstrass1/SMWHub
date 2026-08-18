@@ -5,6 +5,9 @@ namespace SMWHubPluginAPI.PackagesTypes;
 
 public class FolderPackage(string packagePath, CodeType type, CodeScope scope) : IPackage
 {
+    public IPatchPlugin? PatchPlugin { get; init; } = null;
+    public required IResourcePlugin OriginPlugin { get; init; }
+    public Priority Priority { get; init; } = 0;
     public CodeType Type { get; } = type;
     public CodeScope Scope { get; } = scope;
     public string DirectoryPath { get; } = Path.GetDirectoryName(packagePath)!;
@@ -22,13 +25,29 @@ public class FolderPackage(string packagePath, CodeType type, CodeScope scope) :
             return null;
         string internalFilePath = Path.Combine(Scope.SourceDirectoryPath, filepath);
         if (Directory.Exists(internalFilePath))
-            return new FolderPackage(filepath, Type, Scope);
+            return new FolderPackage(filepath, Type, Scope)
+            { 
+                OriginPlugin = OriginPlugin,
+                Priority = Priority,
+                PatchPlugin = PatchPlugin
+            };
         if (PackageExtensions._rootExtensions.Contains(Path.GetExtension(filepath).ToLower()) &&
             File.Exists(filepath))
-            return new FolderPackage(filepath, Type, Scope);
+            return new FolderPackage(filepath, Type, Scope)
+            {
+                OriginPlugin = OriginPlugin,
+                Priority = Priority,
+                PatchPlugin = PatchPlugin
+            };
         Match m = CompressedPackage.RootRegex().Match(filepath);
         if (m.Success)
-            return new CompressedPackage(m.Value, Type, Scope).GetSubPackageFromInternalFile(filepath);
+            return new CompressedPackage(m.Value, Type, Scope)
+            {
+                OriginPlugin = OriginPlugin,
+                Priority = Priority,
+                PatchPlugin = PatchPlugin
+            }.GetSubPackageFromInternalFile(filepath);
+
         return null;
     }
     public long GetSize()

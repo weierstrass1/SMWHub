@@ -18,4 +18,5 @@ public class SharedResourcesPlugin : ISMWHubPlugin
     {
         yield return _sharedResource;
     }
+    public IPatchPlugin? GetDefaultPatchPlugin() => null;
 }

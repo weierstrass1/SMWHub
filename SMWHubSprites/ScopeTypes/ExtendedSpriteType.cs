@@ -2,7 +2,7 @@
 
 namespace SMWHubSprites.ScopeTypes;
 
-public class ExtendedSpriteType : IScopeType<ExtendedSpriteType>
+public class ExtendedSpriteType : IScopeType<ExtendedSpriteType>, ICustomRoutineDefinition
 {
     public bool AllowsSharedResources { get; } = true;
     public string Name { get; } = "Extendeds";
@@ -11,5 +11,9 @@ public class ExtendedSpriteType : IScopeType<ExtendedSpriteType>
     public static IScopeType GetInstance()
     {
         return _instance;
+    }
+    public string Define(Code code)
+    {
+        return SpriteResourcePlugin.CustomRoutineDefinition(code);
     }
 }

@@ -11,6 +11,7 @@ public interface ISMWHubPlugin
     /// Gets the context of the plugin, which can be used to store shared data between Resource Plugins and Format Plugins.
     /// </summary>
     public PluginContext Context { get; }
+    public IPatchPlugin? GetDefaultPatchPlugin();
     /// <summary>
     /// Gets the format plugins provided by the plugin.
     /// </summary>
@@ -26,7 +27,7 @@ public interface ISMWHubPlugin
     /// </summary>
     /// <param name="smwplugin">The plugin for which to get the version.</param>
     /// <returns>The version of the plugin.</returns>
-    public string GetVersion(ISMWHubPlugin smwplugin)
+    public static string GetVersion(ISMWHubPlugin smwplugin)
     {
         return smwplugin.GetType().Assembly.GetName().Version?.ToString() ?? "???";
     }

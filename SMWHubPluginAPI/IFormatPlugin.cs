@@ -1,4 +1,5 @@
 ﻿using OneOf;
+using SMWHubASMCodeLibrary;
 using SMWHubEnumerators;
 using Validations;
 
@@ -34,12 +35,12 @@ public interface IFormatPlugin<TFormat> : IFormatPlugin
     /// <param name="context">Context used by the plugin</param>
     /// <param name="readerEnum">The IFormattedEnumerable to read from</param>
     /// <returns>A collection that has ValidationResults when the read fails and TFormat when it succeeds.</returns>
-    public IEnumerable<OneOf<ValidationResult, TFormat>> Read(PluginContext context, IFormattedEnumerable readerEnum);
+    public IEnumerable<OneOf<ValidationResult, TFormat>> Read(PluginContext context, CodeScope scope, IFormattedEnumerable readerEnum);
     /// <summary>
     /// Processes the specified collection of TFormat and returns a ValidationResult with the possible errors that occurred during the processing operation.
     /// </summary>
     /// <param name="context">Context used by the plugin</param>
     /// <param name="obj">The collection of TFormat to process</param>
     /// <returns>A ValidationResult with the possible errors that occurred during the processing operation.</returns>
-    public ValidationResult Process(PluginContext context, IEnumerable<TFormat> obj);
+    public ValidationResult Process(PluginContext context, CodeScope scope, IEnumerable<TFormat> obj);
 }

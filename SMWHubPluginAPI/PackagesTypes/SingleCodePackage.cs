@@ -4,6 +4,9 @@ namespace SMWHubPluginAPI.PackagesTypes;
 
 public class SingleCodePackage(string filepath, CodeType type, CodeScope scope) : IPackage
 {
+    public IPatchPlugin? PatchPlugin { get; init; } = null;
+    public required IResourcePlugin OriginPlugin { get; init; }
+    public Priority Priority { get; init; } = 0;
     public CodeType Type { get; } = type;
     public CodeScope Scope { get; } = scope;
     public string PackagePath { get; } = filepath;

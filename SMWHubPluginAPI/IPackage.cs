@@ -10,6 +10,9 @@ namespace SMWHubPluginAPI;
 /// </summary>
 public interface IPackage
 {
+    public IPatchPlugin? PatchPlugin { get; init; }
+    public IResourcePlugin OriginPlugin { get; init; }
+    public Priority Priority { get; }
     /// <summary>
     /// Indicates if the package represents a Macros Library, a Defines Library, a Routine or Code.
     /// </summary>

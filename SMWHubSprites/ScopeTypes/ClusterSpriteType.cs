@@ -2,7 +2,7 @@
 
 namespace SMWHubSprites.ScopeTypes;
 
-public class ClusterSpriteType : IScopeType<ClusterSpriteType>
+public class ClusterSpriteType : IScopeType<ClusterSpriteType>, ICustomRoutineDefinition
 {
     public bool AllowsSharedResources { get; } = true;
     public string Name { get; } = "Clusters";
@@ -11,5 +11,9 @@ public class ClusterSpriteType : IScopeType<ClusterSpriteType>
     public static IScopeType GetInstance()
     {
         return _instance;
+    }
+    public string Define(Code code)
+    {
+        return SpriteResourcePlugin.CustomRoutineDefinition(code);
     }
 }

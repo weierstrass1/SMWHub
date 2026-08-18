@@ -8,6 +8,9 @@ namespace SMWHubPluginAPI.PackagesTypes;
 
 public partial class CompressedPackage(string packagePath, CodeType type, CodeScope scope) : IPackage
 {
+    public IPatchPlugin? PatchPlugin { get; init; } = null;
+    public required IResourcePlugin OriginPlugin { get; init; }
+    public Priority Priority { get; init; } = 0;
     public static readonly string DECOMPRESSED_DIRECTORY = Path.Combine("_Internal", "Decompressed");
     public CodeType Type { get; } = type;
     public CodeScope Scope { get; } = scope;
@@ -49,7 +52,12 @@ public partial class CompressedPackage(string packagePath, CodeType type, CodeSc
                 Overwrite = true
             });
         CodeScope scope = new(decompressedDir, decompressedDir, Scope.Type);
-        _folderPackage = new(destination, Type, scope);
+        _folderPackage = new(destination, Type, scope)
+        {
+            OriginPlugin = OriginPlugin,
+            Priority = Priority,
+            PatchPlugin = PatchPlugin
+        };
     }
     public long GetSize()
     {
